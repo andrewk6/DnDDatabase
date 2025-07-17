@@ -73,7 +73,7 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 
 	private ReminderField monsterNameField, monsterTypeField, acField, initBnsField, hpField, speedField, strField,
 			dexField, conField, intField, wisField, chaField, dmgResistField, dmgVulnField, immuneField, sensesField,
-			langField, crField, numLActs, numLActsBns;
+			langField, crField, numLActs, numLActsBns, filter;
 
 	private JCheckBox initProfChck, initExpertChck, strSaveP, dexSaveP, conSaveP, intSaveP, wisSaveP, chaSaveP;
 
@@ -92,6 +92,8 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 	private JTabbedPane tabPane;
 	
 	private HashMap<String, String> rEditReps;
+	
+	private final Dimension limitSize = new Dimension(200, Integer.MAX_VALUE);
 
 	public MonsterBuilderIFrame(DataContainer data) {
 		this.data = data;
@@ -193,12 +195,18 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 
 		sidePane = new JPanel();
 		sidePane.setLayout(new BorderLayout());
+		
 		monstGridPane = new JPanel();
+//		monstGridPane.setPreferredSize(limitSize);
+//		monstGridPane.setMaximumSize(limitSize);
 		LoadMonsters(data.getMonsters());
 		cPane.add(sidePane, BorderLayout.WEST);
 		
 		JScrollPane monstScroll = new JScrollPane(monstGridPane);
 		sidePane.add(monstScroll, BorderLayout.CENTER);
+		monstScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		monstScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		
 		JButton saveBtn = new JButton("Save");
 		StyleContainer.SetFontBtn(saveBtn);
 		saveBtn.addActionListener(e ->{
@@ -207,6 +215,15 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 		});
 		sidePane.add(saveBtn, BorderLayout.SOUTH);
 		
+		filter = new ReminderField("Monster Filter");
+		StyleContainer.SetFontMain(filter);
+		filter.getDocument().addDocumentListener(new DocumentListener() {
+			public void insertUpdate(DocumentEvent e) {BuildMonstListPane();}
+			public void removeUpdate(DocumentEvent e) {BuildMonstListPane();}
+			public void changedUpdate(DocumentEvent e) {BuildMonstListPane();}
+		});
+		filter.setColumns(12);
+		sidePane.add(filter, BorderLayout.NORTH);
 	}
 	
 	private void ResetEditors() throws BadLocationException {
@@ -355,28 +372,7 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 		StyleContainer.SetFontBtn(addTagBtn);
 		addTagBtn.addActionListener(e -> {
 			SwingUtilities.invokeLater(() -> {
-				ReminderField tagField = new ReminderField("", "Enter Tag");
-				StyleContainer.SetFontHeader(tagField);
-
-				JButton dTagBtn = new JButton("Delete");
-				StyleContainer.SetFontBtn(dTagBtn);
-				dTagBtn.setFocusable(false);
-				dTagBtn.addActionListener(e2 -> {
-					SwingUtilities.invokeLater(() -> {
-						tagFields.remove(tagField);
-						tagGrid.remove(tagField);
-						tagGrid.remove(dTagBtn);
-
-						tagGrid.revalidate();
-						tagGrid.repaint();
-					});
-				});
-
-				tagGrid.add(tagField);
-				tagGrid.add(dTagBtn);
-				tagField.requestFocus();
-				tagFields.add(tagField);
-
+				AddTag();
 				tagGrid.revalidate();
 				tagGrid.repaint();
 			});
@@ -814,25 +810,42 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 			
 			ArrayList<String> sortKeys = new ArrayList<String>();
 			for(String key : monstMap.keySet()) {
-				sortKeys.add(key);
+				if(filter.getText().length() > 0) {
+					if(key.contains(filter.getText()))
+						sortKeys.add(key);
+				}else {
+					sortKeys.add(key);
+				}
+				
 			}
 			Collections.sort(sortKeys);
 			for (String key : sortKeys) {
 //				System.out.println(key);
-				JTextField monstName = new JTextField(key);
+				String name = key;
+				if(name.length() > 13)
+					name = name.substring(0, 13);
+				JTextField monstName = new JTextField(name);
+				
+				monstName.setToolTipText(key);
 				StyleContainer.SetFontMain(monstName);
 				monstName.setColumns(15);
 				monstName.addMouseListener(new MouseListener() {
 
 					@Override
 					public void mouseClicked(MouseEvent e) {
-						JFrame monstDisp = new JFrame();
-						monstDisp.setTitle(key);
-						monstDisp.setContentPane(new MonsterDispPane(monstMap.get(key), data, new GuiDirector(new JDesktopPane())));
-						monstDisp.setSize(645, 515);
-						monstDisp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);						
-						monstDisp.setVisible(true);
-						monstDisp.setResizable(false);
+//						JFrame monstDisp = new JFrame();
+//						monstDisp.setTitle(key);
+//						monstDisp.setContentPane(new MonsterDispPane(monstMap.get(key), data, new GuiDirector(new JDesktopPane())));
+//						monstDisp.setSize(645, 515);
+//						monstDisp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);						
+//						monstDisp.setVisible(true);
+//						monstDisp.setResizable(false);
+						
+						int opt = JOptionPane.showConfirmDialog(null, 
+								"Load: " + key + "? Any unadded work on current monster will be lost.", 
+								"Load Confirm", JOptionPane.YES_NO_OPTION);
+						if(opt == JOptionPane.YES_OPTION)
+							LoadEditMonster(monstMap.get(key));
 					}
 					public void mousePressed(MouseEvent e) {}
 					public void mouseReleased(MouseEvent e) {}
@@ -932,7 +945,6 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 			mData.wisSProf = wisSaveP.isSelected();
 
 			Monster m = MonsterFactory.BuildMonster(mData);
-			System.out.println("Return true, add monst");
 			monstMap.put(m.name, m);
 			return true;
 		} catch (NumberFormatException e) {
@@ -971,6 +983,136 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 			return false;
 		}
 	}
+	
+	private void LoadEditMonster(Monster m) {
+		ResetEditor();
+		monsterNameField.setText(m.name);
+		monsterNameField.setEditable(false);
+		monsterNameField.setFocusable(false);
+		monsterTypeField.setText(m.typeSizeAlignment);
+		acField.setText(m.ac);
+		initBnsField.setText("0");
+		hpField.setText(m.hp);
+		speedField.setText(m.speed);
+		strField.setText("" + m.stats[Monster.STR]);
+		dexField.setText("" + m.stats[Monster.DEX]);
+		conField.setText("" + m.stats[Monster.CON]);
+		intField.setText("" + m.stats[Monster.INT]);
+		wisField.setText("" + m.stats[Monster.WIS]);
+		chaField.setText("" + m.stats[Monster.CHA]);
+		dmgResistField.setText(m.dmgRes);
+		dmgVulnField.setText(m.dmgVul);
+		immuneField.setText(m.immune);
+		sensesField.setText(m.senses);
+		langField.setText(m.languages);
+		crField.setText(m.cr + "");
+		numLActs.setText(m.lActNum + "");
+		numLActsBns.setText(m.lActBns + "");
+		int prof = m.profByCR();
+		int init = m.GetInitBonus();
+		int dex = m.stats[Monster.DEX];
+		if(init > Monster.AbilityModCalc(dex)) {
+			if(prof+Monster.AbilityModCalc(dex) == init) {
+				initProfChck.setSelected(true);
+				initExpertChck.setSelected(false);
+			}else {
+				initProfChck.setSelected(false);
+				initExpertChck.setSelected(true);
+			}
+		}
+		strSaveP.setSelected(m.saves[Monster.STR]);
+		dexSaveP.setSelected(m.saves[Monster.DEX]);
+		conSaveP.setSelected(m.saves[Monster.CON]);
+		intSaveP.setSelected(m.saves[Monster.INT]);
+		wisSaveP.setSelected(m.saves[Monster.WIS]);
+		chaSaveP.setSelected(m.saves[Monster.CHA]);
+		
+//		traitsPane.remove(traits);
+		removeAndDergister(traitsPane, traits);
+		traits = new RichEditor(data, rEditReps);
+		traits.LoadDocument(m.traits);
+		traitsPane.add(traits);
+//		actPane.remove(actions);
+		removeAndDergister(actPane, actions);
+		actions = new RichEditor(data, rEditReps);
+		actions.LoadDocument(m.actions);
+		actPane.add(actions);
+//		baPane.remove(bonusActions);
+		removeAndDergister(baPane, bonusActions);
+		bonusActions = new RichEditor(data, rEditReps);
+		bonusActions.LoadDocument(m.bonusActions);
+		baPane.add(bonusActions);
+//		reactPane.remove(reactions);
+		removeAndDergister(reactPane, reactions);
+		reactions = new RichEditor(data, rEditReps);
+		reactions.LoadDocument(m.reactions);
+		reactPane.add(reactions);
+//		legendActPane.remove(legendActions);
+		removeAndDergister(legendActPane, legendActions);
+		legendActions = new RichEditor(data, rEditReps);
+		legendActions.LoadDocument(m.legendActions);
+		legendActPane.add(legendActions);
+		
+		skills = m.skills;
+		tagFields.clear();
+		
+		for(String s : m.tags)
+			AddTag(s);
+		
+		tabPane.setSelectedIndex(0);
+		
+		repaint();
+		revalidate();
+	}
+	
+	private void AddTag() {
+		ReminderField tagField = new ReminderField("", "Enter Tag");
+		StyleContainer.SetFontHeader(tagField);
+
+		JButton dTagBtn = new JButton("Delete");
+		StyleContainer.SetFontBtn(dTagBtn);
+		dTagBtn.setFocusable(false);
+		dTagBtn.addActionListener(e2 -> {
+			SwingUtilities.invokeLater(() -> {
+				tagFields.remove(tagField);
+				tagGrid.remove(tagField);
+				tagGrid.remove(dTagBtn);
+
+				tagGrid.revalidate();
+				tagGrid.repaint();
+			});
+		});
+
+		tagGrid.add(tagField);
+		tagGrid.add(dTagBtn);
+		tagField.requestFocus();
+		tagFields.add(tagField);
+	}
+	
+	private void AddTag(String s) {
+		ReminderField tagField = new ReminderField("", "Enter Tag");
+		tagField.setText(s);
+		StyleContainer.SetFontHeader(tagField);
+
+		JButton dTagBtn = new JButton("Delete");
+		StyleContainer.SetFontBtn(dTagBtn);
+		dTagBtn.setFocusable(false);
+		dTagBtn.addActionListener(e2 -> {
+			SwingUtilities.invokeLater(() -> {
+				tagFields.remove(tagField);
+				tagGrid.remove(tagField);
+				tagGrid.remove(dTagBtn);
+
+				tagGrid.revalidate();
+				tagGrid.repaint();
+			});
+		});
+
+		tagGrid.add(tagField);
+		tagGrid.add(dTagBtn);
+		tagField.requestFocus();
+		tagFields.add(tagField);
+	}
 
 	private void LoadMonsters(Map<String, Monster> mIn) {
 		monstMap = new HashMap<String, Monster>();
@@ -988,8 +1130,9 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 	
 	private void ResetEditor() {
 		BuildMonstListPane();
-		System.out.println("Reset Editor");
 		monsterNameField.setText("");
+		monsterNameField.setEditable(true);
+		monsterNameField.setFocusable(true);
 		monsterTypeField.setText("");
 		acField.setText("");
 		initBnsField.setText("0");

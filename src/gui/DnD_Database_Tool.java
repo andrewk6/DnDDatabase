@@ -80,6 +80,7 @@ public class DnD_Database_Tool extends JFrame {
 	 */
 	public DnD_Database_Tool(DataContainer data) {
 		this.data = data;
+		StyleContainer.SetLookAndFeel();
 		fChoose = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Campaign Files (*.col)", "col");
 		fChoose.setFileFilter(filter);
@@ -412,9 +413,7 @@ public class DnD_Database_Tool extends JFrame {
 		tools.addSeparator();
 	}
 	
-	private void ConfigFrame() {
-		StyleContainer.SetLookAndFeel();
-		
+	private void ConfigFrame() {		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 //		setUndecorated(true);
 //		setResizable(false);
