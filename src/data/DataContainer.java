@@ -431,7 +431,7 @@ public class DataContainer {
 
 	public void setSpellMap(HashMap<String, Spell> spellMap) {
 		this.spellMap = spellMap;
-		SortKeys(DataContainer.SPELLS);
+		SortKeys(DataContainer.SPELLS); 
 		notifyChange(DataContainer.SPELLS);
 	}
 	
