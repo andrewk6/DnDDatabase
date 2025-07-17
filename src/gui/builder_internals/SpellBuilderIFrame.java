@@ -200,26 +200,8 @@ public class SpellBuilderIFrame extends JInternalFrame {
 	}
 
 	public void ReadSpellList() {
-		spellMap = new HashMap<String, Spell>();
-		File spellFile = new File(DataContainer.SPELLS_FILE_NAME);
-
-		if (spellFile.exists()) {
-			try {
-				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(spellFile));
-				while (true) {
-					try {
-						Spell obj = (Spell) ois.readObject();
-						spellMap.put(obj.name, obj);
-					} catch (EOFException | ClassNotFoundException e) {
-						// End of file reached
-						break;
-					}
-				}
-				ois.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		spellMap = new HashMap<String, Spell>(data.getSpells());
+		
 	}
 	
 	private void LoadSpell(String key) {
