@@ -80,7 +80,8 @@ public class DataContainer {
 		Custom, None
 	}
 	
-	public static final File dbFolder = new File("Databases");
+	public static final File appLocal = new File(System.getenv("LOCALAPPDATA") + "\\DnD Database");
+	public static final File dbFolder = new File(appLocal + "\\Databases");
 	
 	public static final String RULES_FILE_NAME = "Rules.xol";
 	public static final String SPELLS_FILE_NAME = "Spells.sol";
@@ -118,9 +119,11 @@ public class DataContainer {
 	private Queue<File> recentFiles;
 	
 	private String lastCampPath;
+	private boolean initiatlized;
 
 	public DataContainer() {
 		StartIOThread();
+		System.out.println(dbFolder.exists() + "/" + appLocal.exists());
 	}
 	
 	public void init() {
@@ -133,6 +136,7 @@ public class DataContainer {
 		SortKeys();
 		LoadConfig();
 		loadFinsihed();
+		initiatlized = true;
 	}
 	
 	public void registerLoadListener(LoadListener loader) {
@@ -386,10 +390,12 @@ public class DataContainer {
 	}
 	
 	public void Exit() {
-		if(isCampaignLoaded())
-			SafeSaveData(CAMPAIGN);
-		shutDownAndWait();
-		SaveConfig();
+		if(initiatlized) {
+			if(isCampaignLoaded())
+				SafeSaveData(CAMPAIGN);
+			shutDownAndWait();
+			SaveConfig();
+		}
 		System.exit(0);
 	}
 	
@@ -878,7 +884,7 @@ public class DataContainer {
 	}
 	
 	private void SaveConfig() {
-		File conf = new File(CONFIG_FILE_NAME);
+		File conf = new File(appLocal.getPath() + File.separator + CONFIG_FILE_NAME);
 		if(!conf.exists())
 			try {
 				conf.createNewFile();
@@ -916,7 +922,7 @@ public class DataContainer {
 	
 	@SuppressWarnings("unchecked")
 	private void LoadConfig() {
-		File conf = new File(CONFIG_FILE_NAME);
+		File conf = new File(appLocal.getPath() + File.separator + CONFIG_FILE_NAME);
 		if(conf.exists()) {
 			try {
 				BufferedReader read = new BufferedReader(new FileReader(conf));
@@ -943,6 +949,8 @@ public class DataContainer {
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
+		}else {
+			System.out.println("Error loading");
 		}
 	}
 }
