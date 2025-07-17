@@ -39,7 +39,10 @@ import gui.gui_helpers.RichEditor;
 public class Test extends JFrame {	
 	public static void main(String[] args) throws BadLocationException {
 		DataContainer data = new DataContainer();
-		System.out.println(data.getMagicItemKeysSorted());
+		data.init();
+		System.out.println("R: " + data.getRuleKeysSorted().size());
+		System.out.println("S: " + data.getSpellKeysSorted().size());
+		System.out.println("M: " + data.getMonsterKeysSorted().size());
 		data.Exit();
 	}
 
