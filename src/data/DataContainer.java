@@ -481,7 +481,7 @@ public class DataContainer {
 	}
 	
 	private boolean SaveInserts() {
-		File inFile = new File(DataContainer.INSERT_FILE_NAME);
+		File inFile = new File(dbFolder.getPath() + File.separator + DataContainer.INSERT_FILE_NAME);
 		System.out.println("Saving Inserts");
 		if(!inFile.exists()) {
 			try {
@@ -504,7 +504,7 @@ public class DataContainer {
 	}
 	
 	private boolean SaveRules() {
-		File saveFile = new File(RULES_FILE_NAME);
+		File saveFile = new File(dbFolder.getPath() + File.separator + RULES_FILE_NAME);
 	    if (!saveFile.exists()) {
 	        try {
 	            saveFile.createNewFile();
@@ -548,7 +548,7 @@ public class DataContainer {
 	}
 	
 	private boolean SaveSpells() {
-		File spellFile = new File(DataContainer.SPELLS_FILE_NAME);
+		File spellFile = new File(dbFolder.getPath() + File.separator + DataContainer.SPELLS_FILE_NAME);
 		if(!spellFile.exists()) {
 			try {
 				spellFile.createNewFile();
@@ -572,7 +572,7 @@ public class DataContainer {
 	}
 	
 	private boolean SaveMonsters() {
-		File monstFile = new File(DataContainer.MONSTERS_FILE_NAME);
+		File monstFile = new File(dbFolder.getPath() + File.separator + DataContainer.MONSTERS_FILE_NAME);
 		if(!monstFile.exists()) {
 			try {
 				monstFile.createNewFile();
@@ -596,7 +596,7 @@ public class DataContainer {
 	}
 	
 	private boolean SaveItems() {
-		File itemFile = new File(DataContainer.ITEMS_FILE_NAME);
+		File itemFile = new File(dbFolder.getPath() + File.separator + DataContainer.ITEMS_FILE_NAME);
 		if(!itemFile.exists()) {
 			try {
 				itemFile.createNewFile();
@@ -885,6 +885,7 @@ public class DataContainer {
 	
 	private void SaveConfig() {
 		File conf = new File(appLocal.getPath() + File.separator + CONFIG_FILE_NAME);
+		System.out.println(conf.getPath());
 		if(!conf.exists())
 			try {
 				conf.createNewFile();
@@ -907,7 +908,7 @@ public class DataContainer {
 			out.close();
 			
 			if(recentFiles.size() > 0) {
-				File f = new File(EXTRAS_FILE_NAME);
+				File f = new File(appLocal.getPath() + File.separator + EXTRAS_FILE_NAME);
 				if(!f.exists())
 					f.createNewFile();
 				ObjectOutputStream oOut = new ObjectOutputStream(new FileOutputStream(f));
@@ -934,7 +935,7 @@ public class DataContainer {
 				lastCampPath = read.readLine();
 				read.close();
 				
-				File f = new File(EXTRAS_FILE_NAME);
+				File f = new File(appLocal.getPath() + File.separator + EXTRAS_FILE_NAME);
 				if(f.exists()) {
 					ObjectInputStream in = new ObjectInputStream(new FileInputStream(f));
 					recentFiles = (Queue<File>) in.readObject();
@@ -951,6 +952,7 @@ public class DataContainer {
 			}
 		}else {
 			System.out.println("Error loading");
+			recentFiles = new LinkedList<File>();
 		}
 	}
 }
