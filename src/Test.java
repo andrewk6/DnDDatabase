@@ -40,9 +40,7 @@ public class Test extends JFrame {
 	public static void main(String[] args) throws BadLocationException {
 		DataContainer data = new DataContainer();
 		data.init();
-		System.out.println("R: " + data.getRuleKeysSorted().size());
-		System.out.println("S: " + data.getSpellKeysSorted().size());
-		System.out.println("M: " + data.getMonsterKeysSorted().size());
+		System.out.println(data.getSpells().keySet().contains("Test"));
 		data.Exit();
 	}
 

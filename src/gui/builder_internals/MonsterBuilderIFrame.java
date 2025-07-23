@@ -811,7 +811,7 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 			ArrayList<String> sortKeys = new ArrayList<String>();
 			for(String key : monstMap.keySet()) {
 				if(filter.getText().length() > 0) {
-					if(key.contains(filter.getText()))
+					if(key.toLowerCase().contains(filter.getText().toLowerCase()))
 						sortKeys.add(key);
 				}else {
 					sortKeys.add(key);

@@ -110,4 +110,6 @@ public class ArmorPanel extends JPanel {
         }
         return sb.length() > 0 ? sb.toString() : "—";
     }
+    
+    
 }
