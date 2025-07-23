@@ -215,8 +215,6 @@ public class QuickInsertBuilderIFrame extends JInternalFrame
 //		oos.close();
 //	}
 
-
-	@SuppressWarnings("unchecked")
 	private void LoadInserts() {
 		inMap = new HashMap<String, StyledDocument>(data.getInserts());
 	}
