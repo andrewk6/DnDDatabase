@@ -223,4 +223,43 @@ public class Monster implements Serializable
 	        return 0;
 	    }
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+	    if (this == obj) return true;
+	    if (obj == null || getClass() != obj.getClass()) return false;
+
+	    Monster other = (Monster) obj;
+
+	    return lActNum == other.lActNum &&
+	           lActBns == other.lActBns &&
+	           Double.compare(other.cr, cr) == 0 &&
+	           custom == other.custom &&
+	           java.util.Objects.equals(name, other.name) &&
+	           java.util.Objects.equals(typeSizeAlignment, other.typeSizeAlignment) &&
+	           java.util.Objects.equals(ac, other.ac) &&
+	           java.util.Objects.equals(init, other.init) &&
+	           java.util.Objects.equals(hp, other.hp) &&
+	           java.util.Objects.equals(speed, other.speed) &&
+	           java.util.Objects.equals(senses, other.senses) &&
+	           java.util.Objects.equals(languages, other.languages) &&
+	           java.util.Objects.equals(dmgVul, other.dmgVul) &&
+	           java.util.Objects.equals(dmgRes, other.dmgRes) &&
+	           java.util.Objects.equals(immune, other.immune) &&
+	           java.util.Arrays.equals(stats, other.stats) &&
+	           java.util.Arrays.equals(saves, other.saves) &&
+	           java.util.Objects.equals(skills, other.skills) &&
+	           java.util.Objects.equals(tags, other.tags) &&
+	           source == other.source;
+	}
+
+	@Override
+	public int hashCode() {
+	    int result = java.util.Objects.hash(name, typeSizeAlignment, ac, init, hp, speed, senses, languages,
+	                                        dmgVul, dmgRes, immune, lActNum, lActBns, skills, cr, tags, custom, source);
+	    result = 31 * result + java.util.Arrays.hashCode(stats);
+	    result = 31 * result + java.util.Arrays.hashCode(saves);
+	    return result;
+	}
+
 }
