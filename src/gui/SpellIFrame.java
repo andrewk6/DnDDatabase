@@ -223,7 +223,7 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 		cardPane.setLayout(new CardLayout());
 		cPane.add(cardPane, BorderLayout.CENTER);
 		
-		JLabel noLoad = new JLabel("Np Spells Selected");
+		JLabel noLoad = new JLabel("No Spells Selected");
 		StyleContainer.SetFontHeader(noLoad);
 		cardPane.add(noLoad, "noload");
 		
