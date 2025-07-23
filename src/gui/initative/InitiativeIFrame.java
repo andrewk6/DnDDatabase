@@ -281,7 +281,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
                 if (!value.isEmpty()) {
                     try {
                         int init = Integer.parseInt(value);
-                        addInitiativeEntry(new InitiativeEntry(UUID.fromString("" + -1), name, init, null));
+                        addInitiativeEntry(new InitiativeEntry(PLAYER_ID, name, init, null));
                     } catch (NumberFormatException ex) {
                         JOptionPane.showMessageDialog(this, "Invalid initiative for " + name + ": " + value);
                     }
