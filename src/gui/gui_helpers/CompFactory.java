@@ -70,7 +70,6 @@ public class CompFactory
 				frm.toFront();         // Bring to front visually
 				frm.setSelected(true);
 			} catch (PropertyVetoException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} // Make it active/focused
 		});
