@@ -201,10 +201,6 @@ public class SpellBuilderIFrame extends JInternalFrame {
 
 	public void ReadSpellList() {
 		spellMap = new HashMap<String, Spell>(data.getSpells());
-<<<<<<< HEAD
-		
-=======
->>>>>>> 9a45e0e (Minor Fixes Builder - Initiative Fix)
 	}
 	
 	private void LoadSpell(String key) {
