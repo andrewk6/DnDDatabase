@@ -35,6 +35,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
+import data.DataChangeListener;
 import data.DataContainer;
 import data.Monster;
 import data.Rule;
@@ -48,7 +49,7 @@ import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
-public class ComboIFrame extends JInternalFrame implements AllTab {
+public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeListener{
 
 	private ColorTabbedPaneUI tabsUI;
 	private JTabbedPane tabs;
@@ -67,6 +68,7 @@ public class ComboIFrame extends JInternalFrame implements AllTab {
 		this.dPane = dPane;
 		gd = guiD;
 
+		this.data.registerListener(this);
 		BuildFrame();
 		BuildContent(getContentPane());
 		BuildSidePane(getContentPane());
@@ -433,5 +435,15 @@ public class ComboIFrame extends JInternalFrame implements AllTab {
 	@Override
 	public JTabbedPane GetTabs() {
 		return null;
+	}
+
+	@Override
+	public void onMapUpdated() {
+		FillSidePane();
+	}
+
+	@Override
+	public void onMapUpdated(int mapType) {
+		FillSidePane();
 	}
 }

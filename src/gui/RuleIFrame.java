@@ -30,6 +30,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
+import data.DataChangeListener;
 import data.DataContainer;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CustomDesktopIcon;
@@ -38,7 +39,7 @@ import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
-public class RuleIFrame extends JInternalFrame implements ContentTab{
+public class RuleIFrame extends JInternalFrame implements ContentTab, DataChangeListener{
 	private DataContainer data;
 	private GuiDirector gd;
 	private JDesktopPane dPane;
@@ -57,6 +58,8 @@ public class RuleIFrame extends JInternalFrame implements ContentTab{
 		BuildFrame();
 		BuildContent(getContentPane());
 		BuildSidePane(getContentPane());
+		
+		data.registerListener(this);
 		
 		this.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
 		if(gd.getrFrame() == null)
@@ -236,5 +239,16 @@ public class RuleIFrame extends JInternalFrame implements ContentTab{
 	
 	public JTabbedPane GetTabs() {
 		return ruleTabs;
+	}
+
+	@Override
+	public void onMapUpdated() {
+		FillSidePane();
+	}
+
+	@Override
+	public void onMapUpdated(int mapType) {
+		FillSidePane();
+		
 	}
 }

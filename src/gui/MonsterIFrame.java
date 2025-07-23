@@ -32,6 +32,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.JCheckBox;
 
+import data.DataChangeListener;
 import data.DataContainer;
 import data.Monster;
 import gui.gui_helpers.CustomDesktopIcon;
@@ -42,7 +43,7 @@ import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
-public class MonsterIFrame extends JInternalFrame implements ContentTab{
+public class MonsterIFrame extends JInternalFrame implements ContentTab, DataChangeListener{
 	private DataContainer data;
 	private GuiDirector gd;
 	private JDesktopPane dPane;
@@ -58,6 +59,7 @@ public class MonsterIFrame extends JInternalFrame implements ContentTab{
 		this.dPane = dPane;
 		gd = guiD;
 
+		this.data.registerListener(this);
 		BuildFrame();
 		BuildContent(getContentPane());
 		BuildSidePane(getContentPane());
@@ -332,5 +334,15 @@ public class MonsterIFrame extends JInternalFrame implements ContentTab{
 	
 	public JTabbedPane GetTabs() {
 		return mPane;
+	}
+
+	@Override
+	public void onMapUpdated() {
+		FillSidePane();
+	}
+
+	@Override
+	public void onMapUpdated(int mapType) {
+		FillSidePane();
 	}
 }

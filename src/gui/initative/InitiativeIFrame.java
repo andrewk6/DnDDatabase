@@ -42,8 +42,8 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
     private JDesktopPane dPane;
     private ColorTabbedPaneUI tabsUI;
 
-    private final DefaultListModel<String> initiativeListModel = new DefaultListModel<>();
-    private final JList<String> initiativeList = new JList<>(initiativeListModel);
+    private final DefaultListModel<InitiativeEntry> initiativeListModel = new DefaultListModel<>();
+    private final JList<InitiativeEntry> initiativeList = new JList<>(initiativeListModel);
     private final JPanel rightPane = new JPanel(new BorderLayout());
     
     private JTabbedPane tabs;
@@ -51,6 +51,9 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
     private int currentIndex = -1;
     
     private ProgrammaticSelectionModel selectionModel;
+    
+    public static final UUID PLAYER_ID = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -138,9 +141,10 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
             		
             		Rectangle cellBounds = initiativeList.getCellBounds(index, index);
                     if (cellBounds.contains(e.getPoint())) {
-                        String clickedItem = initiativeList.getModel().getElementAt(index);
-                        System.out.println("Alt Down Clicked: " + clickedItem);
-                        removeInitiativeEntry(clickedItem.substring(0, clickedItem.lastIndexOf(' ')));
+//                        String clickedItem = initiativeList.getModel().getElementAt(index);
+                        InitiativeEntry clickedItem = initiativeList.getModel().getElementAt(index);
+                        System.out.println("Alt Down Clicked: " + clickedItem.toString());
+                        removeInitiativeEntry(clickedItem);
                     }
             	}else {
 //            		System.out.println(initiativeList.getSelectedValue());
@@ -150,15 +154,15 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
             		
             		Rectangle cellBounds = initiativeList.getCellBounds(index, index);
                     if (cellBounds.contains(e.getPoint())) {
-                        String clickedItem = initiativeList.getModel().getElementAt(index);
-                        clickedItem = clickedItem.substring(0,  clickedItem.lastIndexOf(' '));
+//                        String clickedItem = initiativeList.getModel().getElementAt(index);
+                        InitiativeEntry clickedItem = initiativeList.getModel().getElementAt(index);
                         System.out.println("Clicked: " + clickedItem);
-                        if(data.getMonsterKeysSorted().contains(clickedItem)) {
-                        	AddTab(data.getMonsters().get(clickedItem));
+                        if(data.getMonsterKeysSorted().contains(clickedItem.name)) {
+                        	AddTab(data.getMonsters().get(clickedItem.name));
                         }else if(data.isCampaignLoaded()) {
-                        	if(data.getParty().containsKey(clickedItem)) {
+                        	if(data.getParty().containsKey(clickedItem.name)) {
                         		PlayerPane pPane = new PlayerPane(data.getParty().get(clickedItem), data, gd);
-                        		tabs.addTab(clickedItem, pPane);
+                        		tabs.addTab(clickedItem.name, pPane);
                         		tabs.setSelectedComponent(pPane);
                         	}
                         }     
@@ -238,7 +242,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
             String name = nameField.getText().trim();
             try {
                 int init = Integer.parseInt(initField.getText().trim());
-                addInitiativeEntry(new InitiativeEntry(name, init, null));
+                addInitiativeEntry(new InitiativeEntry(PLAYER_ID, name, init, null));
             } catch (NumberFormatException ignored) {
                 JOptionPane.showMessageDialog(this, "Invalid initiative value.");
             }
@@ -277,7 +281,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
                 if (!value.isEmpty()) {
                     try {
                         int init = Integer.parseInt(value);
-                        addInitiativeEntry(new InitiativeEntry(name, init, null));
+                        addInitiativeEntry(new InitiativeEntry(UUID.fromString("" + -1), name, init, null));
                     } catch (NumberFormatException ex) {
                         JOptionPane.showMessageDialog(this, "Invalid initiative for " + name + ": " + value);
                     }
@@ -336,7 +340,8 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
             try {
                 int bonus = Integer.parseInt(overrideBonus.getText().trim());
                 int roll = bonus + new Random().nextInt(20) + 1;
-                addInitiativeEntry(new InitiativeEntry(m.name, roll, m));
+                UUID id = UUID.randomUUID();
+                addInitiativeEntry(new InitiativeEntry(id, m.name, roll, m));
             } catch (NumberFormatException ignored) {
                 JOptionPane.showMessageDialog(this, "Invalid bonus.");
             }
@@ -352,7 +357,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
     private void updateInitiativeList() {
         initiativeListModel.clear();
         for (InitiativeEntry e : entries) {
-            initiativeListModel.addElement(e.name + " (" + e.initiative + ")");
+            initiativeListModel.addElement(e);
         }
     }
     
@@ -377,6 +382,41 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
             rightPane.revalidate();
             rightPane.repaint();
         }
+    }
+    
+    public void removeInitiativeEntry(InitiativeEntry remove) {
+        if (remove == null || remove.id.equals(PLAYER_ID)) return;
+
+        InitiativeEntry tmpEntry = initiativeList.getSelectedValue();
+        // Remove matching entry (case-sensitive)
+        entries.removeIf(entry -> entry.equals(remove));
+
+        // Re-sort and update the display
+        entries.sort((a, b) -> Integer.compare(b.initiative, a.initiative));
+        updateInitiativeList();
+
+        SwingUtilities.invokeLater(()->{
+        	if(currentIndex > -1) {
+            	if(!remove.equals(tmpEntry))
+            		for(int i = 0; i < initiativeListModel.size(); i++)
+            			if(initiativeListModel.get(i).equals(tmpEntry))
+            				currentIndex = i;
+            	// Reset selection and right pane if current was removed
+                if (currentIndex >= entries.size()) currentIndex = 0;
+
+                if (!entries.isEmpty()) {
+                    initiativeList.setSelectedIndex(currentIndex);
+                    loadEntry(entries.get(currentIndex));
+                    initiativeList.ensureIndexIsVisible(currentIndex);
+                    selectionModel.setProgrammaticSelection(currentIndex);
+                    initiativeList.repaint();
+                } else {
+                    rightPane.removeAll();
+                    rightPane.revalidate();
+                    rightPane.repaint();
+                }
+            }
+        });
     }
 
     private void advanceTurn() {
@@ -467,7 +507,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
                 entries.clear();
                 for (SavedEntry s : saved) {
-                    entries.add(new InitiativeEntry(s.name, s.initiative, s.monster));
+                    entries.add(new InitiativeEntry(s.id, s.name, s.initiative, s.monster));
                 }
 
                 currentIndex = index;
@@ -595,30 +635,47 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 	}
     
     private static class SavedEntry implements Serializable {
-        String name;
+        UUID id;
+    	String name;
         int initiative;
         Monster monster; // Serializable!
+        
 
         public SavedEntry(InitiativeEntry entry) {
+        	this.id = entry.id;
             this.name = entry.name;
             this.initiative = entry.initiative;
             this.monster = entry.monster;
+        }
+        
+        public InitiativeEntry toEntry() {
+            return new InitiativeEntry(id, name, initiative, monster);
         }
     }
 
     
     private static class InitiativeEntry {
+    	final UUID id;
         String name;
         int initiative;
         Monster monster;
 
-        InitiativeEntry(String name, int initiative, Monster monster) {
-            this.name = name;
+        InitiativeEntry(UUID id, String name, int initiative, Monster monster) {
+            this.id = id;
+        	this.name = name;
             this.initiative = initiative;
             this.monster = monster;
         }
+        
+        public String toString() {
+        	return name + " (" + initiative + ")";
+        }
+        
+        public boolean equals(InitiativeEntry e) {
+        	return id.equals(e.id) && name.equals(e.name) &&
+        			initiative == e.initiative && monster.equals(e.monster);
+        }
     }
-
 }
 
 
