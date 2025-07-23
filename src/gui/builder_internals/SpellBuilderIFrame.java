@@ -201,6 +201,7 @@ public class SpellBuilderIFrame extends JInternalFrame {
 
 	public void ReadSpellList() {
 		spellMap = new HashMap<String, Spell>(data.getSpells());
+
 	}
 	
 	private void LoadSpell(String key) {
