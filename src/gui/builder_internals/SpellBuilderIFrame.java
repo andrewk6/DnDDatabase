@@ -212,7 +212,7 @@ public class SpellBuilderIFrame extends JInternalFrame {
 			editor.close();
 			centerPane.remove(editor);
 			editor = new RichEditor(data);
-			editor.LoadDocument(data.getSpells().get(keyVal).spellDoc); 
+			editor.LoadDocument(data.getSpells().get(keyVal).spellDoc);
 			centerPane.add(editor, BorderLayout.CENTER);
 			spellNameField.setText(keyVal);
 			
