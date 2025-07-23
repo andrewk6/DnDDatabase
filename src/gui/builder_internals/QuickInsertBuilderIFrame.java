@@ -215,23 +215,7 @@ public class QuickInsertBuilderIFrame extends JInternalFrame
 //		oos.close();
 //	}
 
-
-	@SuppressWarnings("unchecked")
 	private void LoadInserts() {
-		File inFile = new File(DataContainer.INSERT_FILE_NAME);
-		
-		if(inFile.exists()) {
-			try {
-				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(inFile));
-				inMap = (HashMap<String, StyledDocument>) ois.readObject();
-				ois.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}else {
-			inMap = new HashMap<String, StyledDocument>();
-		}
+		inMap = new HashMap<String, StyledDocument>(data.getInserts());
 	}
 }

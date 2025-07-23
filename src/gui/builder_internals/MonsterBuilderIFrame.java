@@ -1115,10 +1115,7 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 	}
 
 	private void LoadMonsters(Map<String, Monster> mIn) {
-		monstMap = new HashMap<String, Monster>();
-		for (String s : mIn.keySet())
-			monstMap.put(s, mIn.get(s));
-
+		monstMap = new HashMap<String, Monster>(mIn);
 		BuildMonstListPane();
 	}
 	
