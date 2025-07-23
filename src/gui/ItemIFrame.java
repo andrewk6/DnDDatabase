@@ -14,6 +14,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
+import data.DataChangeListener;
 import data.DataContainer;
 import gui.gui_helpers.structures.ContentFrame;
 import gui.gui_helpers.structures.GuiDirector;
@@ -24,7 +25,7 @@ import gui.item_panels.MagicItemPanel;
 import gui.item_panels.ToolsPanel;
 import gui.item_panels.WeaponPanel;
 
-public class ItemIFrame extends JInternalFrame implements ContentFrame {
+public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChangeListener {
 	private DataContainer data;
 	private JDesktopPane dPane;
 	private GuiDirector gd;
@@ -36,6 +37,8 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame {
 		this.data = data;
 		this.dPane = dPane;
 		this.gd = gd;
+		
+		data.registerListener(this);
 
 		BuildFrame();
 		BuildWeaponPane();
@@ -112,5 +115,33 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame {
 	public void handleLink(String obj) {
 		tabs.setSelectedComponent(miPane);
 		miPane.LoadItem(obj);
+	}
+
+	@Override
+	public void onMapUpdated() {
+		for (int i = tabs.getTabCount() - 1; i >= 0; i--) {
+		    tabs.removeTabAt(i);
+		}
+		
+		BuildFrame();
+		BuildWeaponPane();
+		BuildArmorPane();
+		BuildToolPane();
+		BuildGearPane();
+		BuildMagicItemPane();
+	}
+
+	@Override
+	public void onMapUpdated(int mapType) {
+		for (int i = tabs.getTabCount() - 1; i >= 0; i--) {
+		    tabs.removeTabAt(i);
+		}
+		
+		BuildFrame();
+		BuildWeaponPane();
+		BuildArmorPane();
+		BuildToolPane();
+		BuildGearPane();
+		BuildMagicItemPane();
 	}
 }

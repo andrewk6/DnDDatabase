@@ -30,6 +30,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
+import data.DataChangeListener;
 import data.DataContainer;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
@@ -37,7 +38,7 @@ import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
-public class SpellIFrame extends JInternalFrame implements ContentTab{
+public class SpellIFrame extends JInternalFrame implements ContentTab, DataChangeListener{
 	private GuiDirector gd;
 	private DataContainer data;
 	private JDesktopPane dPane;
@@ -53,6 +54,7 @@ public class SpellIFrame extends JInternalFrame implements ContentTab{
 		this.dPane = dPane;
 		gd = guiD;
 
+		data.registerListener(this);
 		BuildFrame();
 		BuildContent(getContentPane());
 		BuildSidePane(getContentPane());
@@ -234,6 +236,16 @@ public class SpellIFrame extends JInternalFrame implements ContentTab{
 	
 	public JTabbedPane GetTabs() {
 		return spellTab;
+	}
+
+	@Override
+	public void onMapUpdated() {
+		FillSidePane();
+	}
+
+	@Override
+	public void onMapUpdated(int mapType) {
+		FillSidePane();
 	}
 
 //	private void BuildContent(Container cPane) {

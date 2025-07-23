@@ -419,30 +419,50 @@ public class DataContainer {
 	
 	public void SetMonstersMap(Map<String, Monster> monstMap2) {
 		this.monstMap = (HashMap<String, Monster>) monstMap2;
+		this.monstKeysSorted = new ArrayList<String>(monstMap.keySet());
 		SortKeys(DataContainer.MONSTERS);
 		notifyChange(DataContainer.MONSTERS);
 	}
 	
 	public void setInserts(HashMap<String, StyledDocument> in ) {
 		insertMap = in;
+		this.insertKeysSorted = new ArrayList<String>(insertMap.keySet());
 		SortKeys(DataContainer.INSERTS);
 		notifyChange(DataContainer.INSERTS);
 	}
 
 	public void setSpellMap(HashMap<String, Spell> spellMap) {
 		this.spellMap = spellMap;
+		this.spellKeysSorted = new ArrayList<String>(this.spellMap.keySet());
 		SortKeys(DataContainer.SPELLS); 
 		notifyChange(DataContainer.SPELLS);
 	}
 	
 	public void setRuleMap(HashMap<String, Rule> ruleMap) {
 		this.ruleMap = ruleMap;
+		this.ruleKeysSorted = new ArrayList<String>(this.ruleMap.keySet());
 		SortKeys(DataContainer.RULES);
 		notifyChange(DataContainer.RULES);
 	}
 	
 	public void SetItemMap(HashMap<String, Item> iMap) {
 		this.itemMap = iMap;
+		weaponKeysSorted = new ArrayList<String>();
+		armorKeysSorted = new ArrayList<String>();
+		gearKeysSorted = new ArrayList<String>();
+		toolKeysSorted = new ArrayList<String>();
+		magicItemKeysSorted = new ArrayList<String>();
+		for(String s : itemMap.keySet()) {
+			Item i = itemMap.get(s);
+			switch(i) {
+			case Weapon w: weaponKeysSorted.add(w.name); break;
+			case Armor a: armorKeysSorted.add(a.name); break;
+			case Gear g: gearKeysSorted.add(g.name); break;
+			case ToolSet t: toolKeysSorted.add(t.name); break;
+			case MagicItem m: magicItemKeysSorted.add(m.name); break;
+			default: throw new IllegalArgumentException("Unexpected value: " + i);
+			}
+		}
 		SortKeys(DataContainer.ITEMS);
 		notifyChange(DataContainer.ITEMS);
 	}
@@ -657,30 +677,6 @@ public class DataContainer {
 				keys.add(s);
 		return keys;
 	}
-	
-	 public static StyledDocument createTestDocument(String test) {
-	        DefaultStyledDocument doc = new DefaultStyledDocument();
-
-	        StyleContext context = new StyleContext();
-	        Style defaultStyle = context.getStyle(StyleContext.DEFAULT_STYLE);
-
-	        Style boldStyle = context.addStyle("Bold", null);
-	        StyleConstants.setBold(boldStyle, true);
-
-	        Style italicStyle = context.addStyle("Italic", null);
-	        StyleConstants.setItalic(italicStyle, true);
-
-	        try {
-	        	doc.insertString(doc.getLength(), test + "\n\n", defaultStyle);
-	            doc.insertString(doc.getLength(), "This is regular text.\n", defaultStyle);
-	            doc.insertString(doc.getLength(), "This is bold text.\n", boldStyle);
-	            doc.insertString(doc.getLength(), "This is italic text.\n", italicStyle);
-	        } catch (BadLocationException e) {
-	            e.printStackTrace();
-	        }
-
-	        return doc;
-	    }
 
 	private void SortKeys() {
 		Collections.sort(spellKeysSorted);
