@@ -7,6 +7,7 @@ import java.beans.PropertyVetoException;
 import java.util.function.Supplier;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -119,5 +120,18 @@ public class CompFactory
 			public void windowActivated(WindowEvent e) {}
 			public void windowDeactivated(WindowEvent e) {}
 		};
+	}
+
+	public static JCheckBox createNewCheckbox(String string, ActionListener act) {
+		JCheckBox cBox = new JCheckBox(string);
+		StyleContainer.SetFontMain(cBox);
+		cBox.addActionListener(act);
+		return cBox;
+	}
+	
+	public static JCheckBox createNewCheckbox(String string) {
+		JCheckBox cBox = new JCheckBox(string);
+		StyleContainer.SetFontMain(cBox);
+		return cBox;
 	}
 }
