@@ -50,6 +50,13 @@ public class CompFactory
 		return out;
 	}
 	
+	public static JMenuItem createNewJMenuItem(String text, ActionListener act) {
+		JMenuItem out = new JMenuItem(text);
+		StyleContainer.SetFontMain(out);
+		out.addActionListener(act);
+		return out;
+	}
+	
 	public static JMenuItem createNewJMenuItem(String text, Supplier<JInternalFrame> fSup, JDesktopPane dPane) {
 		JMenuItem out = new JMenuItem(text);
 		StyleContainer.SetFontMain(out);

@@ -1,10 +1,15 @@
 package gui.dungeon;
 
+import gui.dungeon.dialogs.NoteDialog;
 import gui.dungeon.tile.*;
 import gui.dungeon.tile.Tile.TILE_TYPE;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
+import data.DataContainer;
+import data.dungeon.DungeonNote;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -24,35 +29,38 @@ public class DungeonEditorPane extends JPanel {
 
 	private final HashMap<String, Image> iconMap = new HashMap<String, Image>();
 	private String currentIcon;
+	
+	private DataContainer data;
 
-	public DungeonEditorPane() {
+	public DungeonEditorPane(DataContainer data) {
 		rows = 30;
 		cols = 30;
 		tiles = new Tile[rows][cols];
-		Initialize();
+		
+		Initialize(data);
 		buildTiles();
 	}
-	public DungeonEditorPane(int rows, int cols) {
+	public DungeonEditorPane(DataContainer data, int rows, int cols) {
 		this.rows = rows;
 		this.cols = cols;
 		tiles = new Tile[this.rows][this.cols];
-		Initialize();
+		Initialize(data);
 		buildTiles();
 	}
 
-	public DungeonEditorPane(Tile[][] tiles) {
+	public DungeonEditorPane(DataContainer data, Tile[][] tiles) {
 		this.tiles = tiles;
 		for(int i = 0; i < this.tiles.length; i++)
 			for(int i2 = 0; i2 < this.tiles[i].length; i2 ++)
 					System.out.println(this.tiles[i][i2].color);
 		rows = tiles.length;
 		cols = tiles[0].length;
-		Initialize();
+		Initialize(data);
 	}
 
-	public void Initialize() {
-		setPreferredSize(new Dimension(cols * TILE_SIZE, rows * TILE_SIZE));
-
+	public void Initialize(DataContainer data) {
+		setPreferredSize(new Dimension(cols * TILE_SIZE + 20, rows * TILE_SIZE + 20));
+		this.data = data;
 		currentIcon = "NONE";
 		try {
 			loadIcons();
@@ -158,7 +166,9 @@ public class DungeonEditorPane extends JPanel {
 			break;
 		case SELECT:
 			if(tiles[y][x].type == TILE_TYPE.NOTE) {
-				
+				NoteDialog nDialog = new NoteDialog(data, tiles[y][x].note);
+				nDialog.setVisible(true);
+				nDialog.setAlwaysOnTop(true);
 			}else if(tiles[y][x].type == TILE_TYPE.MONSTER) {
 				
 			}
@@ -166,8 +176,11 @@ public class DungeonEditorPane extends JPanel {
 	}
 
 	private void setTileType(String curIcon, Tile tile) {
-		if (curIcon.equals("note") || curIcon.equals("trap") || curIcon.equals("door"))
+		if (curIcon.equals("note") || curIcon.equals("trap") || curIcon.equals("door")) {
 			tile.type = TILE_TYPE.NOTE;
+			tile.note = new DungeonNote();
+			tile.imageFileName = "/" + curIcon + "_icon.png";
+		}
 	}
 
 	private void applyDragTool() {
@@ -263,7 +276,7 @@ public class DungeonEditorPane extends JPanel {
 		if (mouseDown && dragStart != null && dragEnd != null
 				&& EnumSet.of(Tool.RECT_FILL, Tool.LINE_FILL, Tool.HEX_FILL).contains(currentTool)) {
 			Graphics2D g2 = (Graphics2D) g.create();
-			g2.setColor(new Color(0, 0, 0, 80));
+			g2.setColor(new Color(255, 255, 255, 80));
 			g2.setStroke(new BasicStroke(2));
 			int x1 = dragStart.x * TILE_SIZE, y1 = dragStart.y * TILE_SIZE;
 			int x2 = dragEnd.x * TILE_SIZE, y2 = dragEnd.y * TILE_SIZE;
