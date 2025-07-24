@@ -12,6 +12,8 @@ public class DungeonNote implements Serializable
 	public String check;
 	
 	public DungeonNote() {
-		
+		title = "";
+		check = "";
+		note = null;
 	}
 }

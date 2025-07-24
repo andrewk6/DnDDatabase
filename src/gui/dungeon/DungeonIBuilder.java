@@ -1,11 +1,15 @@
 package gui.dungeon;
 
 import gui.dungeon.tile.*;
+import gui.dungeon.tile.Tile.TILE_TYPE;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.structures.StyleContainer;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import data.DataContainer;
+import data.dungeon.Dungeon;
 
 import java.awt.*;
 import java.io.File;
@@ -17,30 +21,50 @@ import java.io.ObjectOutputStream;
 
 public class DungeonIBuilder extends JInternalFrame {
 
+	private JScrollPane editScroll;
 	private DungeonEditorPane editor;
 	private JMenuBar menuBar;
 
 	private final JFileChooser fChoose = new JFileChooser();
+	private final DataContainer data;
+	
+	private Dungeon d;
 
-	public DungeonIBuilder() {
+	public DungeonIBuilder(DataContainer data) {
 		super("Dungeon Builder", true, true, true, true);
 		setSize(800, 600);
 		setLayout(new BorderLayout());
+		this.data = data;
 
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Dungeon Files (*.dol)", "dol");
 		fChoose.setFileFilter(filter);
 
-		editor = new DungeonEditorPane();
-		add(editor, BorderLayout.CENTER);
-
 		configMenu();
-		addIOPane();
+		addBtnPane();
+	}
+	
+	private void addNewEditor(Tile[][] tiles) {
+		if(editScroll != null)
+			remove(editScroll);
+		if(tiles == null)
+			editor = new DungeonEditorPane(data);
+		else
+			editor = new DungeonEditorPane(data, tiles);
+		editScroll = new JScrollPane(editor);
+		editScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		editScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		add(editScroll, BorderLayout.CENTER);
 	}
 
-	private void addIOPane() {
-		JPanel ioPane = new JPanel();
-		ioPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		add(ioPane, BorderLayout.SOUTH);
+	private void addBtnPane() {
+		JPanel btnPane = new JPanel();
+		btnPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		add(btnPane, BorderLayout.SOUTH);
+		
+		JButton addFloorBtn = CompFactory.createNewButton("Add Floor", e->{
+			String floorName = JOptionPane.showInputDialog("What is the floor's name:");
+			
+		});
 
 		JButton saveBtn = CompFactory.createNewButton("Save", _ -> {
 			int result = fChoose.showSaveDialog(this);
@@ -64,7 +88,7 @@ public class DungeonIBuilder extends JInternalFrame {
 				}
 			}
 		});
-		ioPane.add(saveBtn);
+		btnPane.add(saveBtn);
 
 		JButton loadBtn = CompFactory.createNewButton("Load", _ -> {
 			int result = fChoose.showOpenDialog(this);
@@ -75,9 +99,7 @@ public class DungeonIBuilder extends JInternalFrame {
 					ObjectInputStream ois = new ObjectInputStream(new FileInputStream(selectedFile));
 					Tile[][] tiles = (Tile[][]) ois.readObject();
 					SwingUtilities.invokeLater(()->{
-						remove(editor);
-						editor = new DungeonEditorPane(tiles);
-						add(editor, BorderLayout.CENTER);
+						addNewEditor(tiles);
 						revalidate();
 						repaint();
 					});
@@ -90,7 +112,7 @@ public class DungeonIBuilder extends JInternalFrame {
 				}
 			}
 		});
-		ioPane.add(loadBtn);
+		btnPane.add(loadBtn);
 	}
 	
 	private void configToolbar() {
@@ -114,25 +136,70 @@ public class DungeonIBuilder extends JInternalFrame {
 			}
 			if (t == Tool.SELECT) {
 				item.setSelected(true);
-				editor.setTool(t);
 			}
 		}
 
 		toolMenu.addSeparator();
 
-		JMenuItem colorPickerItem = CompFactory.createNewJMenuItem("Color Picker");
-		final ColorIcon colorIcon = new ColorIcon(editor.getCurrentColor());
-		colorPickerItem.setIcon(colorIcon);
-
-		colorPickerItem.addActionListener(e -> {
-			Color newColor = JColorChooser.showDialog(this, "Choose Tile Color", editor.getCurrentColor());
-			if (newColor != null) {
-				editor.setCurrentColor(newColor);
-				colorPickerItem.setIcon(new ColorIcon(newColor));
-			}
+		JMenu colorMenu = new JMenu("Color Selection");
+		StyleContainer.SetFontMain(colorMenu);
+		toolMenu.add(colorMenu);
+		
+		JMenuItem whiteSelect = CompFactory.createNewJMenuItem("White", _->{
+			editor.setCurrentColor(Color.WHITE);
+			editor.setTool(Tool.BRUSH);
 		});
-
-		toolMenu.add(colorPickerItem);
+		colorMenu.add(whiteSelect);
+		
+		JMenuItem greenSelect = CompFactory.createNewJMenuItem("Green", _->{
+			editor.setCurrentColor(Color.GREEN);
+			editor.setTool(Tool.BRUSH);
+		});
+		colorMenu.add(greenSelect);
+		
+		JMenuItem redSelect = CompFactory.createNewJMenuItem("Red", _->{
+			editor.setCurrentColor(Color.RED);
+			editor.setTool(Tool.BRUSH);
+		});
+		colorMenu.add(redSelect);
+		
+		JMenuItem blueSelect = CompFactory.createNewJMenuItem("Blue", _->{
+			editor.setCurrentColor(Color.BLUE);
+			editor.setTool(Tool.BRUSH);
+		});
+		colorMenu.add(blueSelect);
+		
+		JMenuItem orangeSelect = CompFactory.createNewJMenuItem("Orange", _->{
+			editor.setCurrentColor(Color.ORANGE);
+			editor.setTool(Tool.BRUSH);
+		});
+		colorMenu.add(orangeSelect);
+		
+		JMenuItem cyanSelect = CompFactory.createNewJMenuItem("Cyan", _->{
+			editor.setCurrentColor(Color.CYAN);
+			editor.setTool(Tool.BRUSH);
+		});
+		colorMenu.add(cyanSelect);
+		
+		JMenuItem pinkSelect = CompFactory.createNewJMenuItem("Pink", _->{
+			editor.setCurrentColor(Color.GREEN);
+			editor.setTool(Tool.BRUSH);
+		});
+		colorMenu.add(pinkSelect);
+		
+//		JMenuItem colorPickerItem = CompFactory.createNewJMenuItem("Color Picker");
+//		final ColorIcon colorIcon = new ColorIcon(editor.getCurrentColor());
+//		colorPickerItem.setIcon(colorIcon);
+//
+//		colorPickerItem.addActionListener(e -> {
+//			Color newColor = JColorChooser.showDialog(this, "Choose Tile Color", editor.getCurrentColor());
+//			if (newColor != null) {
+//				editor.setCurrentColor(newColor);
+//				colorPickerItem.setIcon(new ColorIcon(newColor));
+//			}
+//		});
+//
+//		toolMenu.add(colorPickerItem);
 		menuBar.add(toolMenu);
 
 		// Icon Menu
@@ -185,14 +252,17 @@ public class DungeonIBuilder extends JInternalFrame {
 
 	public static void main(String[] args) {
 		StyleContainer.SetLookAndFeel();
+		DataContainer data = new DataContainer();
+		data.init();
 		SwingUtilities.invokeLater(() -> {
 
 			JFrame frame = new JFrame("Dungeon Editor Test");
-			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			frame.setSize(1000, 800);
+			frame.addWindowListener(CompFactory.createSafeExitWindowListener(frame, data));
 
 			JDesktopPane desktop = new JDesktopPane();
-			DungeonIBuilder dungeon = new DungeonIBuilder();
+			DungeonIBuilder dungeon = new DungeonIBuilder(data);
 			desktop.add(dungeon);
 			dungeon.setVisible(true);
 

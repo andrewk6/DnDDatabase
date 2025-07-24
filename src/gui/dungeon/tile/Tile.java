@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import javax.swing.text.StyledDocument;
 
 import data.Monster;
+import data.dungeon.DungeonNote;
 
 public class Tile implements Serializable{
 	private static final long serialVersionUID = -5384404010802867146L;
@@ -24,7 +25,7 @@ public class Tile implements Serializable{
     public String imageFileName;
     public TILE_TYPE type;
     
-    public StyledDocument noteDoc;
+    public DungeonNote note;
     public ArrayList<Monster> monsters;
     
 
@@ -52,9 +53,11 @@ public class Tile implements Serializable{
     }
     
     public void loadImage(String imageFile) {
+    	System.out.println(imageFile);
     	try {
 			imageFileName = imageFile;
-			icon = ImageIO.read(this.getClass().getResource(imageFile));
+			icon = ImageIO.read(this.getClass().getResource(imageFile)).getScaledInstance(32,
+					32, BufferedImage.SCALE_SMOOTH);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
