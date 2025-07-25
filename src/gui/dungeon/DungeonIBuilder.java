@@ -33,6 +33,7 @@ public class DungeonIBuilder extends JInternalFrame {
 	private JMenuBar menuBar;
 	private JMenu toolMenu, iconMenu, floorMenu; 
 	private JScrollPane sideScroll;
+	private JPanel editPane;
 
 	private final JFileChooser fChoose = new JFileChooser();
 	private final DataContainer data;
@@ -47,7 +48,10 @@ public class DungeonIBuilder extends JInternalFrame {
 
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Dungeon Files (*.dol)", "dol");
 		fChoose.setFileFilter(filter);
-
+		
+		editPane = new JPanel();
+		add(editPane, BorderLayout.CENTER);
+		
 		configMenu();
 		addBtnPane();
 	}
@@ -64,6 +68,16 @@ public class DungeonIBuilder extends JInternalFrame {
 //		editScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 //		add(editScroll, BorderLayout.CENTER);
 //	}
+	
+	private void addEditor(String key) {
+		curEditKey = key;
+		editPane.removeAll();
+		editPane.add(editor.get(curEditKey));
+		toolMenu.setEnabled(true);
+		iconMenu.setEnabled(true);
+		revalidate();
+		repaint();
+	}
 
 	private void addBtnPane() {
 		JPanel btnPane = new JPanel();
@@ -116,7 +130,11 @@ public class DungeonIBuilder extends JInternalFrame {
 
 				try {
 					ObjectInputStream ois = new ObjectInputStream(new FileInputStream(selectedFile));
-					Tile[][] tiles = (Tile[][]) ois.readObject();
+					d = (Dungeon) ois.readObject();
+					floorMenu.setEnabled(true);
+					if(d.floors.size() > 0) {
+//						for(Stin)
+					}
 					SwingUtilities.invokeLater(()->{
 //						addNewEditor(tiles);
 						revalidate();
@@ -304,7 +322,7 @@ public class DungeonIBuilder extends JInternalFrame {
 						JLabel lbl = CompFactory.createNewLabel(s, ComponentType.BODY);
 						lbl.addMouseListener(new MouseListener() {
 							public void mouseClicked(MouseEvent e) {
-								
+								addEditor(s);
 							}
 							public void mousePressed(MouseEvent e) {}
 							public void mouseReleased(MouseEvent e) {}
