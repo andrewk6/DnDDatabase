@@ -19,4 +19,10 @@ public class DungeonFloor implements Serializable
 	public DungeonFloor(Tile[][]tiles) {
 		this.tiles = tiles;
 	}
+	
+	public void fillEmpty() {
+		for(int x = 0; x < tiles.length; x ++)
+			for(int y = 0; y < tiles[x].length; y ++)
+				tiles[x][y] = new Tile();
+	}
 }

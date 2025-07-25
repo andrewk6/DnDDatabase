@@ -2,10 +2,15 @@ package gui.dungeon.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.Dialog;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import data.dungeon.DungeonFloor;
@@ -18,6 +23,7 @@ public class FloorDialog extends JDialog
 	private static final long serialVersionUID = -2525060850451924323L;
 
 	public DungeonFloor floor = null;
+	public String floorName = null;
 	
 	private ReminderField nameField, rowField, colField;
 	
@@ -27,6 +33,7 @@ public class FloorDialog extends JDialog
 		
 		ConfigOptions();
 		ConfigButtons();
+		pack();
 	}
 	
 	private void ConfigOptions() {
@@ -56,6 +63,28 @@ public class FloorDialog extends JDialog
 	}
 	
 	private void ConfigButtons() {
+		JPanel btnPane = new JPanel();
+		btnPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		add(btnPane, BorderLayout.SOUTH);
+		
+		JButton finsh = CompFactory.createNewButton("Finish", _->{
+			if(rowField.getText().length() > 0 
+					&& colField.getText().length() > 0 
+					&& nameField.getText().length() > 0) {
+				floor = new DungeonFloor(Integer.parseInt(rowField.getText()), 
+						Integer.parseInt(colField.getText()));
+				floorName = nameField.getText();
+				floor.fillEmpty();
+				dispose();
+			}else
+				JOptionPane.showMessageDialog(this, "Please fill out all sections before finishing.");
+		});
+		btnPane.add(finsh);
+		
+		JButton cancel = CompFactory.createNewButton("Cancel", _->{
+			
+			dispose();
+		});
 		
 	}
 }
