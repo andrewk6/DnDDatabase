@@ -53,6 +53,7 @@ public class MagicItemPanel extends JPanel{
 	private JPanel miPane;
 	private final int subTypeSizeAdjust = 4;
 
+	//TODO: Add implementation to filter by Item type, possibly JComboBox across the top?
 	public MagicItemPanel(DataContainer data, GuiDirector guiD, JDesktopPane dPane) {
 		this.data = data;
 		this.dPane = dPane;
