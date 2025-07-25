@@ -157,7 +157,7 @@ public class DungeonEditorPane extends JPanel {
 			tiles[y][x].color = currentColor;
 			break;
 		case ERASER:
-			tiles[y][x] = null;
+			tiles[y][x].empty();
 			break;
 		case ICON:
 			tiles[y][x].icon = iconMap.get(currentIcon);
