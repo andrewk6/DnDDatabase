@@ -1,5 +1,6 @@
 package gui.dungeon;
 
+import gui.dungeon.dialogs.EncounterDialog;
 import gui.dungeon.dialogs.NoteDialog;
 import gui.dungeon.tile.*;
 import gui.dungeon.tile.Tile.TILE_TYPE;
@@ -8,12 +9,15 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import data.DataContainer;
+import data.Monster;
 import data.dungeon.DungeonNote;
+import data.dungeon.EncounterNote;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 
@@ -147,6 +151,10 @@ public class DungeonEditorPane extends JPanel {
 				TILE_SIZE, TILE_SIZE));
 		iconMap.put("door", ImageIO.read(this.getClass().getResource("/door_icon.png")).getScaledInstance(TILE_SIZE,
 				TILE_SIZE, TILE_SIZE));
+		iconMap.put("locked_door", ImageIO.read(this.getClass().getResource("/locked_door_icon.png")).getScaledInstance(TILE_SIZE,
+				TILE_SIZE, TILE_SIZE));
+		iconMap.put("encounter", ImageIO.read(this.getClass().getResource("/monster_icon.png")).getScaledInstance(TILE_SIZE,
+				TILE_SIZE, TILE_SIZE));
 	}
 
 	private void applyTool(int x, int y) {
@@ -170,15 +178,22 @@ public class DungeonEditorPane extends JPanel {
 				nDialog.setVisible(true);
 				nDialog.setAlwaysOnTop(true);
 			}else if(tiles[y][x].type == TILE_TYPE.MONSTER) {
-				
+				EncounterDialog eDialog = new EncounterDialog(data, tiles[y][x].eNote);
+				eDialog.setVisible(true);
+				eDialog.setAlwaysOnTop(true);
 			}
 		}
 	}
 
 	private void setTileType(String curIcon, Tile tile) {
-		if (curIcon.equals("note") || curIcon.equals("trap") || curIcon.equals("door")) {
+		if (curIcon.equals("note") || curIcon.equals("trap") || 
+				curIcon.equals("door") || curIcon.equals("locked_door")) {
 			tile.type = TILE_TYPE.NOTE;
 			tile.note = new DungeonNote();
+			tile.imageFileName = "/" + curIcon + "_icon.png";
+		}else {
+			tile.type = TILE_TYPE.MONSTER;
+			tile.eNote = new EncounterNote();
 			tile.imageFileName = "/" + curIcon + "_icon.png";
 		}
 	}
