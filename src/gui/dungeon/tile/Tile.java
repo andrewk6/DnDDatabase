@@ -13,6 +13,7 @@ import javax.swing.text.StyledDocument;
 
 import data.Monster;
 import data.dungeon.DungeonNote;
+import data.dungeon.EncounterNote;
 
 public class Tile implements Serializable{
 	private static final long serialVersionUID = -5384404010802867146L;
@@ -26,7 +27,7 @@ public class Tile implements Serializable{
     public TILE_TYPE type;
     
     public DungeonNote note;
-    public ArrayList<Monster> monsters;
+    public EncounterNote eNote;
     
 
     public Tile() {

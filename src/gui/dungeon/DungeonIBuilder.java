@@ -7,6 +7,7 @@ import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.structures.StyleContainer;
 
+import javax.print.attribute.standard.JobKOctetsProcessed;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -39,6 +40,8 @@ public class DungeonIBuilder extends JInternalFrame {
 	private final DataContainer data;
 	
 	private Dungeon d;
+	
+	private enum DungeonChange {LOAD, NEW};
 
 	public DungeonIBuilder(DataContainer data) {
 		super("Dungeon Builder", true, true, true, true);
@@ -50,7 +53,9 @@ public class DungeonIBuilder extends JInternalFrame {
 		fChoose.setFileFilter(filter);
 		
 		editPane = new JPanel();
-		add(editPane, BorderLayout.CENTER);
+		
+		editScroll = new JScrollPane(editPane);
+		add(editScroll, BorderLayout.CENTER);
 		
 		configMenu();
 		addBtnPane();
@@ -85,17 +90,13 @@ public class DungeonIBuilder extends JInternalFrame {
 		add(btnPane, BorderLayout.SOUTH);
 		
 		JButton newDungeonBtn = CompFactory.createNewButton("New Dungeonr", e->{
-			String dungeonName = JOptionPane.showInputDialog("What is the dungeon's name:");
-			d = new Dungeon();
-			d.dungeonName = dungeonName;
-			curEditKey = null;
-			if(editor != null)
-				editor.clear();
-			else
-				editor = new HashMap<String, DungeonEditorPane>();
-			toolMenu.setEnabled(false);
-			iconMenu.setEnabled(false);
-			floorMenu.setEnabled(true);
+			if(d != null) {
+				if(changeDungeonConf(DungeonChange.NEW))
+					buildDungeon();
+			}else {
+				buildDungeon();
+			}
+			
 		});
 		btnPane.add(newDungeonBtn);
 
@@ -113,7 +114,7 @@ public class DungeonIBuilder extends JInternalFrame {
 						selectedFile.createNewFile();
 
 					ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(selectedFile));
-					oos.writeObject(editor.get(curEditKey).getTiles());
+					oos.writeObject(d);
 					oos.flush();
 					oos.close();
 				} catch (IOException e1) {
@@ -124,6 +125,9 @@ public class DungeonIBuilder extends JInternalFrame {
 		btnPane.add(saveBtn);
 
 		JButton loadBtn = CompFactory.createNewButton("Load", _ -> {
+			if(d != null)
+				if(!changeDungeonConf(DungeonChange.LOAD))
+					return;
 			int result = fChoose.showOpenDialog(this);
 			if (result == JFileChooser.APPROVE_OPTION) {
 				File selectedFile = fChoose.getSelectedFile();
@@ -132,8 +136,15 @@ public class DungeonIBuilder extends JInternalFrame {
 					ObjectInputStream ois = new ObjectInputStream(new FileInputStream(selectedFile));
 					d = (Dungeon) ois.readObject();
 					floorMenu.setEnabled(true);
+					if(editor != null)
+						editor.clear();
+					else
+						editor = new HashMap<String, DungeonEditorPane>();
 					if(d.floors.size() > 0) {
-//						for(Stin)
+						for(String s : d.floors.keySet()) {
+							editor.put(s, new DungeonEditorPane(data, d.floors.get(s).tiles));
+						}
+						fillSidePane();
 					}
 					SwingUtilities.invokeLater(()->{
 //						addNewEditor(tiles);
@@ -173,7 +184,7 @@ public class DungeonIBuilder extends JInternalFrame {
 				toolGroup.add(item);
 				toolMenu.add(item);
 			}
-			if (t == Tool.SELECT) {
+			if (t == Tool.BRUSH) {
 				item.setSelected(true);
 			}
 		}
@@ -306,6 +317,34 @@ public class DungeonIBuilder extends JInternalFrame {
 		setJMenuBar(menuBar);
 	}
 	
+	private void buildDungeon() {
+		String dungeonName = JOptionPane.showInputDialog("What is the dungeon's name:");
+		if(dungeonName != null) {
+			d = new Dungeon();
+			d.dungeonName = dungeonName;
+			curEditKey = null;
+			if(editor != null)
+				editor.clear();
+			else
+				editor = new HashMap<String, DungeonEditorPane>();
+			toolMenu.setEnabled(false);
+			iconMenu.setEnabled(false);
+			floorMenu.setEnabled(true);
+		}
+	}
+	
+	private boolean changeDungeonConf(DungeonChange cType) {
+		String typeString = (cType == DungeonChange.LOAD) ? 
+				"Load a different dungeon," :
+					"Create a new dungeon,";
+		int opt = JOptionPane.showConfirmDialog(
+				this, 
+				typeString + " you will lose unsaved work.", 
+				"Change Dungeon Confirmation", 
+				JOptionPane.YES_NO_OPTION);
+		return opt == JOptionPane.YES_OPTION;
+	}
+	
 	public void fillSidePane() {
 		SwingUtilities.invokeLater(()->{
 			if(sideScroll != null)
@@ -319,7 +358,12 @@ public class DungeonIBuilder extends JInternalFrame {
 				if(d.floors.size() > 0)
 					for(String s : d.floors.keySet()) {
 //						System.out.println(s);
-						JLabel lbl = CompFactory.createNewLabel(s, ComponentType.BODY);
+						JPanel pane = new JPanel();
+						pane.setLayout(new BorderLayout());
+						pane.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.DARK_GRAY));
+						sidePane.add(pane);
+						
+						JLabel lbl = CompFactory.createNewLabel(s, ComponentType.HEADER);
 						lbl.addMouseListener(new MouseListener() {
 							public void mouseClicked(MouseEvent e) {
 								addEditor(s);
@@ -329,7 +373,16 @@ public class DungeonIBuilder extends JInternalFrame {
 							public void mouseEntered(MouseEvent e) {lbl.setFont(lbl.getFont().deriveFont(Font.BOLD));}
 							public void mouseExited(MouseEvent e) {lbl.setFont(lbl.getFont().deriveFont(Font.PLAIN));}
 						});
-						sidePane.add(lbl);
+						pane.add(lbl, BorderLayout.CENTER);
+						
+						JButton del = CompFactory.createNewButton("Delete", _->{
+							if(editPane.isAncestorOf(editor.get(s)))
+								editPane.remove(editor.get(s));
+							editor.remove(s);
+							d.floors.remove(s);
+							fillSidePane();
+						});
+						pane.add(del, BorderLayout.EAST);
 					}
 				revalidate();
 				repaint();

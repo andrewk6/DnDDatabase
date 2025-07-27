@@ -16,6 +16,7 @@ import data.dungeon.DungeonNote;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
+import gui.gui_helpers.structures.StyleContainer;
 
 public class NoteDialog extends JDialog{
 	private static final long serialVersionUID = 725990709923540407L;
@@ -48,6 +49,7 @@ public class NoteDialog extends JDialog{
 		add(noteEdit, BorderLayout.CENTER);
 		
 		title = new ReminderField("Notes title...");
+		StyleContainer.SetFontHeader(title);
 		if(note.title.length() > 0)
 			title.setText(note.title);
 		add(title, BorderLayout.NORTH);
