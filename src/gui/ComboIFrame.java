@@ -50,7 +50,7 @@ import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
 public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeListener{
-
+	private static final long serialVersionUID = 1L;
 	private ColorTabbedPaneUI tabsUI;
 	private JTabbedPane tabs;
 	private DataContainer data;

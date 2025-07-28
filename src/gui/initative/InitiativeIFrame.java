@@ -78,6 +78,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         this.data = data;
         this.gd = gd;
         this.dPane = dPane;
+        this.gd.RegisterInitiativeFrame(this);
         tabsUI = new ColorTabbedPaneUI();
         this.setBounds(20, 20, 800, 600);
         this.setLayout(new BorderLayout());
@@ -112,7 +113,10 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 			public void internalFrameIconified(InternalFrameEvent e) {}
 			public void internalFrameDeiconified(InternalFrameEvent e) {}
 			public void internalFrameDeactivated(InternalFrameEvent e) {}
-			public void internalFrameClosing(InternalFrameEvent e) {gd.lockPlayerEdits(false);}
+			public void internalFrameClosing(InternalFrameEvent e) {
+				gd.lockPlayerEdits(false);
+				gd.DegisterInitiativeFrame(InitiativeIFrame.this);
+				}
 			public void internalFrameClosed(InternalFrameEvent e) {}
 			public void internalFrameActivated(InternalFrameEvent e) {}
 		});
@@ -346,6 +350,15 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
                 JOptionPane.showMessageDialog(this, "Invalid bonus.");
             }
         }
+    }
+    
+    public void importMonsterInit(ArrayList<Monster> monsts) {
+    	for(Monster m : monsts) {
+    		 int bonus = m.GetInitBonus();
+             int roll = bonus + new Random().nextInt(20) + 1;
+             UUID id = UUID.randomUUID();
+             addInitiativeEntry(new InitiativeEntry(id, m.name, roll, m));
+    	}
     }
 
     private void addInitiativeEntry(InitiativeEntry entry) {

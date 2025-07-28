@@ -15,12 +15,15 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
+import data.Monster;
+import data.dungeon.Dungeon;
 import gui.ComboIFrame;
 import gui.ItemIFrame;
 import gui.MonsterIFrame;
@@ -28,6 +31,8 @@ import gui.RuleIFrame;
 import gui.SpellIFrame;
 import gui.campaign.PartyIFrame;
 import gui.campaign.PlayerPane;
+import gui.dungeon.DungeonIBuilder;
+import gui.dungeon.DungeonIViewer;
 import gui.gui_helpers.PlayerNameTargets;
 import gui.initative.InitiativeIFrame;
 
@@ -39,6 +44,11 @@ public class GuiDirector
 	private RuleIFrame rFrame;
 	private ItemIFrame iFrame;
 	private PartyIFrame pFrame;
+	private InitiativeIFrame initFrame;
+	
+	private DungeonIBuilder dunBuild;
+	private DungeonIViewer dunView;
+	
 	private AllTab cFrame;
 	
 	private HashMap<PlayerPane, PlayerNameTargets> nameUpdates;
@@ -88,6 +98,44 @@ public class GuiDirector
 			pFrame = null;
 		else if(frame instanceof ItemIFrame)
 			iFrame = null;
+	}
+	
+	public void RegisterInitiativeFrame(InitiativeIFrame iFrame) {
+		initFrame = iFrame;
+	}
+	
+	public void DegisterInitiativeFrame(InitiativeIFrame iFrame) {
+		if(initFrame.equals(iFrame))
+			initFrame = null;
+	}
+	
+	public void RegisterDungeonFrame(JInternalFrame frame) {
+		if(frame instanceof DungeonIBuilder)
+			dunBuild = (DungeonIBuilder) frame;
+		else if(frame instanceof DungeonIViewer)
+			dunView = (DungeonIViewer) frame;
+	}
+	
+	public void DeregisterDungeonFrame(JInternalFrame f) {
+		if(f instanceof DungeonIBuilder)
+			if(dunBuild.equals(f))
+				dunBuild = null;
+		else if(f instanceof DungeonIViewer)
+			if(dunView.equals(f))
+				dunView = null;
+	}
+	
+	public void addInitiaitive(ArrayList<Monster> m) {
+		if(initFrame != null) {
+			initFrame.importMonsterInit(m);
+			initFrame.setVisible(true);
+			initFrame.requestFocus();
+			initFrame.toFront();
+			dPane.revalidate();
+			dPane.repaint();
+		}else {
+			JOptionPane.showMessageDialog(dPane, "Please open an Initiative Window.");
+		}
 	}
 	
 	public void RegisterCombo(AllTab frame) {
@@ -190,6 +238,22 @@ public class GuiDirector
 		});
 	}
 	
+	public void popFrame(JInternalFrame frame) {
+		SwingUtilities.invokeLater(()->{
+			if(frame.isIcon())
+				try {
+					frame.setIcon(false);
+				} catch (PropertyVetoException e) {
+					e.printStackTrace();
+				}
+			frame.toFront();
+			if(!frame.isVisible())
+				frame.setVisible(true);
+			dPane.revalidate();
+			dPane.repaint();
+		});
+	}
+	
 	public void deregisterPlayerPaneTabs(PlayerPane p) {
 		nameUpdates.remove(p);
 	}
@@ -224,6 +288,23 @@ public class GuiDirector
 		tabs.setTitleAt(index, newTitle);
 		
 		btn.setText("Delete: " + newTitle);
+	}
+	
+	public void EditDungeon(Dungeon d) {
+		System.out.println("Edit: D-" + d != null + " Frm ");
+		if(dunBuild != null && d != null) {
+			dunBuild.loadDungeon(d);
+			popFrame(dunBuild);
+			dunView.setVisible(false);
+		}
+	}
+	
+	public void ViewDungeon(Dungeon d) {
+		if(dunView != null && d != null) {
+			dunView.LoadDungeon(d);
+			popFrame(dunView);
+			dunBuild.setVisible(false);
+		}
 	}
 	
 	public String showTypeSelectionDialog(Window parentFrame, String itemName, List<String> types) {

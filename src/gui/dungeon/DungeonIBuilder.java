@@ -5,6 +5,7 @@ import gui.dungeon.tile.*;
 import gui.dungeon.tile.Tile.TILE_TYPE;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
 import javax.print.attribute.standard.JobKOctetsProcessed;
@@ -35,25 +36,29 @@ public class DungeonIBuilder extends JInternalFrame {
 	private JMenu toolMenu, iconMenu, floorMenu; 
 	private JScrollPane sideScroll;
 	private JPanel editPane;
+	private JButton viewBtn;
 
 	private final JFileChooser fChoose = new JFileChooser();
 	private final DataContainer data;
+	private final GuiDirector gd;
 	
 	private Dungeon d;
 	
 	private enum DungeonChange {LOAD, NEW};
 
-	public DungeonIBuilder(DataContainer data) {
+	public DungeonIBuilder(DataContainer data, GuiDirector gd) {
 		super("Dungeon Builder", true, true, true, true);
 		setSize(800, 600);
 		setLayout(new BorderLayout());
 		this.data = data;
+		this.gd = gd;
+		this.gd.RegisterDungeonFrame(this);
+		this.addInternalFrameListener(CompFactory.createNonCloseListener(this));
 
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Dungeon Files (*.dol)", "dol");
 		fChoose.setFileFilter(filter);
 		
 		editPane = new JPanel();
-		
 		editScroll = new JScrollPane(editPane);
 		add(editScroll, BorderLayout.CENTER);
 		
@@ -89,7 +94,7 @@ public class DungeonIBuilder extends JInternalFrame {
 		btnPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		add(btnPane, BorderLayout.SOUTH);
 		
-		JButton newDungeonBtn = CompFactory.createNewButton("New Dungeonr", e->{
+		JButton newDungeonBtn = CompFactory.createNewButton("New Dungeon", e->{
 			if(d != null) {
 				if(changeDungeonConf(DungeonChange.NEW))
 					buildDungeon();
@@ -99,6 +104,12 @@ public class DungeonIBuilder extends JInternalFrame {
 			
 		});
 		btnPane.add(newDungeonBtn);
+		
+		viewBtn = CompFactory.createNewButton("GoTo View", _->{
+			gd.ViewDungeon(d);
+		});
+		viewBtn.setEnabled(false);
+		btnPane.add(viewBtn);
 
 		JButton saveBtn = CompFactory.createNewButton("Save", _ -> {
 			int result = fChoose.showSaveDialog(this);
@@ -135,23 +146,7 @@ public class DungeonIBuilder extends JInternalFrame {
 				try {
 					ObjectInputStream ois = new ObjectInputStream(new FileInputStream(selectedFile));
 					d = (Dungeon) ois.readObject();
-					floorMenu.setEnabled(true);
-					if(editor != null)
-						editor.clear();
-					else
-						editor = new HashMap<String, DungeonEditorPane>();
-					if(d.floors.size() > 0) {
-						for(String s : d.floors.keySet()) {
-							editor.put(s, new DungeonEditorPane(data, d.floors.get(s).tiles));
-						}
-						fillSidePane();
-					}
-					SwingUtilities.invokeLater(()->{
-//						addNewEditor(tiles);
-						revalidate();
-						repaint();
-					});
-					
+					loadDungeon(d);
 					ois.close();
 				} catch (IOException e1) {
 					e1.printStackTrace();
@@ -163,8 +158,27 @@ public class DungeonIBuilder extends JInternalFrame {
 		btnPane.add(loadBtn);
 	}
 	
-	private void configToolbar() {
-		
+	public void loadDungeon(Dungeon d) {
+		floorMenu.setEnabled(true);
+		viewBtn.setEnabled(true);
+		if(this.d != d)
+			this.d = d;
+		if(editor != null)
+			editor.clear();
+		else
+			editor = new HashMap<String, DungeonEditorPane>();
+		if(d.floors.size() > 0) {
+			for(String s : d.floors.keySet()) {
+				editor.put(s, new DungeonEditorPane(data, d.floors.get(s).tiles));
+			}
+			System.out.println("Filling side panels");
+			fillSidePane();
+		}
+		SwingUtilities.invokeLater(()->{
+//			addNewEditor(tiles);
+			revalidate();
+			repaint();
+		});
 	}
 
 	private void configMenu() {
@@ -330,6 +344,7 @@ public class DungeonIBuilder extends JInternalFrame {
 			toolMenu.setEnabled(false);
 			iconMenu.setEnabled(false);
 			floorMenu.setEnabled(true);
+			viewBtn.setEnabled(true);
 		}
 	}
 	
@@ -403,7 +418,7 @@ public class DungeonIBuilder extends JInternalFrame {
 			frame.addWindowListener(CompFactory.createSafeExitWindowListener(frame, data));
 
 			JDesktopPane desktop = new JDesktopPane();
-			DungeonIBuilder dungeon = new DungeonIBuilder(data);
+			DungeonIBuilder dungeon = new DungeonIBuilder(data, new GuiDirector(desktop));
 			desktop.add(dungeon);
 			dungeon.setVisible(true);
 
