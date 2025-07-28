@@ -40,6 +40,8 @@ import gui.builder_internals.RuleBuilderIFrame;
 import gui.builder_internals.SpellBuilderIFrame;
 import gui.campaign.NotesIFrame;
 import gui.campaign.PartyIFrame;
+import gui.dungeon.DungeonIBuilder;
+import gui.dungeon.DungeonIViewer;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.LoadListener;
@@ -59,6 +61,10 @@ public class DnD_Database_Tool extends JFrame {
 	private SpellIFrame sFrame;
 	private MonsterIFrame mFrame;
 	private ItemIFrame iFrame;
+	
+	//Dungeon Frames
+	DungeonIBuilder dBuildFrame;
+	DungeonIViewer dViewFrame;
 	
 	//Builder Frames
 	RuleBuilderIFrame rBuildFrame;
@@ -157,6 +163,14 @@ public class DnD_Database_Tool extends JFrame {
 		iBuildFrame = new ItemBuilderIFrame(data);
 		dPane.add(iBuildFrame);
 		iBuildFrame.setVisible(false);
+		
+		dBuildFrame = new DungeonIBuilder(data, gd);
+		dPane.add(dBuildFrame);
+		dBuildFrame.setVisible(false);
+		
+		dViewFrame = new DungeonIViewer(data, gd);
+		dPane.add(dViewFrame);
+		dViewFrame.setVisible(false);
 	}
 	
 	private void BuildMenuBar() {
@@ -187,6 +201,17 @@ public class DnD_Database_Tool extends JFrame {
 				"Initiative Tracker", ()->new InitiativeIFrame(data, gd, dPane), dPane));
 		toolsMenu.add(CompFactory.createNewJMenuItem(
 				"Dice Calculator", ()->new DiceCalcIFrame(), dPane));
+		
+		/*
+		 * DUNGEON MENU
+		 */
+		
+		JMenu dungeonMenu = new JMenu("Dungeons");
+		StyleContainer.SetFontHeader(dungeonMenu);
+		menu.add(dungeonMenu);
+		
+		dungeonMenu.add(CompFactory.createNewJMenuItem("Dungeon Builder", dBuildFrame));
+		dungeonMenu.add(CompFactory.createNewJMenuItem("Dungeon Viewer", dViewFrame));
 		
 		/*
 		 * CAMPAIGN MENU

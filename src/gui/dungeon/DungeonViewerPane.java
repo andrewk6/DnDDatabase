@@ -14,7 +14,6 @@ import data.DataContainer;
 import data.Monster;
 import data.dungeon.DungeonNote;
 import data.dungeon.EncounterNote;
-import data.dungeon.NoteViewer;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -132,6 +131,8 @@ public class DungeonViewerPane extends JPanel {
 			return;
 		if(tiles[y][x].type == TILE_TYPE.NOTE) {
 			AddTab(new NoteViewer(data, gd, tiles[y][x].note), tiles[y][x].note.title);
+		}else if(tiles[y][x].type == TILE_TYPE.MONSTER) {
+			AddTab(new EncounterViewer(data, gd, tiles[y][x].eNote), tiles[y][x].eNote.title);
 		}
 	}
 	
