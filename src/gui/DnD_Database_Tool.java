@@ -23,6 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -43,6 +44,7 @@ import gui.campaign.PartyIFrame;
 import gui.dungeon.DungeonIBuilder;
 import gui.dungeon.DungeonIViewer;
 import gui.gui_helpers.CompFactory;
+import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.LoadListener;
 import gui.gui_helpers.structures.StyleContainer;
@@ -61,6 +63,9 @@ public class DnD_Database_Tool extends JFrame {
 	private SpellIFrame sFrame;
 	private MonsterIFrame mFrame;
 	private ItemIFrame iFrame;
+	
+	//Campaign Label
+	private JLabel camp;
 	
 	//Dungeon Frames
 	DungeonIBuilder dBuildFrame;
@@ -252,6 +257,7 @@ public class DnD_Database_Tool extends JFrame {
 	            if(!campBtnsLoaded)
 	            	AddCampaignButtons(campMenu, cMenu);
 	            updateQuickLoad(campMenu, cMenu);
+	            camp.setText(data.getCampaignName());
 	        }
 		});
 		cMenu.add(loadCamp);
@@ -274,10 +280,15 @@ public class DnD_Database_Tool extends JFrame {
 		buildMenu.add(CompFactory.createNewJMenuItem("Item Buider", iBuildFrame));
 		
 		/*
-		 * EXIT BUTTON
+		 * LOADED CAMPAIGN
 		 */
 		menu.add(Box.createHorizontalGlue());
 		
+		camp = CompFactory.createNewLabel("", ComponentType.HEADER);
+		menu.add(camp);
+		/*
+		 * EXIT BUTTON
+		 */		
 		JButton exitButton = new JButton("Exit");
 		exitButton.setFocusable(false);
 		StyleContainer.SetFontBtn(exitButton);
