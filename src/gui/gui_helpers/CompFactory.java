@@ -44,6 +44,18 @@ public class CompFactory
 		return lbl;
 	}
 	
+	public static InfoLabel createNewInfoLabel(String text, int textLength, ComponentType type) {
+		InfoLabel lbl = new InfoLabel(text, textLength);
+		
+		switch(type) {
+		case ComponentType.HEADER: StyleContainer.SetFontHeader(lbl);
+		default: StyleContainer.SetFontMain(lbl);
+		}
+		
+		return lbl;
+	}
+	
+	
 	public static JMenuItem createNewJMenuItem(String text) {
 		JMenuItem out = new JMenuItem(text);
 		StyleContainer.SetFontMain(out);

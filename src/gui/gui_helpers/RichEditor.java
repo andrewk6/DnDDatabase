@@ -3,6 +3,7 @@ package gui.gui_helpers;
 import builders.monster_builder.AttackInsertForm;
 import data.DataChangeListener;
 import data.DataContainer;
+import data.Feat;
 import data.Monster;
 import data.Rule;
 import data.Spell;
@@ -38,6 +39,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     private Map<String, Spell> spellMap;
     private Map<String, Monster> monstMap;
     private Map<String, Item> itemMap;
+    private Map<String, Feat> featMap;
     private Map<String, StyledDocument> insertMap;
     private Map<String, Player> playerMap;
 
@@ -48,6 +50,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     private final Map<Integer, String> ruleOffsets = new HashMap<>();
     private final Map<Integer, String> spellOffsets = new HashMap<>();
     private final Map<Integer, String> monstOffsets = new HashMap<>();
+    private final Map<Integer, String> featOffsets = new HashMap<>();
     private final Map<Integer, String> itemOffsets = new HashMap<>();
     private final Map<Integer, String> playerOffsets = new HashMap<>();
 
@@ -796,6 +799,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         this.monstMap = data.getMonsters();
         this.insertMap = data.getInserts();
         this.itemMap = data.getItems();
+        this.featMap = data.getFeats();
         this.playerMap = data.getParty();
     }
 
@@ -811,6 +815,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 		case DataContainer.SPELLS: this.spellMap = data.getSpells(); break;
 		case DataContainer.MONSTERS: this.monstMap = data.getMonsters(); break;
 		case DataContainer.INSERTS: this.insertMap = data.getInserts(); break;
+		case DataContainer.FEATS: this.featMap = data.getFeats(); break;
 		case DataContainer.ITEMS: this.itemMap = data.getItems(); break;
 		case DataContainer.CAMPAIGN: this.playerMap = data.getParty(); break;
 		default: System.out.println("Invalid map type: " + mapType);

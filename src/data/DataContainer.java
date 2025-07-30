@@ -88,6 +88,7 @@ public class DataContainer {
 	public static final String MONSTERS_FILE_NAME = "Monster.mol";
 	public static final String INSERT_FILE_NAME = "Inserts.bol";
 	public static final String ITEMS_FILE_NAME = "Items.iol";
+	public static final String FEATS_FILE_NAME = "Feats.fol";
 	public static final String CONFIG_FILE_NAME = "Config.confol";
 	public static final String EXTRAS_FILE_NAME = "Extras.exol";
 	
@@ -97,16 +98,18 @@ public class DataContainer {
 	public static final int INSERTS  = 3;
 	public static final int ITEMS = 4;
 	public static final int CAMPAIGN = 5;
+	public static final int FEATS = 6;
 
 	private HashMap<String, Rule> ruleMap;
 	private HashMap<String, Spell> spellMap;
 	private HashMap<String, Monster> monstMap;
 	private HashMap<String, Item> itemMap;
+	private HashMap<String, Feat> featMap;
 	private HashMap<String, StyledDocument> insertMap;
 	private Campaign camp;
 	
 	private ArrayList<String> ruleKeysSorted, spellKeysSorted, monstKeysSorted, insertKeysSorted,
-		weaponKeysSorted, armorKeysSorted, gearKeysSorted, toolKeysSorted, magicItemKeysSorted;
+		weaponKeysSorted, armorKeysSorted, gearKeysSorted, toolKeysSorted, magicItemKeysSorted, featKeysSorted;
 	
 
 	private final AtomicInteger runningTasks = new AtomicInteger(0);
@@ -132,6 +135,7 @@ public class DataContainer {
 		ImportMonsters();
 		ImportInsertHelpers();
 		ImportItems();
+		ImportFeats();
 		
 		SortKeys();
 		LoadConfig();
@@ -324,6 +328,43 @@ public class DataContainer {
 		return false;		
 	}
 	
+	private boolean ImportFeats() {
+		featMap = new HashMap<String, Feat>();
+		featKeysSorted = new ArrayList<String>();
+		File featFile;
+		
+		if(dbFolder.exists()) {
+			if(dbFolder.isDirectory()) {
+				featFile = new File(dbFolder.getPath() + File.separator + FEATS_FILE_NAME);
+			}else {
+				featFile = new File(FEATS_FILE_NAME);
+			}
+		}else {
+			featFile = new File(FEATS_FILE_NAME);
+		}
+		
+		if (featFile.exists()) {
+			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(featFile))) {
+				System.out.println("Loading Feats:");
+				while (true) {
+					try {
+						Feat f = (Feat) ois.readObject();
+						System.out.println(f.name);
+						featMap.put(f.name, f);
+						featKeysSorted.add(f.name);
+					} catch (EOFException eof) {
+						// End of file reached
+						return true;
+					}
+				}
+			} catch (IOException | ClassNotFoundException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return false;		
+	}
+	
 	private boolean ImportItems() {
 		itemMap = new HashMap<String, Item>();
 		weaponKeysSorted = new ArrayList<String>();
@@ -445,6 +486,13 @@ public class DataContainer {
 		notifyChange(DataContainer.RULES);
 	}
 	
+	public void setFeatMap(HashMap<String, Feat> featMap) {
+		this.featMap = featMap;
+		this.featKeysSorted = new ArrayList<String>(this.featMap.keySet());
+		SortKeys(DataContainer.FEATS);
+		notifyChange(DataContainer.FEATS);
+	}
+	
 	public void SetItemMap(HashMap<String, Item> iMap) {
 		this.itemMap = iMap;
 		weaponKeysSorted = new ArrayList<String>();
@@ -480,7 +528,8 @@ public class DataContainer {
 	}
 	
 	private boolean SaveData() {
-		return SaveRules() && SaveSpells() && SaveMonsters() && SaveInserts() && SaveItems() && SaveCampaign();
+		return SaveRules() && SaveSpells() && SaveMonsters() && 
+				SaveInserts() && SaveItems() && SaveCampaign() && SaveFeats();
 	}
 
 	private boolean SaveData(int saveOpt) {
@@ -496,6 +545,8 @@ public class DataContainer {
 			return SaveItems();
 		else if(saveOpt == CAMPAIGN)
 			return SaveCampaign();
+		else if(saveOpt == FEATS)
+			return SaveFeats();
 		else throw  new IllegalArgumentException("Invalid save option");
 //		System.out.println("Save Complete");
 	}
@@ -615,6 +666,30 @@ public class DataContainer {
 		}
 	}
 	
+	private boolean SaveFeats() {
+		File featFile = new File(dbFolder.getPath() + File.separator + DataContainer.FEATS_FILE_NAME);
+		if(!featFile.exists()) {
+			try {
+				featFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(featFile));
+			for (String s : featMap.keySet()) {
+				oos.writeObject(featMap.get(s));
+			}
+			oos.flush();
+			oos.close();
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	private boolean SaveItems() {
 		File itemFile = new File(dbFolder.getPath() + File.separator + DataContainer.ITEMS_FILE_NAME);
 		if(!itemFile.exists()) {
@@ -689,6 +764,7 @@ public class DataContainer {
 		Collections.sort(gearKeysSorted);
 		Collections.sort(toolKeysSorted);
 		Collections.sort(magicItemKeysSorted);
+		Collections.sort(featKeysSorted);
 	}
 	
 	private void SortKeys(int mapType) {
@@ -704,6 +780,7 @@ public class DataContainer {
 			Collections.sort(toolKeysSorted);
 			Collections.sort(magicItemKeysSorted);
 			break;
+		case DataContainer.FEATS: Collections.sort(featKeysSorted); break;
 		default: throw new IllegalArgumentException("Invalid Map Type.");
 		}
 	}
@@ -713,6 +790,10 @@ public class DataContainer {
 		SortKeys();
 		return importStatus;
 
+	}
+	
+	public String getCampaignName() {
+		return camp.saveLoc.getName();
 	}
 	
 	public Map<String, Rule> getRules() {
@@ -729,6 +810,12 @@ public class DataContainer {
 	
 	public Map<String, StyledDocument> getInserts(){
 		return Collections.unmodifiableMap(insertMap);
+	}
+	
+	public Map<String, Feat> getFeats(){
+		if(featMap == null)
+			return null;
+		return Collections.unmodifiableMap(featMap);
 	}
 	
 	public Map<String, Item> getItems(){
@@ -769,6 +856,10 @@ public class DataContainer {
 	
 	public List<String> getMagicItemKeysSorted(){
 		return Collections.unmodifiableList(magicItemKeysSorted);
+	}
+	
+	public List<String> getFeatKeysSorted(){
+		return Collections.unmodifiableList(featKeysSorted);
 	}
 	
 	public HashMap<String, Monster> getUnsafe(){
