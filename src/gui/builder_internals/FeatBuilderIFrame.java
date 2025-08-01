@@ -1,4 +1,4 @@
-package builders.feat_builder;
+package gui.builder_internals;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -17,6 +17,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -32,13 +33,15 @@ import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.InfoLabel;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
+import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
-public class FeatBuilder extends JFrame implements DataChangeListener
+public class FeatBuilderIFrame extends JInternalFrame implements DataChangeListener
 {
 	private static final long serialVersionUID = 7767913160428645959L;
 	
 	private DataContainer data;
+	private GuiDirector gd;
 	private final HashMap<String, Feat> featMap;
 	
 	private JPanel featList, mPane;
@@ -46,23 +49,15 @@ public class FeatBuilder extends JFrame implements DataChangeListener
 	private JComboBox<FeatType> featTypeComb;
 	private RichEditor edit;
 
-	public static void main(String[]args) {
-		DataContainer data = new DataContainer();
-		data.init();
-		SwingUtilities.invokeLater(()->{
-			FeatBuilder build = new FeatBuilder(data);
-			build.setVisible(true);
-		});
-	}
-	public FeatBuilder(DataContainer data) 
+	public FeatBuilderIFrame(DataContainer data, GuiDirector gd) 
 	{
 		this.data = data;
+		this.gd = gd;
 		if(data.getFeats() == null)
 			featMap = new HashMap<String, Feat>();
 		else
 			featMap = new HashMap<String, Feat>(data.getFeats());
 		this.data.registerListener(this);
-		this.addWindowListener(CompFactory.createSafeExitWindowListener(this, data));
 		Initialize(this.getContentPane());
 		pack();
 	}
@@ -95,7 +90,7 @@ public class FeatBuilder extends JFrame implements DataChangeListener
 		mPane.add(btnPane, BorderLayout.SOUTH);
 		
 		JButton clearBtn = CompFactory.createNewButton("Clear Editor", _->{
-			int conf = JOptionPane.showConfirmDialog(FeatBuilder.this, "Are you sure you want to clear", 
+			int conf = JOptionPane.showConfirmDialog(FeatBuilderIFrame.this, "Are you sure you want to clear", 
 					"Confirmation", JOptionPane.YES_NO_OPTION);
 			if(conf == JOptionPane.YES_OPTION)
 				resetEditor();
@@ -115,7 +110,7 @@ public class FeatBuilder extends JFrame implements DataChangeListener
 				resetEditor();
 				FillSidePane();
 			}else {
-				JOptionPane.showMessageDialog(FeatBuilder.this, 
+				JOptionPane.showMessageDialog(FeatBuilderIFrame.this, 
 						"Please finish entering the feat name and desc", 
 						"Feat Edit Warning", JOptionPane.WARNING_MESSAGE);
 			}

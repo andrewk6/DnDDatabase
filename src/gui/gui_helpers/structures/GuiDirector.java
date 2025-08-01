@@ -25,6 +25,7 @@ import javax.swing.event.InternalFrameListener;
 import data.Monster;
 import data.dungeon.Dungeon;
 import gui.ComboIFrame;
+import gui.FeatIFrame;
 import gui.ItemIFrame;
 import gui.MonsterIFrame;
 import gui.RuleIFrame;
@@ -43,6 +44,8 @@ public class GuiDirector
 	private SpellIFrame sFrame;
 	private RuleIFrame rFrame;
 	private ItemIFrame iFrame;
+	private FeatIFrame fFrame;
+	
 	private PartyIFrame pFrame;
 	private InitiativeIFrame initFrame;
 	
@@ -72,6 +75,8 @@ public class GuiDirector
 			sFrame = (SpellIFrame) frame;
 		else if(frame instanceof MonsterIFrame)
 			mFrame = (MonsterIFrame) frame;
+		else if(frame instanceof FeatIFrame)
+			fFrame = (FeatIFrame) frame;
 	}
 	
 	public void DeRegister(ContentTab frame) {
@@ -84,6 +89,9 @@ public class GuiDirector
 		else if(frame instanceof MonsterIFrame)
 			if(mFrame == frame)
 				mFrame = null;
+			else if(frame instanceof FeatIFrame)
+				if(fFrame == frame)
+					fFrame = null;
 	}
 	
 	public void RegisterFrame(ContentFrame frame) {

@@ -29,6 +29,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import data.DataContainer;
+import data.Feat;
 import data.Monster;
 import data.Rule;
 import data.Spell;
@@ -250,6 +251,43 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
 			});
 			btnFlow.add(removeRule);
 			mainPane.setSelectedComponent(rPane);
+		}
+	}
+	
+	public void AddTab(Feat f) {
+		if(!hasTab(f.name)) {
+			JPanel fPane = new JPanel();
+			fPane.setLayout(new BorderLayout());
+			mainPane.addTab(f.name, fPane);
+			tabsUI.setTabColor(mainPane.indexOfTab(f.name), Color.YELLOW);
+
+			JTextField fTitle = new JTextField(f.name);
+			fTitle.setEditable(false);
+			fTitle.setFocusable(false);
+			fTitle.setHorizontalAlignment(JTextField.CENTER);
+			StyleContainer.SetFontHeader(fTitle);
+			fPane.add(fTitle, BorderLayout.NORTH);
+
+			HoverTextPane fDesc = new HoverTextPane(data, gd, gd.getDesktop());
+			fDesc.setDocument(data.getFeats().get(f.name).desc);
+			JScrollPane fScroll = new JScrollPane(fDesc);
+			fScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			fPane.add(fScroll, BorderLayout.CENTER);
+
+			JPanel btnFlow = new JPanel();
+			btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			fPane.add(btnFlow, BorderLayout.SOUTH);
+
+			JButton removeFeat = new JButton("Remove " + f.name);
+			StyleContainer.SetFontBtn(removeFeat);
+			removeFeat.addActionListener(e -> {
+				int index = mainPane.indexOfComponent(fPane);
+				if (index != -1) {
+					mainPane.removeTabAt(index);
+				}
+			});
+			btnFlow.add(removeFeat);
+			mainPane.setSelectedComponent(fPane);
 		}
 	}
 

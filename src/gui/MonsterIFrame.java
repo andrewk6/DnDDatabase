@@ -304,7 +304,7 @@ public class MonsterIFrame extends JInternalFrame implements ContentTab, DataCha
 			btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			monstDisp.add(btnFlow, BorderLayout.SOUTH);
 			
-			JButton removeMonst = new JButton("Remove Monster");
+			JButton removeMonst = new JButton("Remove " + key);
 			StyleContainer.SetFontBtn(removeMonst);
 			removeMonst.addActionListener(e ->{
 				int index = mPane.indexOfComponent(monstDisp);
