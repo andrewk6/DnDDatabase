@@ -166,7 +166,7 @@ public class RuleIFrame extends JInternalFrame implements ContentTab, DataChange
 		
 		HoverTextPane ruleDesc = new HoverTextPane(data, gd, dPane);
 		ruleDesc.setDocument(data.getRules().get(key).ruleDoc);
-		ruleDesc.SetRuleTabbedPane(this);
+//		ruleDesc.SetRuleTabbedPane(this);
 		JScrollPane rScroll = new JScrollPane(ruleDesc);
 		rScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		rPane.add(rScroll, BorderLayout.CENTER);

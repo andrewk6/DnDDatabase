@@ -143,7 +143,7 @@ public class MonsterDispPane extends JTabbedPane {
 	private void SetHoverIFrames(Container cont) {
 		for(Component c : cont.getComponents()) {
 			if(c instanceof HoverTextPane) {
-				((HoverTextPane)c).SetMonsterTabbedPane(monstFrm);
+//				((HoverTextPane)c).SetMonsterTabbedPane(monstFrm);
 			}else if(c instanceof Container)
 				SetHoverIFrames((Container)c);
 		}

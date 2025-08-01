@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -24,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -32,27 +34,28 @@ import javax.swing.event.InternalFrameListener;
 
 import data.DataChangeListener;
 import data.DataContainer;
-import gui.gui_helpers.CompFactory;
+import data.Feat;
+import data.Feat.FeatType;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
-public class SpellIFrame extends JInternalFrame implements ContentTab, DataChangeListener{
+public class FeatIFrame extends JInternalFrame implements ContentTab, DataChangeListener{
 	private GuiDirector gd;
 	private DataContainer data;
-	private JDesktopPane dPane;
 	private HoverTextPane hPane;
-	private JTextField spellTitle;
-	private JPanel spellGridPane, cardPane;
-	private JTextField spellFilter;
+	private JTextField featTitle;
+	private JPanel featGridPane, cardPane;
 	
-	private JTabbedPane spellTab;
+	private JTextField featFilter;
+	private JComboBox<String> featTypeFilt;
+	
+	private JTabbedPane featTab;
 
-	public SpellIFrame(DataContainer data, GuiDirector guiD, JDesktopPane dPane) {
+	public FeatIFrame(DataContainer data, GuiDirector guiD) {
 		this.data = data;
-		this.dPane = dPane;
 		gd = guiD;
 
 		data.registerListener(this);
@@ -67,20 +70,20 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 			public void internalFrameIconified(InternalFrameEvent e) {}
 			
 			public void internalFrameDeiconified(InternalFrameEvent e) {
-				gd.NotifyFocus(SpellIFrame.this);
+				gd.NotifyFocus(FeatIFrame.this);
 			}
 			
 			public void internalFrameDeactivated(InternalFrameEvent e) {}
 			
 			public void internalFrameClosing(InternalFrameEvent e) {
-				gd.DeRegister(SpellIFrame.this);
+				gd.DeRegister(FeatIFrame.this);
 				setVisible(false);
 			}
 			
 			public void internalFrameClosed(InternalFrameEvent e) {}
 			
 			public void internalFrameActivated(InternalFrameEvent e) {
-				gd.NotifyFocus(SpellIFrame.this);
+				gd.NotifyFocus(FeatIFrame.this);
 			}
 		});
 //		setVisible(true);
@@ -92,45 +95,61 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 	private void BuildFrame() {
 		getContentPane().setLayout(new BorderLayout());
 		setSize(800, 800);
-		setTitle("Spell Database");
+		setTitle("Feat Database");
 		setIconifiable(true);
 		setClosable(true);
 		setMaximizable(true);
 		setResizable(true);
 //		setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
 		
-		try {
-			
-			BufferedImage iconImage = ImageIO.read(
-				    getClass().getResource("/"+ StyleContainer.SPELL_ICON_FILE));
-			setDesktopIcon(new CustomDesktopIcon(this, iconImage));
-			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.SPELL_ICON_FILE));
-			this.setFrameIcon(icon);
-		} catch (IOException e) {
-			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.SPELL_ICON_FILE));
-			this.setFrameIcon(icon);
-		}
+		//TODO: Add in an icon for the feat frames
+//		try {
+//			
+//			BufferedImage iconImage = ImageIO.read(
+//				    getClass().getResource("/"+ StyleContainer.SPELL_ICON_FILE));
+//			setDesktopIcon(new CustomDesktopIcon(this, iconImage));
+//			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.SPELL_ICON_FILE));
+//			this.setFrameIcon(icon);
+//		} catch (IOException e) {
+//			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.SPELL_ICON_FILE));
+//			this.setFrameIcon(icon);
+//		}
 	}
 	
 	public void BuildSidePane(Container cPane){
 		JPanel sPane = new JPanel();
 		sPane.setLayout(new BorderLayout());
 		
-		spellFilter = new JTextField();
-		spellFilter.setToolTipText("Enter a spell filter");
-		spellFilter.getDocument().addDocumentListener(new DocumentListener() {
+		JTabbedPane filterTab = new JTabbedPane();
+		sPane.add(filterTab, BorderLayout.NORTH);
+		
+		featFilter = new JTextField();
+		featFilter.setToolTipText("Enter a feat filter");
+		featFilter.getDocument().addDocumentListener(new DocumentListener() {
 			public void removeUpdate(DocumentEvent e) {FillSidePane();};
 			public void insertUpdate(DocumentEvent e) {FillSidePane();}
 			public void changedUpdate(DocumentEvent e) {FillSidePane();}
 		});
-		StyleContainer.SetFontHeader(spellFilter);
-		sPane.add(spellFilter, BorderLayout.NORTH);
+		StyleContainer.SetFontHeader(featFilter);
+		filterTab.addTab("Name", featFilter);
 		
-		spellGridPane = new JPanel();
-		spellGridPane.setLayout(new GridLayout(0,1));
+		ArrayList<String> vals = new ArrayList<String>();
+		vals.add("All");
+		for(FeatType f : FeatType.values())
+			vals.add(f.name());
+		
+		featTypeFilt = new JComboBox<String>(new Vector<String>(vals));
+		featTypeFilt.addActionListener(_->{
+			FillSidePane();
+		});
+		featTypeFilt.setFont(StyleContainer.FNT_BODY_PLAIN);
+		filterTab.addTab("Type", featTypeFilt);
+		
+		featGridPane = new JPanel();
+		featGridPane.setLayout(new GridLayout(0,1));
 		FillSidePane();
 		
-		JScrollPane spellGridScroll = new JScrollPane(spellGridPane);
+		JScrollPane spellGridScroll = new JScrollPane(featGridPane);
 		spellGridScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		spellGridScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		
@@ -140,10 +159,20 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 	
 	public void FillSidePane() {
 		SwingUtilities.invokeLater(()->{
-			spellGridPane.removeAll();
-			List<String> keys = data.getSpellKeysSorted();
+			featGridPane.removeAll();
+			List<String> keys = new ArrayList<String>(data.getFeatKeysSorted());
+			ArrayList<String> filter = new ArrayList<String>();
+			if(!featTypeFilt.getSelectedItem().equals("All")) {
+				for(String k : keys) {
+					Feat f = data.getFeats().get(k);
+					if(f.type != FeatType.valueOf((String) featTypeFilt.getSelectedItem()))
+						filter.add(k);
+				}
+				keys.removeAll(filter);
+			}
 			for(String s : keys) {
-				if(s.toLowerCase().startsWith(spellFilter.getText().toLowerCase()) || spellFilter.getText().length() == 0) {
+				if((s.toLowerCase().contains(featFilter.getText().toLowerCase())) 
+						|| featFilter.getText().length() == 0) {
 					JTextField sField = new JTextField(s);
 					StyleContainer.SetFontHeader(sField);
 					sField.setEditable(false);
@@ -154,9 +183,9 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 //							spellTitle.setText(s);
 //							hPane.setDocument(data.getSpells().get(s).spellDoc);
 							if(gd.getComboFrame() != null) {
-								gd.getComboFrame().AddTab(data.getSpells().get(s));
+								gd.getComboFrame().AddTab(data.getFeats().get(s));
 							}else {
-								AddSpellTab(s);
+								AddFeatTab(s);
 							}
 						}
 						public void mousePressed(MouseEvent e) {}
@@ -165,57 +194,58 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 						public void mouseExited(MouseEvent e) {}
 						
 					});
-					spellGridPane.add(sField);
+					featGridPane.add(sField);
 				}
 			}
-			spellGridPane.revalidate();
-			spellGridPane.repaint();
+			featGridPane.revalidate();
+			featGridPane.repaint();
 		});
 	}
 	
 	public void CheckTabs() {
-		if(spellTab.getTabCount() == 1) {
+		if(featTab.getTabCount() == 1) {
 			CardLayout cl = (CardLayout) cardPane.getLayout();
-			cl.show(cardPane, "spelltabs");
-		}else if(spellTab.getTabCount() <= 0) {
+			cl.show(cardPane, "feattabs");
+		}else if(featTab.getTabCount() <= 0) {
 			CardLayout cl = (CardLayout) cardPane.getLayout();
 			cl.show(cardPane, "noload");
 		}
 	}
 	
-	public void AddSpellTab(String key) {
-		JPanel sPane = new JPanel();
-		sPane.setLayout(new BorderLayout());
-		spellTab.addTab(key, sPane);
+	public void AddFeatTab(String key) {
+		JPanel fPane = new JPanel();
+		fPane.setLayout(new BorderLayout());
+		featTab.addTab(key, fPane);
 		
-		JTextField spellTitle = new JTextField(key);
-		spellTitle.setEditable(false);
-		spellTitle.setFocusable(false);
-		spellTitle.setHorizontalAlignment(JTextField.CENTER);
-		StyleContainer.SetFontHeader(spellTitle);
-		sPane.add(spellTitle, BorderLayout.NORTH);
+		JTextField featTitle = new JTextField(key);
+		featTitle.setEditable(false);
+		featTitle.setFocusable(false);
+		featTitle.setHorizontalAlignment(JTextField.CENTER);
+		StyleContainer.SetFontHeader(featTitle);
+		fPane.add(featTitle, BorderLayout.NORTH);
 		
-		HoverTextPane spellDesc = new HoverTextPane(data, gd, dPane);
-//		spellDesc.SetSpellTabbedPane(this);
-		spellDesc.setDocument(data.getSpells().get(key).spellDoc);
-		JScrollPane spellScroll = new JScrollPane(spellDesc);
-		spellScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		sPane.add(spellScroll, BorderLayout.CENTER);
+		HoverTextPane featDesc = new HoverTextPane(data, gd, gd.getDesktop());
+		featDesc.setDocument(data.getFeats().get(key).desc);
+		JScrollPane featScroll = new JScrollPane(featDesc);
+		featScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		fPane.add(featScroll, BorderLayout.CENTER);
 		
 		JPanel btnFlow = new JPanel();
 		btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		sPane.add(btnFlow, BorderLayout.SOUTH);
+		fPane.add(btnFlow, BorderLayout.SOUTH);
 		
-		JButton removeBtn = CompFactory.createNewButton("Remove " + key, _->{
-			int index = spellTab.indexOfComponent(sPane);
+		JButton removeBtn = new JButton("Remove " + key);
+		removeBtn.addActionListener(e ->{
+			int index = featTab.indexOfComponent(fPane);
 		    if (index != -1) {
-		    	spellTab.removeTabAt(index);
+		    	featTab.removeTabAt(index);
 		    }
 			CheckTabs();
 		});
+		StyleContainer.SetFontBtn(removeBtn);
 		btnFlow.add(removeBtn);
 		CheckTabs();
-		spellTab.setSelectedComponent(sPane);
+		featTab.setSelectedComponent(fPane);
 	}
 	
 	private void BuildContent(Container cPane) {
@@ -223,19 +253,19 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 		cardPane.setLayout(new CardLayout());
 		cPane.add(cardPane, BorderLayout.CENTER);
 		
-		JLabel noLoad = new JLabel("No Spells Selected");
+		JLabel noLoad = new JLabel("No Feats Selected");
 		StyleContainer.SetFontHeader(noLoad);
 		cardPane.add(noLoad, "noload");
 		
-		spellTab = new JTabbedPane();
-		cardPane.add(spellTab, "spelltabs");
+		featTab = new JTabbedPane();
+		cardPane.add(featTab, "feattabs");
 		
 		CardLayout cl = (CardLayout) cardPane.getLayout();
 		cl.show(cardPane, "noload");
 	}
 	
 	public JTabbedPane GetTabs() {
-		return spellTab;
+		return featTab;
 	}
 
 	@Override

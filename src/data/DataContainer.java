@@ -345,7 +345,6 @@ public class DataContainer {
 		
 		if (featFile.exists()) {
 			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(featFile))) {
-				System.out.println("Loading Feats:");
 				while (true) {
 					try {
 						Feat f = (Feat) ois.readObject();

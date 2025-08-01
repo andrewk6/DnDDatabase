@@ -46,6 +46,7 @@ public class QuickInsertBuilder extends JFrame
 	
 	public static void main(String[]args) {
 		DataContainer d = new DataContainer();
+		d.init();
 		SwingUtilities.invokeLater(()->{
 			QuickInsertBuilder insertBuild = new QuickInsertBuilder(d);
 			insertBuild.setVisible(true);

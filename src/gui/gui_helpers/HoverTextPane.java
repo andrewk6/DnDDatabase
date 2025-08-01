@@ -85,15 +85,15 @@ public class HoverTextPane extends JTextPane {
         popupScroll.addMouseWheelListener(MouseEvent::consume);
     }
     
-    public void SetMonsterTabbedPane(MonsterIFrame mPane) {
-    	monstTabs = mPane;
-    }
-    public void SetSpellTabbedPane(SpellIFrame mPane) {
-    	spellTabs = mPane;
-    }
-    public void SetRuleTabbedPane(RuleIFrame mPane) {
-    	ruleTabs = mPane;
-    }
+//    public void SetMonsterTabbedPane(MonsterIFrame mPane) {
+//    	monstTabs = mPane;
+//    }
+//    public void SetSpellTabbedPane(SpellIFrame mPane) {
+//    	spellTabs = mPane;
+//    }
+//    public void SetRuleTabbedPane(RuleIFrame mPane) {
+//    	ruleTabs = mPane;
+//    }
     
     public boolean getScrollableTracksViewportWidth() {
 		return true;

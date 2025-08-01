@@ -34,6 +34,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import data.DataContainer;
 import data.campaign.Campaign;
+import gui.builder_internals.FeatBuilderIFrame;
 import gui.builder_internals.ItemBuilderIFrame;
 import gui.builder_internals.MonsterBuilderIFrame;
 import gui.builder_internals.QuickInsertBuilderIFrame;
@@ -63,6 +64,7 @@ public class DnD_Database_Tool extends JFrame {
 	private SpellIFrame sFrame;
 	private MonsterIFrame mFrame;
 	private ItemIFrame iFrame;
+	private FeatIFrame fFrame;
 	
 	//Campaign Label
 	private JLabel camp;
@@ -77,7 +79,7 @@ public class DnD_Database_Tool extends JFrame {
 	MonsterBuilderIFrame mBuildFrame;
 	QuickInsertBuilderIFrame qBuildFrame;
 	ItemBuilderIFrame iBuildFrame;
-	
+	FeatBuilderIFrame fBuildFrame;
 
 	private final List<LoadListener> loadListeners = new ArrayList<LoadListener>();
 
@@ -149,6 +151,10 @@ public class DnD_Database_Tool extends JFrame {
 		dPane.add(iFrame);
 		iFrame.setVisible(false);
 		
+		fFrame = new FeatIFrame(data, gd);
+		dPane.add(fFrame);
+		fFrame.setVisible(false);
+		
 		rBuildFrame = new RuleBuilderIFrame(data);
 		dPane.add(rBuildFrame);
 		rBuildFrame.setVisible(false);
@@ -173,6 +179,10 @@ public class DnD_Database_Tool extends JFrame {
 		dPane.add(dBuildFrame);
 		dBuildFrame.setVisible(false);
 		
+		fBuildFrame = new FeatBuilderIFrame(data, gd);
+		dPane.add(fBuildFrame);
+		fBuildFrame.setVisible(false);
+		
 		dViewFrame = new DungeonIViewer(data, gd);
 		dPane.add(dViewFrame);
 		dViewFrame.setVisible(false);
@@ -194,6 +204,7 @@ public class DnD_Database_Tool extends JFrame {
 		dataMenu.add(CompFactory.createNewJMenuItem("Spells", sFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Monsters", mFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Items", iFrame));
+		dataMenu.add(CompFactory.createNewJMenuItem("Feats", fFrame));
 		
 		/*
 		 * TOOLS MENU
@@ -278,6 +289,7 @@ public class DnD_Database_Tool extends JFrame {
 		buildMenu.add(CompFactory.createNewJMenuItem("Monster Builder", mBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Quick Insert Builder", qBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Item Buider", iBuildFrame));
+		buildMenu.add(CompFactory.createNewJMenuItem("Feat Builder", fBuildFrame));
 		
 		/*
 		 * LOADED CAMPAIGN

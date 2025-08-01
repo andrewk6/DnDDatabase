@@ -1,6 +1,7 @@
 package gui.initative;
 
 import data.DataContainer;
+import data.Feat;
 import data.Monster;
 import data.Rule;
 import data.Spell;
@@ -600,6 +601,45 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 			tabs.setSelectedComponent(sPane);
 		}
     }
+    
+    @Override
+	public void AddTab(Feat f) {
+		if(!hasTab(f.name)) {
+			JPanel fPane = new JPanel();
+			fPane.setLayout(new BorderLayout());
+			tabs.addTab(f.name, fPane);
+			tabsUI.setTabColor(tabs.indexOfTab(f.name), Color.YELLOW);
+
+			JTextField fTitle = new JTextField(f.name);
+			fTitle.setEditable(false);
+			fTitle.setFocusable(false);
+			fTitle.setHorizontalAlignment(JTextField.CENTER);
+			StyleContainer.SetFontHeader(fTitle);
+			fPane.add(fTitle, BorderLayout.NORTH);
+
+			HoverTextPane fDesc = new HoverTextPane(data, gd, gd.getDesktop());
+			fDesc.setDocument(data.getFeats().get(f.name).desc);
+			JScrollPane fScroll = new JScrollPane(fDesc);
+			fScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			fPane.add(fScroll, BorderLayout.CENTER);
+
+			JPanel btnFlow = new JPanel();
+			btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			fPane.add(btnFlow, BorderLayout.SOUTH);
+
+			JButton removeFeat = new JButton("Remove " + f.name);
+			StyleContainer.SetFontBtn(removeFeat);
+			removeFeat.addActionListener(e -> {
+				int index = tabs.indexOfComponent(fPane);
+				if (index != -1) {
+					tabs.removeTabAt(index);
+				}
+			});
+			btnFlow.add(removeFeat);
+			tabs.setSelectedComponent(fPane);
+		}
+	}
+    
     public void AddTab(Rule r) {
     	if(!hasTab(r.name)) {
 			JPanel rPane = new JPanel();
