@@ -10,6 +10,7 @@ import data.DataContainer;
 import gui.DnD_Database_Tool;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.LoadFrame;
+import utils.ErrorLogger;
 
 public class Runner
 {
@@ -35,6 +36,7 @@ public class Runner
 					frame.init();
 					frame.setVisible(true);
 				} catch (Exception e) {
+					ErrorLogger.log(e);
 					e.printStackTrace();
 				}
 			}

@@ -43,6 +43,7 @@ import gui.gui_helpers.structures.AllTab;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 
 public class DungeonIViewer extends JInternalFrame implements AllTab
 {
@@ -113,8 +114,10 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
 					LoadDungeon(d);
 					ois.close();
 				} catch (IOException e1) {
+					ErrorLogger.log(e1);
 					e1.printStackTrace();
 				} catch (ClassNotFoundException e) {
+					ErrorLogger.log(e);
 					e.printStackTrace();
 				}
 			}

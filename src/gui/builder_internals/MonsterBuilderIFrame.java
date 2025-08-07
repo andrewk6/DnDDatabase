@@ -67,6 +67,7 @@ import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 
 public class MonsterBuilderIFrame extends JInternalFrame {
 	private DataContainer data;
@@ -178,13 +179,14 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 		
 		JButton addMonsterRetain = new JButton("Add: Retain");
 		StyleContainer.SetFontBtn(addMonsterRetain);
-		addMonsterRetain.addActionListener(e -> {
+		addMonsterRetain.addActionListener(_ -> {
 			if(AddMonster()) {
 				System.out.println("Adding Monster");
 				BuildMonstListPane();
 				try {
 					ResetEditors();
 				} catch (BadLocationException e1) {
+					ErrorLogger.log(e1);
 					e1.printStackTrace();
 				}
 			}
@@ -434,7 +436,7 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 		JButton addSkills = new JButton("Add Skills");
 		StyleContainer.SetFontBtn(addSkills);
 		addSkills.setFocusable(false);
-		addSkills.addActionListener(e -> {
+		addSkills.addActionListener(_ -> {
 			SwingUtilities.invokeLater(() -> {
 				SkillsSelectFrame skillFrame = new SkillsSelectFrame(skills);
 
@@ -443,6 +445,7 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e1) {
+							ErrorLogger.log(e1);
 							e1.printStackTrace();
 						}
 					}
@@ -948,6 +951,7 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 			monstMap.put(m.name, m);
 			return true;
 		} catch (NumberFormatException e) {
+			ErrorLogger.log(e);
 			int opt = JOptionPane.showOptionDialog(this, "Empty fields found how to procedd", "Empty Fields Warning",
 					JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, 
 					new String[] {"Set all to 0", "Return to Edit"}, 1);
@@ -979,6 +983,7 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 			System.out.println("Return false in NumberFornate");
 			return false;
 		} catch (Exception e2) {
+			ErrorLogger.log(e2);
 			System.out.println("Still editing, return false");
 			return false;
 		}

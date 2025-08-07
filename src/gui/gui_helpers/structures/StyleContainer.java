@@ -22,6 +22,7 @@ import javax.swing.text.JTextComponent;
 
 import data.DataContainer;
 import gui.gui_helpers.CustomDesktopIcon;
+import utils.ErrorLogger;
 
 public class StyleContainer {
 	public final static Font BTN_FONT_MAIN = new Font("Monospaced", Font.BOLD, 24);
@@ -50,8 +51,19 @@ public class StyleContainer {
 			UIManager.put("ComboBox.disabledForeground", UIManager.getColor("ComboBox.foreground"));
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e) {
+			ErrorLogger.log(e);
 			e.printStackTrace();
 		}
+	}
+	
+	
+	public static void ConfigIFrame(JInternalFrame iFrame, String title) {
+		iFrame.setSize(800, 800);
+		iFrame.setTitle(title);
+		iFrame.setIconifiable(true);
+		iFrame.setClosable(true);
+		iFrame.setMaximizable(true);
+		iFrame.setResizable(true);
 	}
 	
 	public static void SetIcon(JInternalFrame iFrame, String file) {
@@ -62,6 +74,7 @@ public class StyleContainer {
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(file));
 			iFrame.setFrameIcon(icon);
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(file));
 			iFrame.setFrameIcon(icon);
 			System.out.println("IO Exception");

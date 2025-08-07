@@ -15,6 +15,7 @@ import gui.gui_helpers.structures.AllTab;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -104,6 +105,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.INIT_ICON_FILE));
 			this.setFrameIcon(icon);
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.INIT_ICON_FILE));
 			this.setFrameIcon(icon);
 		}
@@ -249,6 +251,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
                 int init = Integer.parseInt(initField.getText().trim());
                 addInitiativeEntry(new InitiativeEntry(PLAYER_ID, name, init, null));
             } catch (NumberFormatException ignored) {
+            	ErrorLogger.log(ignored);
                 JOptionPane.showMessageDialog(this, "Invalid initiative value.");
             }
         }
@@ -288,6 +291,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
                         int init = Integer.parseInt(value);
                         addInitiativeEntry(new InitiativeEntry(PLAYER_ID, name, init, null));
                     } catch (NumberFormatException ex) {
+                    	ErrorLogger.log(ex);
                         JOptionPane.showMessageDialog(this, "Invalid initiative for " + name + ": " + value);
                     }
                 }
@@ -348,6 +352,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
                 UUID id = UUID.randomUUID();
                 addInitiativeEntry(new InitiativeEntry(id, m.name, roll, m));
             } catch (NumberFormatException ignored) {
+            	ErrorLogger.log(ignored);
                 JOptionPane.showMessageDialog(this, "Invalid bonus.");
             }
         }
@@ -506,6 +511,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
                 out.writeObject(saved);
                 out.writeInt(currentIndex);
             } catch (IOException ex) {
+            	ErrorLogger.log(ex);
                 JOptionPane.showMessageDialog(this, "Failed to save: " + ex.getMessage());
             }
         }
@@ -528,6 +534,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
                 updateInitiativeList();
                 advanceTurn(); // Load active turn
             } catch (IOException | ClassNotFoundException ex) {
+            	ErrorLogger.log(ex);
                 JOptionPane.showMessageDialog(this, "Failed to load: " + ex.getMessage());
             }
         }

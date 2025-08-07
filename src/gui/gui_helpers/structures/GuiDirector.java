@@ -36,6 +36,7 @@ import gui.dungeon.DungeonIBuilder;
 import gui.dungeon.DungeonIViewer;
 import gui.gui_helpers.PlayerNameTargets;
 import gui.initative.InitiativeIFrame;
+import utils.ErrorLogger;
 
 public class GuiDirector
 {
@@ -162,6 +163,7 @@ public class GuiDirector
 				try {
 					rFrame.setIcon(false);
 				} catch (PropertyVetoException e) {
+					ErrorLogger.log(e);
 					e.printStackTrace();
 				}
 			rFrame.toFront();
@@ -178,6 +180,7 @@ public class GuiDirector
 				try {
 					sFrame.setIcon(false);
 				} catch (PropertyVetoException e) {
+					ErrorLogger.log(e);
 					e.printStackTrace();
 				}
 			sFrame.toFront();
@@ -194,6 +197,7 @@ public class GuiDirector
 				try {
 					mFrame.setIcon(false);
 				} catch (PropertyVetoException e) {
+					ErrorLogger.log(e);
 					e.printStackTrace();
 				}
 			mFrame.toFront();
@@ -220,6 +224,7 @@ public class GuiDirector
 				try {
 					pFrame.setIcon(false);
 				} catch (PropertyVetoException e) {
+					ErrorLogger.log(e);
 					e.printStackTrace();
 				}
 			pFrame.toFront();
@@ -236,6 +241,7 @@ public class GuiDirector
 				try {
 					iFrame.setIcon(false);
 				} catch (PropertyVetoException e) {
+					ErrorLogger.log(e);
 					e.printStackTrace();
 				}
 			iFrame.toFront();
@@ -252,6 +258,7 @@ public class GuiDirector
 				try {
 					frame.setIcon(false);
 				} catch (PropertyVetoException e) {
+					ErrorLogger.log(e);
 					e.printStackTrace();
 				}
 			frame.toFront();

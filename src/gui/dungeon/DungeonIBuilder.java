@@ -7,6 +7,7 @@ import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 
 import javax.print.attribute.standard.JobKOctetsProcessed;
 import javax.swing.*;
@@ -129,6 +130,7 @@ public class DungeonIBuilder extends JInternalFrame {
 					oos.flush();
 					oos.close();
 				} catch (IOException e1) {
+					ErrorLogger.log(e1);
 					e1.printStackTrace();
 				}
 			}
@@ -149,8 +151,10 @@ public class DungeonIBuilder extends JInternalFrame {
 					loadDungeon(d);
 					ois.close();
 				} catch (IOException e1) {
+					ErrorLogger.log(e1);
 					e1.printStackTrace();
 				} catch (ClassNotFoundException e) {
+					ErrorLogger.log(e);
 					e.printStackTrace();
 				}
 			}
