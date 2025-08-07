@@ -42,6 +42,7 @@ import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 
 public class MonsterIFrame extends JInternalFrame implements ContentTab, DataChangeListener{
 	private DataContainer data;
@@ -111,6 +112,7 @@ public class MonsterIFrame extends JInternalFrame implements ContentTab, DataCha
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.MONSTER_ICON_FILE));
 			this.setFrameIcon(icon);
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.MONSTER_ICON_FILE));
 			this.setFrameIcon(icon);
 		}

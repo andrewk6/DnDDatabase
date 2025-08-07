@@ -24,6 +24,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,6 +37,8 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
+
+import utils.ErrorLogger;
 
 import data.campaign.Campaign;
 import data.campaign.Player;
@@ -130,12 +135,31 @@ public class DataContainer {
 	}
 	
 	public void init() {
-		ImportRuleMap();
-		ImportSpellMap();
-		ImportMonsters();
-		ImportInsertHelpers();
-		ImportItems();
-		ImportFeats();
+		
+		 // Or however many cores/files you're importing
+        List<Callable<Boolean>> tasks = new ArrayList<>();
+        tasks.add(this::ImportRuleMap);
+        tasks.add(this::ImportSpellMap);
+        tasks.add(this::ImportMonsters);
+        tasks.add(this::ImportInsertHelpers);
+        tasks.add(this::ImportItems);
+        tasks.add(this::ImportFeats);
+        
+        ExecutorService executor = Executors.newFixedThreadPool(tasks.size());
+        try {
+			executor.invokeAll(tasks);
+		} catch (InterruptedException e) {
+			ErrorLogger.log(e);
+			e.printStackTrace();
+		}
+        executor.shutdown();
+//        
+//		ImportRuleMap();
+//		ImportSpellMap();
+//		ImportMonsters();
+//		ImportInsertHelpers();
+//		ImportItems();
+//		ImportFeats();
 		
 		SortKeys();
 		LoadConfig();
@@ -170,7 +194,8 @@ public class DataContainer {
 	            } catch (InterruptedException e) {
 	                // Thread interrupted: check if should stop
 	                if (!isRunning) break;
-	            } catch (Exception e) {
+				} catch (Exception e) {
+	            	ErrorLogger.log(e);
 	                e.printStackTrace();
 	            }
 	        }
@@ -201,6 +226,7 @@ public class DataContainer {
 				}
 				return true;
 			} catch (IOException | ClassNotFoundException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 				return false;
 			}
@@ -211,6 +237,7 @@ public class DataContainer {
 				insertKeysSorted = new ArrayList<String>();
 				return true;
 			} catch (IOException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 			}
 		}
@@ -246,6 +273,7 @@ public class DataContainer {
 					}
 				}
 			} catch (IOException | ClassNotFoundException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 				return false;
 			}
@@ -282,6 +310,7 @@ public class DataContainer {
 					}
 				}
 			} catch (IOException | ClassNotFoundException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 				return false;
 			}
@@ -320,6 +349,7 @@ public class DataContainer {
 					}
 				}
 			} catch (IOException | ClassNotFoundException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 				return false;
 			}
@@ -348,7 +378,6 @@ public class DataContainer {
 				while (true) {
 					try {
 						Feat f = (Feat) ois.readObject();
-						System.out.println(f.name);
 						featMap.put(f.name, f);
 						featKeysSorted.add(f.name);
 					} catch (EOFException eof) {
@@ -357,6 +386,7 @@ public class DataContainer {
 					}
 				}
 			} catch (IOException | ClassNotFoundException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 				return false;
 			}
@@ -403,6 +433,7 @@ public class DataContainer {
 					}
 				}
 			} catch (IOException | ClassNotFoundException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 				return false;
 			}
@@ -557,6 +588,7 @@ public class DataContainer {
 			try {
 				inFile.createNewFile();
 			} catch (IOException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 			}
 		}
@@ -568,6 +600,7 @@ public class DataContainer {
 			oos.close();
 			return true;
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			e.printStackTrace();
 			return false;
 		}
@@ -579,6 +612,7 @@ public class DataContainer {
 	        try {
 	            saveFile.createNewFile();
 	        } catch (IOException e) {
+	        	ErrorLogger.log(e);
 	            System.err.println("Failed to create file: " + e.getMessage());
 	            return false;
 	        }
@@ -589,6 +623,7 @@ public class DataContainer {
 	    try {
 	        originalContents = Files.readAllBytes(saveFile.toPath());
 	    } catch (IOException e) {
+	    	ErrorLogger.log(e);
 	        System.err.println("Failed to read original file: " + e.getMessage());
 	        return false;
 	    }
@@ -599,6 +634,7 @@ public class DataContainer {
 	            try {
 	                oos.writeObject(entry.getValue());
 	            } catch (IOException ex) {
+	            	ErrorLogger.log(ex);
 	                System.err.println("Failed to serialize rule: " + entry.getKey() + " - removing it.");
 	                it.remove(); // remove faulty rule
 	            }
@@ -606,11 +642,13 @@ public class DataContainer {
 	        oos.flush();
 	        return true;
 	    } catch (IOException e) {
+	    	ErrorLogger.log(e);
 	        System.err.println("Serialization failed: " + e.getMessage());
 	        try {
 	            Files.write(saveFile.toPath(), originalContents); // restore
 	            System.out.println("Original file restored.");
 	        } catch (IOException ex) {
+	        	ErrorLogger.log(ex);
 	            System.err.println("Failed to restore original file: " + ex.getMessage());
 	        }
 	        return false;
@@ -623,6 +661,7 @@ public class DataContainer {
 			try {
 				spellFile.createNewFile();
 			} catch (IOException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 			}
 		}
@@ -636,6 +675,7 @@ public class DataContainer {
 			oos.close();
 			return true;
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			e.printStackTrace();
 			return false;
 		}
@@ -647,6 +687,7 @@ public class DataContainer {
 			try {
 				monstFile.createNewFile();
 			} catch (IOException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 			}
 		}
@@ -660,6 +701,7 @@ public class DataContainer {
 			oos.close();
 			return true;
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			e.printStackTrace();
 			return false;
 		}
@@ -671,6 +713,7 @@ public class DataContainer {
 			try {
 				featFile.createNewFile();
 			} catch (IOException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 			}
 		}
@@ -684,6 +727,7 @@ public class DataContainer {
 			oos.close();
 			return true;
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			e.printStackTrace();
 			return false;
 		}
@@ -695,6 +739,7 @@ public class DataContainer {
 			try {
 				itemFile.createNewFile();
 			} catch (IOException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 			}
 		}
@@ -708,6 +753,7 @@ public class DataContainer {
 			oos.close();
 			return true;
 		}catch(IOException e) {
+			ErrorLogger.log(e);
 			e.printStackTrace();
 			return false;
 		}
@@ -722,6 +768,7 @@ public class DataContainer {
 	        try {
 	            Thread.sleep(50);
 	        } catch (InterruptedException e) {
+	        	ErrorLogger.log(e);
 	            Thread.currentThread().interrupt();
 	        }
 	    }
@@ -926,6 +973,7 @@ public class DataContainer {
 				try {
 					camp.saveLoc.createNewFile();
 				} catch (IOException e) {
+					ErrorLogger.log(e);
 					e.printStackTrace();
 				}
 			}
@@ -937,6 +985,7 @@ public class DataContainer {
 				oos.close();
 				return true;
 			} catch (IOException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 				return false;
 			}
@@ -957,6 +1006,7 @@ public class DataContainer {
 				
 				return true;
 			} catch (IOException | ClassNotFoundException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 				return false;
 			}
@@ -976,6 +1026,7 @@ public class DataContainer {
 			try {
 				conf.createNewFile();
 			} catch (IOException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 			}
 		
@@ -1003,6 +1054,7 @@ public class DataContainer {
 				oOut.close();
 			}
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			e.printStackTrace();
 		}
 	}
@@ -1030,10 +1082,13 @@ public class DataContainer {
 					recentFiles = new LinkedList<File>();
 				}
 			} catch (FileNotFoundException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 			} catch (IOException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 			}
 		}else {

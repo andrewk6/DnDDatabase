@@ -94,12 +94,7 @@ public class FeatIFrame extends JInternalFrame implements ContentTab, DataChange
 
 	private void BuildFrame() {
 		getContentPane().setLayout(new BorderLayout());
-		setSize(800, 800);
-		setTitle("Feat Database");
-		setIconifiable(true);
-		setClosable(true);
-		setMaximizable(true);
-		setResizable(true);
+		StyleContainer.ConfigIFrame(this, "Feats Database");
 //		setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
 		
 		//TODO: Add in an icon for the feat frames

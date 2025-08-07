@@ -50,6 +50,7 @@ import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.LoadListener;
 import gui.gui_helpers.structures.StyleContainer;
 import gui.initative.InitiativeIFrame;
+import utils.ErrorLogger;
 
 public class DnD_Database_Tool extends JFrame {
 	
@@ -119,6 +120,7 @@ public class DnD_Database_Tool extends JFrame {
 			this.setIconImage(ImageIO.read(this.getClass().
 					getResourceAsStream("/" + StyleContainer.PROGRAM_ICON_FILE)));
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			System.out.println("Failed load icon");
 		}
 		
@@ -479,6 +481,7 @@ public class DnD_Database_Tool extends JFrame {
 				}
 			};
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			dPane = new JDesktopPane();
 		}
 		getContentPane().add(dPane);

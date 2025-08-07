@@ -14,6 +14,7 @@ import javax.swing.text.StyledDocument;
 import data.Monster;
 import data.dungeon.DungeonNote;
 import data.dungeon.EncounterNote;
+import utils.ErrorLogger;
 
 public class Tile implements Serializable{
 	private static final long serialVersionUID = -5384404010802867146L;
@@ -60,6 +61,7 @@ public class Tile implements Serializable{
 			icon = ImageIO.read(this.getClass().getResource(imageFile)).getScaledInstance(32,
 					32, BufferedImage.SCALE_SMOOTH);
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			e.printStackTrace();
 		}
     }

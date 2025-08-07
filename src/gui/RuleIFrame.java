@@ -38,6 +38,7 @@ import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 
 public class RuleIFrame extends JInternalFrame implements ContentTab, DataChangeListener{
 	private DataContainer data;
@@ -85,6 +86,7 @@ public class RuleIFrame extends JInternalFrame implements ContentTab, DataChange
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.RULE_ICON_FILE));
 			this.setFrameIcon(icon);
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.RULE_ICON_FILE));
 			this.setFrameIcon(icon);
 		}		

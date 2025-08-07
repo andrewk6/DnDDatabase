@@ -25,6 +25,7 @@ import javax.swing.event.InternalFrameListener;
 
 import gui.gui_helpers.structures.StyleContainer;
 import utils.DiceCalculator;
+import utils.ErrorLogger;
 import utils.IllegalDiceNotationException;
 
 public class DiceCalcIFrame extends JInternalFrame
@@ -102,8 +103,10 @@ public class DiceCalcIFrame extends JInternalFrame
 			try {
 				ComputeResult();
 			} catch (IllegalDiceNotationException e1) {
+				ErrorLogger.log(e1);
 				JOptionPane.showMessageDialog(this, "Invalid dice notation", "Bad Equation", JOptionPane.ERROR_MESSAGE);
 			} catch (ScriptException e1) {
+				ErrorLogger.log(e1);
 				e1.printStackTrace();
 			}
 		});

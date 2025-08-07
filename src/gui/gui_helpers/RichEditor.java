@@ -13,6 +13,7 @@ import data.items.Gear;
 import data.items.Item;
 import data.items.MagicItem;
 import data.items.Weapon;
+import utils.ErrorLogger;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -144,6 +145,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                     editor.getDocument().insertString(caretPos, data, null);
                     return true;
                 } catch (Exception e) {
+                	ErrorLogger.log(e);
                     e.printStackTrace();
                     return false;
                 }
@@ -265,6 +267,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 					setTextStyle();
 					aForm.dispose();
 				} catch (BadLocationException e) {
+					ErrorLogger.log(e);
 					e.printStackTrace();
 				}
     		}
@@ -278,6 +281,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             field.setAccessible(true);
             return (JTextPane) field.get(this);
         } catch (Exception e) {
+        	ErrorLogger.log(e);
             throw new RuntimeException("Failed to access editorTextPane", e);
         }
     }
@@ -361,6 +365,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 suggestionPopup.setVisible(false);
             }
         } catch (BadLocationException e) {
+        	ErrorLogger.log(e);
             e.printStackTrace();
         }
     }
@@ -432,6 +437,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             
             
         } catch (BadLocationException e) {
+        	ErrorLogger.log(e);
             e.printStackTrace();
         }
     	
@@ -466,6 +472,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             suggestionPopup.show(editor, caretCoords.x, caretCoords.y + 20);
             suggestionList.requestFocusInWindow();
         } catch (BadLocationException e) {
+        	ErrorLogger.log(e);
             e.printStackTrace();
         }
     }
@@ -531,6 +538,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 	}
                 }
             } catch (BadLocationException e) {
+            	ErrorLogger.log(e);
                 e.printStackTrace();
             }
         }else if(ampPosition >= 0 && selected != null)
@@ -545,6 +553,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 				else
 					DocumentHelper.insertWithReplacements(doc, insertMap.get(selected), ampPosition, replacements);
 			} catch (BadLocationException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 			}
         }
@@ -608,6 +617,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 }
             }
         } catch (BadLocationException e) {
+        	ErrorLogger.log(e);
             e.printStackTrace();
         }
     }
@@ -736,12 +746,14 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                             insertRangedAttack(insertPos);
                         }
                     } catch (BadLocationException ex) {
+                    	ErrorLogger.log(ex);
                         ex.printStackTrace();
                     }
                 });
             }
 
         } catch (BadLocationException e) {
+        	ErrorLogger.log(e);
             e.printStackTrace();
         }
     }

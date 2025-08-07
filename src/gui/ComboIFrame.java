@@ -49,6 +49,7 @@ import gui.gui_helpers.structures.AllTab;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 
 public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeListener{
 	private static final long serialVersionUID = 1L;
@@ -132,6 +133,7 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.FULL_ICON_FILE));
 			this.setFrameIcon(icon);
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.FULL_ICON_FILE));
 			this.setFrameIcon(icon);
 		}

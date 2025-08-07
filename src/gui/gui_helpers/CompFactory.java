@@ -19,6 +19,7 @@ import javax.swing.event.InternalFrameListener;
 import data.DataContainer;
 import gui.campaign.PartyIFrame;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 
 public class CompFactory
 {
@@ -83,13 +84,14 @@ public class CompFactory
 	public static JMenuItem createNewJMenuItem(String text, JInternalFrame frm) {
 		JMenuItem out = new JMenuItem(text);
 		StyleContainer.SetFontMain(out);
-		out.addActionListener(e ->{
+		out.addActionListener(_ ->{
 			try {
 				frm.setVisible(true);
 				frm.setIcon(false);   // Restore if minimized/iconified
 				frm.toFront();         // Bring to front visually
 				frm.setSelected(true);
 			} catch (PropertyVetoException e1) {
+				ErrorLogger.log(e1);
 				e1.printStackTrace();
 			} // Make it active/focused
 		});

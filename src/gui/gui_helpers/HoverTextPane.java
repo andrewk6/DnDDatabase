@@ -14,6 +14,7 @@ import gui.SpellIFrame;
 import gui.campaign.PartyIFrame;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 import data.Monster;
 
 import java.awt.*;
@@ -236,6 +237,7 @@ public class HoverTextPane extends JTextPane {
             copy.insertString(0, original.getText(0, original.getLength()),
                     original.getCharacterElement(0).getAttributes());
         } catch (BadLocationException e) {
+        	ErrorLogger.log(e);
             e.printStackTrace();
         }
         return copy;

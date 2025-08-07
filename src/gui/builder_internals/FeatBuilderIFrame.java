@@ -58,6 +58,7 @@ public class FeatBuilderIFrame extends JInternalFrame implements DataChangeListe
 		else
 			featMap = new HashMap<String, Feat>(data.getFeats());
 		this.data.registerListener(this);
+		StyleContainer.ConfigIFrame(this, "Feats Builder");
 		Initialize(this.getContentPane());
 		pack();
 	}

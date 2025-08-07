@@ -38,6 +38,7 @@ import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 
 public class SpellIFrame extends JInternalFrame implements ContentTab, DataChangeListener{
 	private GuiDirector gd;
@@ -107,6 +108,7 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.SPELL_ICON_FILE));
 			this.setFrameIcon(icon);
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.SPELL_ICON_FILE));
 			this.setFrameIcon(icon);
 		}
