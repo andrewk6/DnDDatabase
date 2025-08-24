@@ -1,23 +1,29 @@
 package gui.gui_helpers;
 
+import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyVetoException;
+import java.util.List;
 import java.util.function.Supplier;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JTabbedPane;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
 import data.DataContainer;
 import gui.campaign.PartyIFrame;
+import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.StyleContainer;
 import utils.ErrorLogger;
 
@@ -26,6 +32,14 @@ public class CompFactory
 	public enum ComponentType{
 		HEADER, BODY, BUTTON
 	}
+	
+	private static <T> void setFont(Component c, ComponentType font) {
+		switch(font) {
+		case ComponentType.HEADER: StyleContainer.SetFontHeader(c); break;
+		default: StyleContainer.SetFontMain(c);
+		}
+	}
+	
 	public static JButton createNewButton(String text, ActionListener act) {
 		JButton btn = new JButton(text);
 		StyleContainer.SetFontBtn(btn);
@@ -35,24 +49,14 @@ public class CompFactory
 	}
 	
 	public static JLabel createNewLabel(String text, ComponentType type) {
-		JLabel lbl = new JLabel(text);
-		
-		switch(type) {
-		case ComponentType.HEADER: StyleContainer.SetFontHeader(lbl);
-		default: StyleContainer.SetFontMain(lbl);
-		}
-		
+		JLabel lbl = new JLabel(text);		
+		setFont(lbl, type);		
 		return lbl;
 	}
 	
 	public static InfoLabel createNewInfoLabel(String text, int textLength, ComponentType type) {
 		InfoLabel lbl = new InfoLabel(text, textLength);
-		
-		switch(type) {
-		case ComponentType.HEADER: StyleContainer.SetFontHeader(lbl);
-		default: StyleContainer.SetFontMain(lbl);
-		}
-		
+		setFont(lbl, type);
 		return lbl;
 	}
 	
@@ -155,4 +159,44 @@ public class CompFactory
 		StyleContainer.SetFontMain(cBox);
 		return cBox;
 	}
+	
+	public static ReminderField createReminderField(String tooltip, boolean numbersOnly, ComponentType font) {
+		ReminderField field = new ReminderField(tooltip);
+		if(numbersOnly)
+			field.setNumbersOnly();
+		setFont(field, font);
+		return field;
+	}
+	
+	public static ReminderField createReminderField(String tooltip, ComponentType font) {
+		ReminderField field = new ReminderField(tooltip);
+		setFont(field, font);
+		return field;
+	}
+	
+	public static JTabbedPane createTabbedPane() {
+		JTabbedPane tabs = new JTabbedPane();
+		tabs = new JTabbedPane();
+		ColorTabbedPaneUI tabsUI = new ColorTabbedPaneUI();
+		tabs.setUI(tabsUI);
+		
+		return tabs;
+	}
+	
+	public static <T> JComboBox<T> createCombo(Class<T> type, List<T> items, ComponentType font) {
+	    JComboBox<T> combo = new JComboBox<>(new 
+	    		DefaultComboBoxModel<>(items.toArray((T[]) java.lang.reflect.Array.newInstance(type, 0))));
+	    setFont(combo, font);
+	    return combo;
+	}
+	
+	public static <T extends Enum<T>> JComboBox<T> createEnumCombo(Class<T> enumType, ComponentType font) {
+        if (!enumType.isEnum()) {
+            throw new IllegalArgumentException("Class must be an enum type");
+        }
+
+        JComboBox<T> combo = new JComboBox<>(enumType.getEnumConstants());
+        setFont(combo, font);
+        return combo;
+    }
 }

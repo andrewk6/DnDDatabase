@@ -38,10 +38,11 @@ import gui.gui_helpers.RichEditor;
 
 public class Test extends JFrame {	
 	public static void main(String[] args) throws BadLocationException {
-		DataContainer data = new DataContainer();
-		data.init();
-		System.out.println(data.getSpells().keySet().contains("Test"));
-		data.Exit();
+		printUID("ToolSet.java");
+//		DataContainer data = new DataContainer();
+//		data.init();
+//		System.out.println(data.getSpells().keySet().contains("Test"));
+//		data.Exit();
 	}
 
     private static void printUID(String className) {

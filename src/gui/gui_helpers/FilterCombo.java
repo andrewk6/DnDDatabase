@@ -16,9 +16,14 @@ public class FilterCombo extends JComboBox<String> {
     private boolean isAdjusting = false;
     private int highlightedIndex = -1;
 
-    public FilterCombo(List<String> items) {
+    public FilterCombo(List<String> items, int columns) {
         super(new DefaultComboBoxModel<>());
         setEditable(true);
+        JTextField editorField = (JTextField) getEditor().getEditorComponent();
+        editorField.setColumns(columns);
+        String proto = String.join("", Collections.nCopies(columns, "M")); // ~20 characters wide
+        setPrototypeDisplayValue(proto);
+        
         originalItems.addAll(items);
         reloadModel(originalItems);
         setSelectedItem(null);
@@ -68,15 +73,41 @@ public class FilterCombo extends JComboBox<String> {
         // Filtering on normal key release
         editor.addKeyListener(new KeyAdapter() {
             @Override
+//            public void keyReleased(KeyEvent e) {
+//                if (isNavigationKey(e)) return;
+//                if (isAdjusting) return;
+//
+//                SwingUtilities.invokeLater(() -> {
+//                    String text = editor.getText();
+//                    List<String> filtered = originalItems.stream()
+//                            .filter(item -> item.toLowerCase().contains(text.toLowerCase()))
+//                            .collect(Collectors.toList());
+//
+//                    isAdjusting = true;
+//                    reloadModel(filtered);
+//
+//                    highlightedIndex = -1;
+//                    setPopupVisible(true);
+//                    editor.setText(text);
+//                    editor.setCaretPosition(text.length());
+//                    isAdjusting = false;
+//                });
+//            }
             public void keyReleased(KeyEvent e) {
                 if (isNavigationKey(e)) return;
                 if (isAdjusting) return;
 
                 SwingUtilities.invokeLater(() -> {
                     String text = editor.getText();
-                    List<String> filtered = originalItems.stream()
-                            .filter(item -> item.toLowerCase().contains(text.toLowerCase()))
-                            .collect(Collectors.toList());
+
+                    List<String> filtered;
+                    if (text.isEmpty()) {
+                        filtered = new ArrayList<>(originalItems); // show all
+                    } else {
+                        filtered = originalItems.stream()
+                                .filter(item -> item.toLowerCase().contains(text.toLowerCase()))
+                                .collect(Collectors.toList());
+                    }
 
                     isAdjusting = true;
                     reloadModel(filtered);
@@ -101,6 +132,16 @@ public class FilterCombo extends JComboBox<String> {
         for (String item : items) {
             model.addElement(item);
         }
+    }
+    
+    public void reset() {
+        isAdjusting = true;
+        reloadModel(originalItems);
+        setSelectedItem(null);
+        JTextComponent editor = (JTextComponent) getEditor().getEditorComponent();
+        editor.setText("");
+        highlightedIndex = -1;
+        isAdjusting = false;
     }
 }
 

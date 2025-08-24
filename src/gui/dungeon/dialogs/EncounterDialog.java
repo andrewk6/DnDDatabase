@@ -134,7 +134,7 @@ public class EncounterDialog extends JDialog
         String[] names = data.getMonsterKeysSorted().toArray(new String[0]);
         Map<String, Monster> monsters = data.getMonsters();
 
-        FilterCombo monsterSelector = new FilterCombo(data.getMonsterKeysSorted());
+        FilterCombo monsterSelector = new FilterCombo(data.getMonsterKeysSorted(), 20);
         JTextField overrideBonus = new JTextField(4);
         JLabel initBonusLabel = new JLabel("Init Bonus: +0");
 

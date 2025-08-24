@@ -13,6 +13,11 @@ public class ColorTabbedPaneUI extends BasicTabbedPaneUI {
     public void setTabColor(int index, Color color) {
         tabColors.put(index, color);
     }
+    
+    protected void installDefaults() {
+        super.installDefaults();
+        tabPane.setFont(StyleContainer.FNT_HEADER_BOLD.deriveFont(16f)); // Set tab font here
+    }
 
     @Override
     protected void paintTabBackground(Graphics g, int tabPlacement, int tabIndex,
