@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 
+/*TODO: Fix some dungeon issues, stay on the Icon tool after place, 
+implement a Stairs Icon, Make it so that colors select doesn't reset you to brush tool*/
 public class DungeonEditorPane extends JPanel {
 	private static final int TILE_SIZE = 32;
 	private static final int IMG_SCALER = 5;

@@ -22,6 +22,7 @@ import javax.swing.text.JTextComponent;
 
 import data.DataContainer;
 import gui.gui_helpers.CustomDesktopIcon;
+import gui.gui_helpers.ReminderField;
 import utils.ErrorLogger;
 
 public class StyleContainer {
@@ -92,7 +93,8 @@ public class StyleContainer {
 	public static void SetFontHeader(Component comp) {
 		if (comp instanceof JLabel || comp instanceof AbstractButton || // JButton, JToggleButton, JCheckBox,
 																		// JRadioButton
-				comp instanceof JTextComponent || comp instanceof JComboBox) {
+				comp instanceof JTextComponent || comp instanceof JComboBox  
+				|| comp instanceof ReminderField) {
 			comp.setFont(FNT_HEADER_BOLD);
 		}
 	}

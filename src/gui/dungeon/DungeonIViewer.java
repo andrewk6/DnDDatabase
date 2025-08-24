@@ -164,7 +164,8 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
 					} else {
 						System.out.println("Adding Floor Tab and Floor");
 						dView = new DungeonViewerPane(data, gd, mainPane, d.floors.get(f).tiles);
-						mainPane.addTab("Dungeon View", dView);
+						JScrollPane scroller = new JScrollPane(dView);
+						mainPane.addTab("Dungeon View", scroller);
 						dungeonLbl.setText(f);
 						mainPane.setTabComponentAt(0, dungeonLbl);
 					}
