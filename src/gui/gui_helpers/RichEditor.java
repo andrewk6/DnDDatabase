@@ -13,6 +13,7 @@ import data.items.Gear;
 import data.items.Item;
 import data.items.MagicItem;
 import data.items.Weapon;
+import data.players.classes.PlayerClass;
 import utils.ErrorLogger;
 
 import javax.swing.*;
@@ -43,6 +44,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     private Map<String, Feat> featMap;
     private Map<String, StyledDocument> insertMap;
     private Map<String, Player> playerMap;
+    private Map<String, PlayerClass> classMap;
 
     private final JWindow rulePreviewWindow = new JWindow();
     private final JTextPane rulePreviewPane = new JTextPane();
@@ -830,6 +832,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 		case DataContainer.FEATS: this.featMap = data.getFeats(); break;
 		case DataContainer.ITEMS: this.itemMap = data.getItems(); break;
 		case DataContainer.CAMPAIGN: this.playerMap = data.getParty(); break;
+		case DataContainer.CLASSES: this.classMap = data.getClasses(); break;
 		default: System.out.println("Invalid map type: " + mapType);
 		}
 		

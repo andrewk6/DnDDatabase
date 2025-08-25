@@ -2,6 +2,7 @@ package builders.class_builder;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -11,10 +12,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import data.DataChangeListener;
@@ -44,6 +47,10 @@ public class SubclassPaneBuilder extends JPanel
 		mPane.setLayout(new CardLayout());
 		this.add(mPane, BorderLayout.CENTER);
 		
+		if(subMap.keySet().size() > 0)
+			for(String key : subMap.keySet())
+				mPane.add(new AbilityPaneBuilder(data, subMap.get(key)), key);
+		
 		JTextArea nonLoad = new JTextArea("No subclass loaded, "
 				+ "please click a subclass. If none on left, click add subclass button.");
 		nonLoad.setLineWrap(true);
@@ -54,10 +61,13 @@ public class SubclassPaneBuilder extends JPanel
 		CardLayout cl = (CardLayout) mPane.getLayout();
 		cl.show(mPane, "NoLoad");
 		
+
+		
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
 		FillSidePane();
-		this.add(sidePane, BorderLayout.WEST);
+		JScrollPane sideScroll = new JScrollPane(sidePane);
+		this.add(sideScroll, BorderLayout.WEST);
 		
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -84,6 +94,7 @@ public class SubclassPaneBuilder extends JPanel
 		for(String s : keys) {
 			JPanel p = new JPanel();
 			p.setLayout(new BorderLayout());
+			p.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 			sidePane.add(p);
 			
 			JLabel lbl = CompFactory.createNewLabel(s, ComponentType.BODY);
