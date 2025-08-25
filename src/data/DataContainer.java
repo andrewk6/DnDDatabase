@@ -94,6 +94,7 @@ public class DataContainer {
 	public static final String INSERT_FILE_NAME = "Inserts.bol";
 	public static final String ITEMS_FILE_NAME = "Items.iol";
 	public static final String FEATS_FILE_NAME = "Feats.fol";
+	public static final String CLASS_FILE_NAME = "Classes.clol";
 	public static final String CONFIG_FILE_NAME = "Config.confol";
 	public static final String EXTRAS_FILE_NAME = "Extras.exol";
 	
@@ -104,17 +105,20 @@ public class DataContainer {
 	public static final int ITEMS = 4;
 	public static final int CAMPAIGN = 5;
 	public static final int FEATS = 6;
+	public static final int CLASSES = 7;
 
 	private HashMap<String, Rule> ruleMap;
 	private HashMap<String, Spell> spellMap;
 	private HashMap<String, Monster> monstMap;
 	private HashMap<String, Item> itemMap;
 	private HashMap<String, Feat> featMap;
+	private HashMap<String, data.players.classes.PlayerClass> classMap;
 	private HashMap<String, StyledDocument> insertMap;
 	private Campaign camp;
 	
 	private ArrayList<String> ruleKeysSorted, spellKeysSorted, monstKeysSorted, insertKeysSorted,
-		weaponKeysSorted, armorKeysSorted, gearKeysSorted, toolKeysSorted, magicItemKeysSorted, featKeysSorted;
+		weaponKeysSorted, armorKeysSorted, gearKeysSorted, toolKeysSorted, magicItemKeysSorted, featKeysSorted,
+		classKeysSorted;
 	
 
 	private final AtomicInteger runningTasks = new AtomicInteger(0);
@@ -144,6 +148,7 @@ public class DataContainer {
         tasks.add(this::ImportInsertHelpers);
         tasks.add(this::ImportItems);
         tasks.add(this::ImportFeats);
+        tasks.add(this::ImportClassMap);
         
         ExecutorService executor = Executors.newFixedThreadPool(tasks.size());
         try {
@@ -441,6 +446,42 @@ public class DataContainer {
 		return false;
 	}
 	
+	private boolean ImportClassMap() {
+		classMap = new HashMap<String, data.players.classes.PlayerClass>();
+		classKeysSorted = new ArrayList<String>();
+		File classFile;
+		
+		if(dbFolder.exists()) {
+			if(dbFolder.isDirectory()) {
+				classFile = new File(dbFolder.getPath() + File.separator + CLASS_FILE_NAME);
+			}else {
+				classFile = new File(FEATS_FILE_NAME);
+			}
+		}else {
+			classFile = new File(FEATS_FILE_NAME);
+		}
+		
+		if (classFile.exists()) {
+			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(classFile))) {
+				while (true) {
+					try {
+						data.players.classes.PlayerClass p = (data.players.classes.PlayerClass) ois.readObject();
+						classMap.put(p.name, p);
+						classKeysSorted.add(p.name);
+					} catch (EOFException eof) {
+						// End of file reached
+						return true;
+					}
+				}
+			} catch (IOException | ClassNotFoundException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return false;
+	}
+	
 	private void notifyChange() {
 		for(DataChangeListener tar : updateListeners)
 			tar.onMapUpdated();
@@ -545,6 +586,13 @@ public class DataContainer {
 		notifyChange(DataContainer.ITEMS);
 	}
 	
+	public void SetClassMap(HashMap<String, data.players.classes.PlayerClass> cMap) {
+		this.classMap = cMap;
+		this.classKeysSorted = new ArrayList<String>(cMap.keySet());
+		SortKeys(DataContainer.CLASSES);
+		notifyChange(DataContainer.CLASSES);
+	}
+	
 	public void SafeSaveData() {
 		System.out.println("Safe Save Enter");
 		ioQueue.offer(this::SaveData);
@@ -577,6 +625,8 @@ public class DataContainer {
 			return SaveCampaign();
 		else if(saveOpt == FEATS)
 			return SaveFeats();
+		else if(saveOpt == CLASSES)
+			return SaveClasses();
 		else throw  new IllegalArgumentException("Invalid save option");
 //		System.out.println("Save Complete");
 	}
@@ -759,6 +809,32 @@ public class DataContainer {
 		}
 	}
 	
+	private boolean SaveClasses() {
+		File classFile = new File(dbFolder.getPath() + File.separator + DataContainer.CLASS_FILE_NAME);
+		if(!classFile.exists()) {
+			try {
+				classFile.createNewFile();
+			} catch (IOException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(classFile));
+			for (String s : classMap.keySet()) {
+				oos.writeObject(classMap.get(s));
+			}
+			oos.flush();
+			oos.close();
+			return true;
+		} catch (IOException e) {
+			ErrorLogger.log(e);
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	public void shutDownAndWait() {
 		System.out.println("Finishing saves before shutdown");
 		isRunning = false;  // tell worker to stop after finishing current + queued tasks
@@ -811,6 +887,7 @@ public class DataContainer {
 		Collections.sort(toolKeysSorted);
 		Collections.sort(magicItemKeysSorted);
 		Collections.sort(featKeysSorted);
+		Collections.sort(classKeysSorted);
 	}
 	
 	private void SortKeys(int mapType) {
@@ -827,6 +904,7 @@ public class DataContainer {
 			Collections.sort(magicItemKeysSorted);
 			break;
 		case DataContainer.FEATS: Collections.sort(featKeysSorted); break;
+		case DataContainer.CLASSES: Collections.sort(classKeysSorted); break;
 		default: throw new IllegalArgumentException("Invalid Map Type.");
 		}
 	}
@@ -862,6 +940,12 @@ public class DataContainer {
 		if(featMap == null)
 			return null;
 		return Collections.unmodifiableMap(featMap);
+	}
+	
+	public Map<String, data.players.classes.PlayerClass> getClasses(){
+		if(classMap == null)
+			return null;
+		return Collections.unmodifiableMap(classMap);
 	}
 	
 	public Map<String, Item> getItems(){
@@ -906,6 +990,10 @@ public class DataContainer {
 	
 	public List<String> getFeatKeysSorted(){
 		return Collections.unmodifiableList(featKeysSorted);
+	}
+	
+	public List<String> getClassKeysSorted(){
+		return Collections.unmodifiableList(classKeysSorted);
 	}
 	
 	public HashMap<String, Monster> getUnsafe(){

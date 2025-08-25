@@ -1,6 +1,7 @@
 package builders.class_builder;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -132,6 +134,7 @@ public class AbilityPaneBuilder extends JPanel
 		Collections.sort(keys);
 		for(String s : keys) {
 			JPanel pane = new JPanel();
+			pane.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 			pane.setLayout(new BorderLayout());
 			sidePane.add(pane);
 			

@@ -30,6 +30,7 @@ import javax.swing.text.StyledDocument;
 import data.DataContainer;
 import data.DataContainer.Abilities;
 import data.DataContainer.Skills;
+import data.items.Item;
 import data.items.Armor.ArmorType;
 import data.players.classes.ClassAbility;
 import data.players.classes.PlayerClass;
@@ -41,6 +42,7 @@ import gui.gui_helpers.FilterCombo;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 
 public class ClassBuilder extends JFrame
 {
@@ -62,7 +64,12 @@ public class ClassBuilder extends JFrame
 	private HashMap<String, HashMap<String, ClassAbility>> subclassAbilities;
 	
 	private ReminderField startGold, startGoldEquip;
-	RichEditor classDesc;
+	private RichEditor classDesc;
+	private JPanel itemListPane;
+	
+	private SubclassPaneBuilder subPane;
+	private AbilityPaneBuilder baseAbilitiesPane;
+	private JTabbedPane tabs;
 	
 	public static void main(String[]args) {
 		DataContainer data = new DataContainer();
@@ -74,10 +81,13 @@ public class ClassBuilder extends JFrame
 	}
 	
 	public ClassBuilder(DataContainer data) {
-		classMap = new HashMap<String, PlayerClass>();
 		abilityDocs = new HashMap<String, ClassAbility>();
 		subclassAbilities = new HashMap<String, HashMap<String, ClassAbility>>();
 		this.data = data;
+		if(data.getClasses() != null)
+			classMap = new HashMap<String, PlayerClass>(data.getClasses());
+		else
+			classMap = new HashMap<String, PlayerClass>();
 		this.addWindowListener(StyleContainer.GetDefaultCloseListener(data));
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.setSize(800, 800);
@@ -94,34 +104,52 @@ public class ClassBuilder extends JFrame
 	private void Initialize(Container cPane) {
 		cPane.setLayout(new BorderLayout());
 		
+		JPanel sideOPane = new JPanel();
+		sideOPane.setLayout(new BorderLayout());
+		cPane.add(sideOPane, BorderLayout.WEST);
+		
+		JLabel sideLabel = CompFactory.createNewLabel("Class List", ComponentType.HEADER);
+		sideOPane.add(sideLabel, BorderLayout.NORTH);
+		
+		JButton save = CompFactory.createNewButton("Save", _->{
+			data.SetClassMap(classMap);
+			data.SafeSaveData(DataContainer.CLASSES);
+		});
+		sideOPane.add(save, BorderLayout.SOUTH);
+		
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
 		FillSidePane();
 		JScrollPane sideScroll = new JScrollPane(sidePane);
-		cPane.add(sideScroll, BorderLayout.WEST);
+		sideOPane.add(sideScroll, BorderLayout.CENTER);
+		
+		JPanel headerPane = new JPanel();
+		headerPane.setLayout(new BorderLayout());
+		cPane.add(headerPane, BorderLayout.NORTH);
 		
 		className = CompFactory.createReminderField("Class name", ComponentType.HEADER);
 		className.setFont(className.getFont().deriveFont(22f).deriveFont(Font.BOLD));
-		cPane.add(className, BorderLayout.NORTH);
+		headerPane.add(className, BorderLayout.CENTER);
 		
 		JPanel mPane = new JPanel();
 		mPane.setLayout(new BorderLayout());
 		cPane.add(mPane, BorderLayout.CENTER);
 		BuildPlayerPane(mPane);
 		
-		JPanel btnPane = new JPanel();
-		btnPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		cPane.add(btnPane, BorderLayout.SOUTH);
+//		JPanel btnPane = new JPanel();
+//		btnPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+//		cPane.add(btnPane, BorderLayout.SOUTH);
 		
 		JButton addClassBtn = CompFactory.createNewButton("Add Class", _->{
 			AddClass();
 			ResetEditor();
+			FillSidePane();
 		});
-		btnPane.add(addClassBtn);
+		headerPane.add(addClassBtn, BorderLayout.EAST);
 	}
 	
 	private void BuildPlayerPane(JPanel mPane) {
-		JTabbedPane tabs = CompFactory.createTabbedPane();
+		tabs = CompFactory.createTabbedPane();
 		mPane.add(tabs, BorderLayout.CENTER);
 		
 		JPanel descPane = new JPanel();
@@ -135,11 +163,11 @@ public class ClassBuilder extends JFrame
 		BuildStatsPane(statPane);
 		tabs.addTab("Basic Stats", statPane);
 		
-		AbilityPaneBuilder baseAbilitiesPane = new AbilityPaneBuilder(data, abilityDocs);
+		baseAbilitiesPane = new AbilityPaneBuilder(data, abilityDocs);
 		tabs.addTab("Base Class Abilities", baseAbilitiesPane);
 		
-		SubclassPaneBuilder subPane = new SubclassPaneBuilder(data, subclassAbilities);
-		tabs.addTab("Sub Class Abilities", subPane);
+		subPane = new SubclassPaneBuilder(data, subclassAbilities);
+		tabs.addTab("Subclass Abilities", subPane);
 	}
 
 	private void BuildDescPane(JPanel descPane) {
@@ -243,7 +271,7 @@ public class ClassBuilder extends JFrame
 		itemSetPane.setLayout(new GridLayout(0,1));
 		itemsPane.add(itemSetPane, BorderLayout.WEST);
 		
-		JPanel itemListPane = new JPanel();
+		itemListPane = new JPanel();
 		itemListPane.setLayout(new FlowLayout(FlowLayout.LEFT));
 		itemsPane.add(itemListPane, BorderLayout.CENTER);
 		
@@ -310,6 +338,7 @@ public class ClassBuilder extends JFrame
 		for(String s : keys) 
 		{
 			JPanel pane = new JPanel();
+			pane.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 			pane.setLayout(new BorderLayout());
 			sidePane.add(pane);
 			
@@ -321,7 +350,10 @@ public class ClassBuilder extends JFrame
 			
 			JLabel keyLbl = CompFactory.createNewLabel(key, ComponentType.HEADER);
 			keyLbl.addMouseListener(new MouseListener() {
-				public void mouseClicked(MouseEvent e) {/*TODO: Implement loading back into editor*/}
+				public void mouseClicked(MouseEvent e) {
+					ResetEditor();
+					LoadClass(classMap.get(s));
+				}
 				public void mousePressed(MouseEvent e) {}
 				public void mouseReleased(MouseEvent e) {}
 				public void mouseEntered(MouseEvent e) {keyLbl.setFont(keyLbl.getFont().deriveFont(Font.BOLD));}
@@ -338,14 +370,178 @@ public class ClassBuilder extends JFrame
 	}
 	
 	private void ResetEditor() {
+		className.setText("");
+		className.setEditable(true);
+		className.setFocusable(true);
+		hdCombo.setSelectedIndex(0);
+		weapCombo.setSelectedIndex(0);
+		primaryAbility.setSelectedIndex(0);
+		saveOne.setSelectedIndex(0);
+		saveTwo.setSelectedIndex(0);
+		for(JCheckBox aBox : armorProfs)
+			aBox.setSelected(false);
+		for(JCheckBox sBox : skillProfs)
+			sBox.setSelected(false);
+		itemListPane.removeAll();
+		items = new ArrayList<JLabel>();
 		
+		abilityDocs = new HashMap<String, ClassAbility>();
+		subclassAbilities = new HashMap<String, HashMap<String, ClassAbility>>();
+		
+		tabs.removeTabAt(tabs.indexOfComponent(baseAbilitiesPane));
+		baseAbilitiesPane = new AbilityPaneBuilder(data, abilityDocs);
+		tabs.addTab("Base Class Abilities", baseAbilitiesPane);
+		
+		tabs.removeTabAt(tabs.indexOfComponent(subPane));
+		subPane = new SubclassPaneBuilder(data, subclassAbilities);
+		tabs.addTab("Subclass Abilities", subPane);
+		
+		startGold.setText("");
+		startGoldEquip.setText("");
+		
+		Container c = classDesc.getParent();
+		c.remove(classDesc);
+		classDesc = new RichEditor(data);
+		c.add(classDesc, BorderLayout.CENTER);
+		
+		this.revalidate();
+		this.repaint();
+		tabs.setSelectedIndex(0);
+	}
+	
+	private void LoadClass(PlayerClass c) {
+		className.setText(c.name);
+		className.setEditable(false);
+		className.setFocusable(false);
+		
+		hdCombo.setSelectedItem(c.hd);
+		weapCombo.setSelectedItem(c.weaponProf);
+		primaryAbility.setSelectedItem(c.primaryAbility);
+		saveOne.setSelectedItem(c.saveingThrows[0]);
+		saveTwo.setSelectedItem(c.saveingThrows[1]);
+		
+		for(ArmorType a : c.armorProf)
+			for(JCheckBox aBox : armorProfs)
+				if(aBox.getText().equals(a.toString()))
+					aBox.setSelected(true);
+		for(Skills s : c.startProf)
+			for(JCheckBox sBox : skillProfs)
+				if(sBox.getText().equals(s.toString()))
+					sBox.setSelected(true);
+		for(Item i : c.startingEquip) {
+			JLabel lbl = CompFactory.createNewLabel(i.name, ComponentType.BODY);
+			lbl.setBorder(BorderFactory.createCompoundBorder(
+				    BorderFactory.createLineBorder(new Color(100,100,100,100), 2),
+				    BorderFactory.createEmptyBorder(5, 5, 5, 5)
+				));
+			lbl.addMouseListener(new MouseListener() {
+				public void mouseClicked(MouseEvent e) {
+					if((e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) 
+							|| (e.isAltDown() && SwingUtilities.isLeftMouseButton(e))){
+						items.remove(lbl);
+						itemListPane.remove(lbl);
+						itemListPane.revalidate();
+						itemListPane.repaint();
+					}
+				}
+				public void mousePressed(MouseEvent e) {}
+				public void mouseReleased(MouseEvent e) {}
+				public void mouseEntered(MouseEvent e) {lbl.setFont(lbl.getFont().deriveFont(Font.BOLD));}
+				public void mouseExited(MouseEvent e) {lbl.setFont(lbl.getFont().deriveFont(Font.PLAIN));}
+			});
+			itemListPane.add(lbl);
+		}
+		
+		abilityDocs = new HashMap<String, ClassAbility>(c.abilities);
+		subclassAbilities = new HashMap<String, HashMap<String, ClassAbility>>(c.subAbilities);
+		
+		tabs.removeTabAt(tabs.indexOfComponent(baseAbilitiesPane));
+		baseAbilitiesPane = new AbilityPaneBuilder(data, abilityDocs);
+		tabs.addTab("Base Class Abilities", baseAbilitiesPane);
+		
+		tabs.removeTabAt(tabs.indexOfComponent(subPane));
+		subPane = new SubclassPaneBuilder(data, subclassAbilities);
+		tabs.addTab("Subclass Abilities", subPane);
+		
+		startGold.setText(c.startingGoldNoEquip + "");
+		startGoldEquip.setText(c.startingGoldEquip + "");
+		
+		Container cont = classDesc.getParent();
+		cont.remove(classDesc);
+		classDesc = new RichEditor(data);
+		classDesc.LoadDocument(c.desc);
+		cont.add(classDesc, BorderLayout.CENTER);
+		
+		this.revalidate();
+		this.repaint();
+		tabs.setSelectedIndex(0);
 	}
 	
 	private void AddClass() {
 		PlayerClass c = new PlayerClass();
+		
 		c.abilities = abilityDocs;
 		c.subAbilities = subclassAbilities;
 		c.name = className.getText();
+		c.desc = classDesc.getStyledDocument();
+		c.hd = (HitDiceType) hdCombo.getSelectedItem();
+		c.weaponProf = (WeaponProficiency) weapCombo.getSelectedItem();
+		c.primaryAbility = (Abilities) primaryAbility.getSelectedItem();
+		c.saveingThrows[0] = (Abilities) saveOne.getSelectedItem();
+		c.saveingThrows[1] = (Abilities) saveTwo.getSelectedItem();
+		ArrayList<Skills> skills = new ArrayList<Skills>();
+		for(JCheckBox skill : skillProfs) {
+			if(skill.isSelected()) {
+				try {
+					skills.add(Skills.valueOf(skill.getText()));
+				}catch(IllegalArgumentException e) {
+					ErrorLogger.log(e);
+					e.printStackTrace();
+				}
+			}
+		}
+		c.startProf = skills;
+		ArrayList<ArmorType> aProf = new ArrayList<ArmorType>();
+		for(JCheckBox armor : armorProfs) {
+			if(armor.isSelected()) {
+				try {
+					aProf.add(ArmorType.valueOf(armor.getText()));
+				}catch(IllegalArgumentException e) {
+					ErrorLogger.log(e);
+					e.printStackTrace();
+				}
+			}
+		}
+		c.armorProf = aProf;
+		ArrayList<Item> startItem = new ArrayList<Item>();
+		for(JLabel item : items) {
+			startItem.add(data.getItems().get(item.getText()));
+		}
+		c.startingEquip = startItem;
+		c.startingGoldNoEquip = Integer.parseInt(startGold.getText());
+		c.startingGoldEquip = Integer.parseInt(startGoldEquip.getText());
 		
+		classMap.put(c.name, c);
 	}
+	
+	
+	/*
+	 * public HashMap<String, ClassAbility> abilities; 
+	public HashMap<String, HashMap<String, ClassAbility>> subAbilities;
+	
+	public String name;
+	public StyledDocument desc;
+	
+	public HitDiceType hd;
+	public WeaponProficiency weaponProf;
+	public Abilities primaryAbility;
+	public Abilities[] saveingThrows = new Abilities[2];
+	
+	
+	public ArrayList<Skills> startProf;
+	public ArrayList<ArmorType> armorProf;
+	
+	public ArrayList<Item> startingEquip;
+	public int startingGoldNoEquip, startingGoldEquip;
+	 */
 }

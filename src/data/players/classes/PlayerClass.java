@@ -38,4 +38,5 @@ public class PlayerClass implements Serializable
 	
 	public ArrayList<Item> startingEquip;
 	public int startingGoldNoEquip, startingGoldEquip;
+	
 }
