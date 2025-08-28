@@ -3,6 +3,7 @@ package builders.class_builder;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -13,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -85,9 +87,15 @@ public class SubclassPaneBuilder extends JPanel
 		this.add(buttonPane, BorderLayout.SOUTH);
 		
 		JButton addBtn = CompFactory.createNewButton("Add Subclass", _->{
-			String subclass = JOptionPane.showInputDialog(this, "What is the subclasses name: ");
-			if(subclass != null) {
-				BuildSubPane(subclass);
+			SubclassDialog dialog = new SubclassDialog(this);
+            dialog.setVisible(true);
+			if(dialog.isConfirmed()) {
+				Subclass sub = new Subclass();
+				sub.name = dialog.getSubclassName();
+				sub.src = dialog.getSubclassSource();
+				sub.abilities = new HashMap<String, ClassAbility>();
+				subMap.put(sub.name, sub);
+				BuildSubPane(sub);
 				cl.show(mPane, "SubTabs");
 			}
 		});
@@ -96,21 +104,32 @@ public class SubclassPaneBuilder extends JPanel
 	
 	private void BuildTabPane() {
 		for(String subclass : subMap.keySet()) {
-			BuildSubPane(subclass);
+			BuildSubPane(subMap.get(subclass));
 		}
 	}
 	
-	private void BuildSubPane(String subclass) {
+	private void BuildSubPane(Subclass subclass) {
 		JPanel subPane = new JPanel();
 		subPane.setLayout(new BorderLayout());
-		subTabs.addTab(subclass, subPane);
+		subTabs.addTab(subclass.name, subPane);
 		
 		JPanel hPane = new JPanel();
 		hPane.setLayout(new BorderLayout());
 		subPane.add(hPane, BorderLayout.NORTH);
 		
-		JLabel subLbl = CompFactory.createNewLabel(subclass, ComponentType.HEADER);
-		hPane.add(subLbl, BorderLayout.CENTER);
+		JPanel titlePane = new JPanel();
+		titlePane.setLayout(new FlowLayout(FlowLayout.LEFT));
+		hPane.add(titlePane, BorderLayout.CENTER);
+		
+		JLabel subLbl = CompFactory.createNewLabel(subclass.name, ComponentType.HEADER);
+		titlePane.add(subLbl);
+		titlePane.add(Box.createRigidArea(new Dimension(15, 0)));
+		
+		JLabel srcLbl = CompFactory.createNewLabel("  Source:", ComponentType.BODY);
+		titlePane.add(srcLbl);
+		
+		JLabel srcNameLbl = CompFactory.createNewLabel("" + subclass.src.toString(), ComponentType.BODY);
+		titlePane.add(srcNameLbl);
 		
 		JButton del = CompFactory.createNewButton("Delete", _->{
 			int conf = JOptionPane.showConfirmDialog(this, "Delete: " + subclass, 
@@ -129,14 +148,14 @@ public class SubclassPaneBuilder extends JPanel
 		});
 		hPane.add(del, BorderLayout.EAST);
 		
-		if(!subMap.keySet().contains(subclass)) {
-			Subclass sub = new Subclass();
-			sub.name = subclass;
-			sub.abilities = new HashMap<String, ClassAbility>();
-			this.subMap.put(subclass, sub);
-		}
+//		if(!subMap.keySet().contains(subclass)) {
+//			Subclass sub = new Subclass();
+//			sub.name = subclass;
+//			sub.abilities = new HashMap<String, ClassAbility>();
+//			this.subMap.put(subclass, sub);
+//		}
 		
-		AbilityPaneBuilder aPane = new AbilityPaneBuilder(data, subMap.get(subclass).abilities);
+		AbilityPaneBuilder aPane = new AbilityPaneBuilder(data, subclass.abilities);
 		subPane.add(aPane, BorderLayout.CENTER);
 //		mPane.add(aPane, subclass);
 		

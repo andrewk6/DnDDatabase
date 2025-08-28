@@ -31,6 +31,7 @@ import javax.swing.text.StyledDocument;
 import data.DataContainer;
 import data.DataContainer.Abilities;
 import data.DataContainer.Skills;
+import data.DataContainer.Source;
 import data.items.Item;
 import data.items.Armor.ArmorType;
 import data.players.classes.ClassAbility;
@@ -60,6 +61,7 @@ public class ClassBuilder extends JFrame
 	private JComboBox<HitDiceType> hdCombo;
 	private JComboBox<WeaponProficiency> weapCombo;
 	private JComboBox<Abilities> primaryAbility, saveOne, saveTwo;
+	private JComboBox<Source> sourceCombo;
 	
 	private ArrayList<JCheckBox> armorProfs, skillProfs;
 	private ArrayList<JLabel> items;
@@ -174,8 +176,24 @@ public class ClassBuilder extends JFrame
 	}
 
 	private void BuildDescPane(JPanel descPane) {
-		JLabel classDescLbl = CompFactory.createNewLabel("Class Description:", ComponentType.HEADER);
-		descPane.add(classDescLbl, BorderLayout.NORTH);
+		JPanel descHead = new JPanel();
+		descHead.setLayout(new BorderLayout());
+		descPane.add(descHead, BorderLayout.NORTH);
+		
+		JLabel classDescLbl = CompFactory.createNewLabel("Class Description", ComponentType.HEADER);
+		descHead.add(classDescLbl, BorderLayout.CENTER);
+		
+		JPanel sourcePane = new JPanel();
+		sourcePane.setLayout(new BorderLayout());
+		descHead.add(sourcePane, BorderLayout.EAST);
+		
+		JLabel srcLbl = CompFactory.createNewLabel("Source:", ComponentType.BODY);
+		sourcePane.add(srcLbl, BorderLayout.WEST);
+		
+		sourceCombo = new JComboBox<Source>();
+		sourceCombo.setModel(new DefaultComboBoxModel<Source>(Source.values()));
+		StyleContainer.SetFontHeader(sourceCombo);
+		sourcePane.add(sourceCombo, BorderLayout.CENTER);
 		
 		classDesc = new RichEditor(data);
 //		classDesc.disableTables();
@@ -425,6 +443,7 @@ public class ClassBuilder extends JFrame
 		primaryAbility.setSelectedIndex(0);
 		saveOne.setSelectedIndex(0);
 		saveTwo.setSelectedIndex(0);
+		sourceCombo.setSelectedItem(Source.PlayersHandbook2024);
 		for(JCheckBox aBox : armorProfs)
 			aBox.setSelected(false);
 		skillsNum.setText("");
@@ -461,6 +480,7 @@ public class ClassBuilder extends JFrame
 		className.setText(c.name);
 		className.setEditable(false);
 		className.setFocusable(false);
+		sourceCombo.setSelectedItem(c.src);
 		
 		hdCombo.setSelectedItem(c.hd);
 		weapCombo.setSelectedItem(c.weaponProf);
@@ -537,6 +557,7 @@ public class ClassBuilder extends JFrame
 			c.subclasses = subclassAbilities;
 			c.name = className.getText();
 			c.desc = DocumentHelper.deepCopyDocument(classDesc.getStyledDocument());
+			c.src = (Source) sourceCombo.getSelectedItem();
 			c.hd = (HitDiceType) hdCombo.getSelectedItem();
 			c.weaponProf = (WeaponProficiency) weapCombo.getSelectedItem();
 			c.primaryAbility = (Abilities) primaryAbility.getSelectedItem();
