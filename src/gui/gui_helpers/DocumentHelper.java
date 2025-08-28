@@ -1,5 +1,9 @@
 package gui.gui_helpers;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -163,6 +167,22 @@ public class DocumentHelper {
 
 	    // Step 2: Insert styled content into that space
 	    DocumentHelper.insertStyledDocument(mainDoc, insertDoc, insertOffset);
+	}
+	
+	public static StyledDocument deepCopyDocument(StyledDocument original) {
+	    try {
+	        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	        ObjectOutputStream oos = new ObjectOutputStream(baos);
+	        oos.writeObject(original);
+	        oos.close();
+	        
+	        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+	        ObjectInputStream ois = new ObjectInputStream(bais);
+	        return (StyledDocument) ois.readObject();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new DefaultStyledDocument();
+	    }
 	}
 
 }
