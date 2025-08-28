@@ -10,6 +10,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -96,9 +97,15 @@ public class AbilityPaneBuilder extends JPanel
 		mPane.add(btnPane, BorderLayout.SOUTH);
 		
 		JButton addBtn = CompFactory.createNewButton("Add Ability", _->{
-			AddAbility();
-			ResetEditor();
-			FillSidePane();
+			if(nameField.getText().length() > 0) {
+				AddAbility();
+				ResetEditor();
+				FillSidePane();
+			}else {
+				JOptionPane.showMessageDialog(this, "Please at least name the ability", 
+						"No Name Warning", JOptionPane.WARNING_MESSAGE);
+			}
+			
 		});
 		btnPane.add(addBtn);
 		
@@ -130,17 +137,18 @@ public class AbilityPaneBuilder extends JPanel
 	private void FillSidePane() {
 		sidePane.removeAll();
 		
-		ArrayList<String> keys = new ArrayList<String>(abilities.keySet());
+//		ArrayList<String> keys = new ArrayList<String>(abilities.keySet());
+		List<ClassAbility> keys = new ArrayList<ClassAbility>(abilities.values());
 		Collections.sort(keys);
-		for(String s : keys) {
+		for(ClassAbility s : keys) {
 			JPanel pane = new JPanel();
 			pane.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 			pane.setLayout(new BorderLayout());
 			sidePane.add(pane);
 			
-			JLabel lbl = CompFactory.createNewLabel(s, ComponentType.BODY);
+			JLabel lbl = CompFactory.createNewLabel(s.name, ComponentType.BODY);
 			lbl.addMouseListener(new MouseListener() {
-				public void mouseClicked(MouseEvent e) {loadAbility(s);}
+				public void mouseClicked(MouseEvent e) {loadAbility(s.name);}
 				public void mousePressed(MouseEvent e) {}
 				public void mouseReleased(MouseEvent e) {}
 				public void mouseEntered(MouseEvent e) {lbl.setFont(lbl.getFont().deriveFont(Font.BOLD));}
@@ -149,8 +157,12 @@ public class AbilityPaneBuilder extends JPanel
 			pane.add(lbl, BorderLayout.CENTER);
 			
 			JButton delBtn = CompFactory.createNewButton("Delete", _->{
-				abilities.remove(s);
-				FillSidePane();
+				int conf = JOptionPane.showConfirmDialog(this, "Delete: " + s.name, 
+						"Delete Confirm", JOptionPane.YES_NO_OPTION);
+				if(conf == JOptionPane.YES_OPTION) {
+					abilities.remove(s.name);
+					FillSidePane();
+				}
 			});
 			pane.add(delBtn, BorderLayout.EAST);
 		}

@@ -48,6 +48,7 @@ import data.items.Item;
 import data.items.MagicItem;
 import data.items.ToolSet;
 import data.items.Weapon;
+import data.players.classes.DnDClass;
 import gui.gui_helpers.structures.LoadListener;
 
 public class DataContainer {
@@ -112,7 +113,7 @@ public class DataContainer {
 	private HashMap<String, Monster> monstMap;
 	private HashMap<String, Item> itemMap;
 	private HashMap<String, Feat> featMap;
-	private HashMap<String, data.players.classes.PlayerClass> classMap;
+	private HashMap<String, DnDClass> classMap;
 	private HashMap<String, StyledDocument> insertMap;
 	private Campaign camp;
 	
@@ -447,7 +448,7 @@ public class DataContainer {
 	}
 	
 	private boolean ImportClassMap() {
-		classMap = new HashMap<String, data.players.classes.PlayerClass>();
+		classMap = new HashMap<String, DnDClass>();
 		classKeysSorted = new ArrayList<String>();
 		File classFile;
 		
@@ -465,7 +466,7 @@ public class DataContainer {
 			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(classFile))) {
 				while (true) {
 					try {
-						data.players.classes.PlayerClass p = (data.players.classes.PlayerClass) ois.readObject();
+						DnDClass p = (DnDClass) ois.readObject();
 						classMap.put(p.name, p);
 						classKeysSorted.add(p.name);
 					} catch (EOFException eof) {
@@ -586,7 +587,7 @@ public class DataContainer {
 		notifyChange(DataContainer.ITEMS);
 	}
 	
-	public void SetClassMap(HashMap<String, data.players.classes.PlayerClass> cMap) {
+	public void SetClassMap(HashMap<String, DnDClass> cMap) {
 		this.classMap = cMap;
 		this.classKeysSorted = new ArrayList<String>(cMap.keySet());
 		SortKeys(DataContainer.CLASSES);
@@ -942,7 +943,7 @@ public class DataContainer {
 		return Collections.unmodifiableMap(featMap);
 	}
 	
-	public Map<String, data.players.classes.PlayerClass> getClasses(){
+	public Map<String, DnDClass> getClasses(){
 		if(classMap == null)
 			return null;
 		return Collections.unmodifiableMap(classMap);
