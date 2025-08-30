@@ -7,17 +7,23 @@ import data.Rule;
 import data.Spell;
 import data.campaign.Player;
 import gui.campaign.PlayerPane;
+import gui.gui_helpers.CompFactory;
+import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.FilterCombo;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.MonsterDispPane;
+import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.structures.AllTab;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.DiceCalculator;
 import utils.ErrorLogger;
+import utils.IllegalDiceNotationException;
 
 import javax.imageio.ImageIO;
+import javax.script.ScriptException;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.InternalFrameEvent;
@@ -60,6 +66,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             DataContainer data = new DataContainer();
+            data.init();
             JFrame frame = new JFrame("Initiative Tracker Test");
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
             frame.addWindowListener(StyleContainer.GetDefaultCloseListener(data));
@@ -94,7 +101,6 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
         tabs = new JTabbedPane();
         tabs.setUI(tabsUI);
-        System.out.println("Tabs UI class: " + tabs.getUI().getClass().getName());
         tabs.addTab("Initiative Tracker", buildTrackerPanel());
         this.add(tabs, BorderLayout.CENTER);
         
@@ -307,6 +313,8 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         FilterCombo monsterSelector = new FilterCombo(data.getMonsterKeysSorted(), 20);
         JTextField overrideBonus = new JTextField(5);
         JLabel initBonusLabel = new JLabel("Init Bonus: +0");
+        ReminderField numEnemies = CompFactory.createReminderField("Num Enemies", true, ComponentType.BODY);
+        numEnemies.setColumns(5);
 
         monsterSelector.addActionListener(e -> {
             String selected = (String) monsterSelector.getSelectedItem();
@@ -333,27 +341,50 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         header.add(new JLabel("Monster:"), BorderLayout.WEST);
         header.add(monsterSelector, BorderLayout.CENTER);
         
-        JPanel panel = new JPanel();
-        request.add(panel, BorderLayout.CENTER);
-      panel.add(initBonusLabel);
-      panel.add(new JLabel("Bonus:"));
-      panel.add(overrideBonus);
+        JPanel config = new JPanel();
+        config.setLayout(new BorderLayout());
+        request.add(config, BorderLayout.CENTER);
         
+        JPanel bonusPane = new JPanel();
+        config.add(bonusPane, BorderLayout.NORTH);
+        
+        JPanel numPane = new JPanel();
+        config.add(numPane, BorderLayout.SOUTH);
+        
+        bonusPane.add(initBonusLabel);
+        bonusPane.add(new JLabel("Bonus:"));
+        bonusPane.add(overrideBonus);
+        numPane.add(new JLabel("Number Enemies:"));
+        numPane.add(numEnemies); 
 
         int result = JOptionPane.showConfirmDialog(this, request, "Add Monster", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
+        	int numEnemy;
+        	if(numEnemies.getText().length() > 0)
+        		numEnemy = Math.max(1, Integer.parseInt(numEnemies.getText()));
+        	else
+        		numEnemy = 1;
             String selected = (String) monsterSelector.getSelectedItem();
             Monster m = monsters.get(selected);
             if (m == null) return;
 
-            try {
-                int bonus = Integer.parseInt(overrideBonus.getText().trim());
-                int roll = bonus + new Random().nextInt(20) + 1;
-                UUID id = UUID.randomUUID();
-                addInitiativeEntry(new InitiativeEntry(id, m.name, roll, m));
-            } catch (NumberFormatException ignored) {
-            	ErrorLogger.log(ignored);
-                JOptionPane.showMessageDialog(this, "Invalid bonus.");
+            for(int it = 0; it < numEnemy; it ++) {
+            	try {
+            		
+                    int bonus = Integer.parseInt(overrideBonus.getText().trim());
+                    System.out.println();
+                    int val = DiceCalculator.parseDiceExpression("1d20 + " + bonus);
+//                    int roll = bonus + new Random().nextInt(20) + 1;
+                    UUID id = UUID.randomUUID();
+                    addInitiativeEntry(new InitiativeEntry(id, m.name, val, m));
+                } catch (NumberFormatException ignored) {
+                	ErrorLogger.log(ignored);
+                    JOptionPane.showMessageDialog(this, "Invalid bonus.");
+                } catch (IllegalDiceNotationException e1) {
+					e1.printStackTrace();
+				} catch (ScriptException e1) {
+					e1.printStackTrace();
+				}
             }
         }
     }
