@@ -74,7 +74,8 @@ public class AbilityPane extends JPanel
 		mainPane.add(nameLbl, BorderLayout.NORTH);
 		
 		hPane = new HoverTextPane(data, gd, gd.getDesktop());
-		mainPane.add(hPane, BorderLayout.CENTER);
+		JScrollPane hScroll = new JScrollPane(hPane);
+		mainPane.add(hScroll, BorderLayout.CENTER);
 		
 		FillSidePane();
 	}
