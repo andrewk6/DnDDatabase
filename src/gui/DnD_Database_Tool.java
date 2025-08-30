@@ -34,6 +34,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import data.DataContainer;
 import data.campaign.Campaign;
+import gui.builder_internals.ClassBuilderIFrame;
 import gui.builder_internals.FeatBuilderIFrame;
 import gui.builder_internals.ItemBuilderIFrame;
 import gui.builder_internals.MonsterBuilderIFrame;
@@ -42,6 +43,7 @@ import gui.builder_internals.RuleBuilderIFrame;
 import gui.builder_internals.SpellBuilderIFrame;
 import gui.campaign.NotesIFrame;
 import gui.campaign.PartyIFrame;
+import gui.classes.ClassIFrame;
 import gui.dungeon.DungeonIBuilder;
 import gui.dungeon.DungeonIViewer;
 import gui.gui_helpers.CompFactory;
@@ -66,6 +68,7 @@ public class DnD_Database_Tool extends JFrame {
 	private MonsterIFrame mFrame;
 	private ItemIFrame iFrame;
 	private FeatIFrame fFrame;
+	private ClassIFrame cFrame;
 	
 	//Campaign Label
 	private JLabel camp;
@@ -81,6 +84,7 @@ public class DnD_Database_Tool extends JFrame {
 	QuickInsertBuilderIFrame qBuildFrame;
 	ItemBuilderIFrame iBuildFrame;
 	FeatBuilderIFrame fBuildFrame;
+	ClassBuilderIFrame cBuildFrame;
 
 	private final List<LoadListener> loadListeners = new ArrayList<LoadListener>();
 
@@ -157,6 +161,10 @@ public class DnD_Database_Tool extends JFrame {
 		dPane.add(fFrame);
 		fFrame.setVisible(false);
 		
+		cFrame = new ClassIFrame(data, gd);
+		dPane.add(cFrame);
+		cFrame.setVisible(false);
+		
 		rBuildFrame = new RuleBuilderIFrame(data);
 		dPane.add(rBuildFrame);
 		rBuildFrame.setVisible(false);
@@ -185,6 +193,10 @@ public class DnD_Database_Tool extends JFrame {
 		dPane.add(fBuildFrame);
 		fBuildFrame.setVisible(false);
 		
+		cBuildFrame = new ClassBuilderIFrame(data, gd);
+		dPane.add(cBuildFrame);
+		cBuildFrame.setVisible(false);
+		
 		dViewFrame = new DungeonIViewer(data, gd);
 		dPane.add(dViewFrame);
 		dViewFrame.setVisible(false);
@@ -205,6 +217,7 @@ public class DnD_Database_Tool extends JFrame {
 		dataMenu.add(CompFactory.createNewJMenuItem("Rules", rFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Spells", sFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Monsters", mFrame));
+		dataMenu.add(CompFactory.createNewJMenuItem("Class", cFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Items", iFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Feats", fFrame));
 		
@@ -292,6 +305,7 @@ public class DnD_Database_Tool extends JFrame {
 		buildMenu.add(CompFactory.createNewJMenuItem("Quick Insert Builder", qBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Item Buider", iBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Feat Builder", fBuildFrame));
+		buildMenu.add(CompFactory.createNewJMenuItem("Class Builder", cBuildFrame));
 		
 		/*
 		 * LOADED CAMPAIGN
