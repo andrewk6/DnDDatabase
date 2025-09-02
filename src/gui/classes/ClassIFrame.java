@@ -67,8 +67,12 @@ public class ClassIFrame extends JInternalFrame implements ContentTab
 			}
 		});
 		this.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
+		if(gd.getClFrame() == null)
+			gd.NotifyFocus(this);
+		
 		StyleContainer.ConfigIFrame(this, "Feats Database");
 		StyleContainer.SetIcon(this, StyleContainer.CLASS_ICON_FILE);
+		
 		
 		this.getContentPane().setLayout(new BorderLayout());
 		Init(this.getContentPane());
@@ -92,7 +96,7 @@ public class ClassIFrame extends JInternalFrame implements ContentTab
 		FillSidePane();
 	}
 	
-	private void AddTab(DnDClass classData) {
+	public void AddTab(DnDClass classData) {
 		JPanel tab = new JPanel();
 		tab.setLayout(new BorderLayout());
 		tabs.addTab(classData.name, tab);

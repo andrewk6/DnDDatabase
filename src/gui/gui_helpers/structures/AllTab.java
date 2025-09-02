@@ -6,6 +6,7 @@ import data.Feat;
 import data.Monster;
 import data.Rule;
 import data.Spell;
+import data.players.classes.DnDClass;
 
 public interface AllTab extends ContentTab
 {
@@ -15,4 +16,5 @@ public interface AllTab extends ContentTab
 	public void AddTab(Spell m);
 	public void AddTab(Rule m);
 	public void AddTab(Feat f);
+	public void AddTab(DnDClass c);
 }

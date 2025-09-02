@@ -32,6 +32,7 @@ import gui.RuleIFrame;
 import gui.SpellIFrame;
 import gui.campaign.PartyIFrame;
 import gui.campaign.PlayerPane;
+import gui.classes.ClassIFrame;
 import gui.dungeon.DungeonIBuilder;
 import gui.dungeon.DungeonIViewer;
 import gui.gui_helpers.PlayerNameTargets;
@@ -46,6 +47,7 @@ public class GuiDirector
 	private RuleIFrame rFrame;
 	private ItemIFrame iFrame;
 	private FeatIFrame fFrame;
+	private ClassIFrame clFrame;
 	
 	private PartyIFrame pFrame;
 	private InitiativeIFrame initFrame;
@@ -78,21 +80,28 @@ public class GuiDirector
 			mFrame = (MonsterIFrame) frame;
 		else if(frame instanceof FeatIFrame)
 			fFrame = (FeatIFrame) frame;
+		else if(frame instanceof ClassIFrame)
+			clFrame = (ClassIFrame) frame;
+//		else if (fr)
 	}
 	
 	public void DeRegister(ContentTab frame) {
-		if(frame instanceof RuleIFrame)
+		if(frame instanceof RuleIFrame) {
 			if(frame == rFrame)
 				rFrame = null;
-		else if(frame instanceof SpellIFrame)
+		}else if(frame instanceof SpellIFrame) {
 			if(sFrame == frame)
 				sFrame = null;
-		else if(frame instanceof MonsterIFrame)
+		}else if(frame instanceof MonsterIFrame) {
 			if(mFrame == frame)
 				mFrame = null;
-			else if(frame instanceof FeatIFrame)
+		}else if(frame instanceof FeatIFrame) {
 				if(fFrame == frame)
 					fFrame = null;
+		}else if(frame instanceof ClassIFrame) {
+			if(clFrame == frame)
+				clFrame = null;
+		}
 	}
 	
 	public void RegisterFrame(ContentFrame frame) {
@@ -203,6 +212,40 @@ public class GuiDirector
 			mFrame.toFront();
 			if(!mFrame.isVisible())
 				mFrame.setVisible(true);
+			dPane.revalidate();
+			dPane.repaint();
+		});
+	}
+	
+	public void popFFrame(){
+		SwingUtilities.invokeLater(()->{
+			if(fFrame.isIcon())
+				try {
+					fFrame.setIcon(false);
+				} catch (PropertyVetoException e) {
+					ErrorLogger.log(e);
+					e.printStackTrace();
+				}
+			fFrame.toFront();
+			if(!fFrame.isVisible())
+				fFrame.setVisible(true);
+			dPane.revalidate();
+			dPane.repaint();
+		});
+	}
+	
+	public void popClFrame(){
+		SwingUtilities.invokeLater(()->{
+			if(clFrame.isIcon())
+				try {
+					clFrame.setIcon(false);
+				} catch (PropertyVetoException e) {
+					ErrorLogger.log(e);
+					e.printStackTrace();
+				}
+			clFrame.toFront();
+			if(!clFrame.isVisible())
+				clFrame.setVisible(true);
 			dPane.revalidate();
 			dPane.repaint();
 		});
@@ -477,6 +520,14 @@ public class GuiDirector
 	
 	public PartyIFrame getPFrame() {
 		return pFrame;
+	}
+	
+	public FeatIFrame getFFrame() {
+		return fFrame;
+	}
+	
+	public ClassIFrame getClFrame() {
+		return clFrame;
 	}
 	
 	public JDesktopPane getDesktop() {

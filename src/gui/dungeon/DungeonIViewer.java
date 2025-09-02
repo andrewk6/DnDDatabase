@@ -35,6 +35,8 @@ import data.Rule;
 import data.Spell;
 import data.dungeon.Dungeon;
 import data.dungeon.DungeonFloor;
+import data.players.classes.DnDClass;
+import gui.classes.ClassPane;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.MonsterDispPane;
@@ -330,6 +332,33 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
 			});
 			btnFlow.add(removeSpell);
 			mainPane.setSelectedComponent(sPane);
+		}
+	}
+	
+	public void AddTab(DnDClass c) {
+		if(!hasTab(c.name)) {
+			JPanel cPane = new JPanel();
+			cPane.setLayout(new BorderLayout());
+			mainPane.addTab(c.name, cPane);
+			tabsUI.setTabColor(mainPane.indexOfTab(c.name), Color.lightGray);
+			
+			ClassPane classDisp = new ClassPane(data, c, gd);
+			cPane.add(classDisp, BorderLayout.CENTER);
+
+			JPanel btnFlow = new JPanel();
+			btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			cPane.add(btnFlow, BorderLayout.SOUTH);
+
+			JButton removeFeat = new JButton("Remove " + c.name);
+			StyleContainer.SetFontBtn(removeFeat);
+			removeFeat.addActionListener(e -> {
+				int index = mainPane.indexOfComponent(cPane);
+				if (index != -1) {
+					mainPane.removeTabAt(index);
+				}
+			});
+			btnFlow.add(removeFeat);
+			mainPane.setSelectedComponent(cPane);
 		}
 	}
 	

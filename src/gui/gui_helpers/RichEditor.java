@@ -152,7 +152,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         StyleConstants.setUnderline(itemStyle, true);
         
         playerStyle = doc.addStyle("PlayerStyle", null);
-        StyleConstants.setForeground(playerStyle, Color.PINK);
+        StyleConstants.setForeground(playerStyle, Color.BLACK);
         StyleConstants.setItalic(playerStyle, true);
         StyleConstants.setUnderline(playerStyle, true);
         
@@ -162,7 +162,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         StyleConstants.setUnderline(featStyle, true);
         
         classStyle = doc.addStyle("ClassStyle", null);
-        StyleConstants.setForeground(classStyle, Color.PINK);
+        StyleConstants.setForeground(classStyle, Color.MAGENTA);
         StyleConstants.setItalic(classStyle, true);
         StyleConstants.setUnderline(classStyle, true);
 

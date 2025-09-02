@@ -41,6 +41,8 @@ import data.Feat;
 import data.Monster;
 import data.Rule;
 import data.Spell;
+import data.players.classes.DnDClass;
+import gui.classes.ClassPane;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.MonsterDispPane;
@@ -199,6 +201,8 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 			combinedKeysSet.addAll(data.getRuleKeysSorted());
 			combinedKeysSet.addAll(data.getSpellKeysSorted());
 			combinedKeysSet.addAll(data.getMonsterKeysSorted());
+			combinedKeysSet.addAll(data.getFeatKeysSorted());
+			combinedKeysSet.addAll(data.getClassKeysSorted());
 			List<String> keys = new ArrayList<>(combinedKeysSet);
 			Collections.sort(keys);
 
@@ -230,7 +234,6 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 				sField.addMouseListener(new MouseListener() {
 					public void mouseClicked(MouseEvent e) {
 						AddTabDirector(s);
-
 					}
 
 					public void mousePressed(MouseEvent e) {
@@ -255,16 +258,28 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 	}
 
 	public void AddTabDirector(String s) {
+		System.out.println(s);
 		if (data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
-				&& !data.getMonsterKeysSorted().contains(s)) {
+				&& !data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
+				&& !data.getClassKeysSorted().contains(s)) {
 			AddTab(data.getRules().get(s));
 		} else if (!data.getRuleKeysSorted().contains(s) && data.getSpellKeysSorted().contains(s)
-				&& !data.getMonsterKeysSorted().contains(s)) {
+				&& !data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
+				&& !data.getClassKeysSorted().contains(s)) {
 			AddTab(data.getSpells().get(s));
 		} else if (!data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
-				&& data.getMonsterKeysSorted().contains(s)) {
+				&& data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
+				&& !data.getClassKeysSorted().contains(s)) {
 			AddTab(data.getMonsters().get(s));
-		} else {
+		} else if (!data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
+				&& !data.getMonsterKeysSorted().contains(s) && data.getFeatKeysSorted().contains(s)
+				&& !data.getClassKeysSorted().contains(s)) {
+			AddTab(data.getFeats().get(s));
+		}else if (!data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
+				&& !data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
+				&& data.getClassKeysSorted().contains(s)) {
+			AddTab(data.getClasses().get(s));
+		}else {
 			ArrayList<String> opts = new ArrayList<String>();
 			if (data.getRuleKeysSorted().contains(s))
 				opts.add("Rule");
@@ -272,6 +287,10 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 				opts.add("Spell");
 			if (data.getMonsterKeysSorted().contains(s))
 				opts.add("Monster");
+			if(data.getFeatKeysSorted().contains(s))
+				opts.add("Feat");
+			if(data.getClassKeysSorted().contains(s))
+				opts.add("Class");
 
 			if (opts.size() > 0) {
 				String type = gd.showTypeSelectionDialog(SwingUtilities.getWindowAncestor(this), s, opts);
@@ -282,6 +301,10 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 						AddTab(data.getSpells().get(s));
 					else if (type.equals("Monster"))
 						AddTab(data.getMonsters().get(s));
+					else if(type.equals("Feat"))
+						AddTab(data.getFeats().get(s));
+					else if(type.equals("Class"))
+						AddTab(data.getClasses().get(s));
 				}
 			}
 		}
@@ -447,11 +470,43 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 				if (index != -1) {
 					tabs.removeTabAt(index);
 				}
+				CheckTabs();
 			});
 			btnFlow.add(removeFeat);
 			tabs.setSelectedComponent(fPane);
+			CheckTabs();
 		}
 		
+	}
+	
+	public void AddTab(DnDClass c) {
+		System.out.println("Add Tab: " + c.name);
+		if(!hasTab(c.name)) {
+			JPanel cPane = new JPanel();
+			cPane.setLayout(new BorderLayout());
+			tabs.addTab(c.name, cPane);
+			tabsUI.setTabColor(tabs.indexOfTab(c.name), Color.lightGray);
+			
+			ClassPane classDisp = new ClassPane(data, c, gd);
+			cPane.add(classDisp, BorderLayout.CENTER);
+
+			JPanel btnFlow = new JPanel();
+			btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			cPane.add(btnFlow, BorderLayout.SOUTH);
+
+			JButton removeFeat = new JButton("Remove " + c.name);
+			StyleContainer.SetFontBtn(removeFeat);
+			removeFeat.addActionListener(e -> {
+				int index = tabs.indexOfComponent(cPane);
+				if (index != -1) {
+					tabs.removeTabAt(index);
+				}
+				CheckTabs();
+			});
+			btnFlow.add(removeFeat);
+			tabs.setSelectedComponent(cPane);
+			CheckTabs();
+		}
 	}
 
 	public void CheckTabs() {

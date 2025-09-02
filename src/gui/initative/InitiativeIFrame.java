@@ -6,7 +6,9 @@ import data.Monster;
 import data.Rule;
 import data.Spell;
 import data.campaign.Player;
+import data.players.classes.DnDClass;
 import gui.campaign.PlayerPane;
+import gui.classes.ClassPane;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CustomDesktopIcon;
@@ -675,6 +677,33 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 			});
 			btnFlow.add(removeFeat);
 			tabs.setSelectedComponent(fPane);
+		}
+	}
+    
+    public void AddTab(DnDClass c) {
+		if(!hasTab(c.name)) {
+			JPanel cPane = new JPanel();
+			cPane.setLayout(new BorderLayout());
+			tabs.addTab(c.name, cPane);
+			tabsUI.setTabColor(tabs.indexOfTab(c.name), Color.lightGray);
+			
+			ClassPane classDisp = new ClassPane(data, c, gd);
+			cPane.add(classDisp, BorderLayout.CENTER);
+
+			JPanel btnFlow = new JPanel();
+			btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			cPane.add(btnFlow, BorderLayout.SOUTH);
+
+			JButton removeFeat = new JButton("Remove " + c.name);
+			StyleContainer.SetFontBtn(removeFeat);
+			removeFeat.addActionListener(e -> {
+				int index = tabs.indexOfComponent(cPane);
+				if (index != -1) {
+					tabs.removeTabAt(index);
+				}
+			});
+			btnFlow.add(removeFeat);
+			tabs.setSelectedComponent(cPane);
 		}
 	}
     
