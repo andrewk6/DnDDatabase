@@ -88,7 +88,7 @@ public class FeatIFrame extends JInternalFrame implements ContentTab, DataChange
 		});
 //		setVisible(true);
 		this.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
-		if(gd.getsFrame() == null)
+		if(gd.getFFrame() == null)
 			gd.NotifyFocus(this);
 	}
 
