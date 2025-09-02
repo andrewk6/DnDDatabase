@@ -23,6 +23,7 @@ import gui.gui_helpers.CompFactory.ComponentType;
 public class ExportDialog extends JDialog
 {
 	private  JCheckBox rules, spells, monsters, items, feats, classes;
+	private JLabel fileLbl;
 	public boolean export;
 	public File expoTarget;
 	
@@ -31,6 +32,7 @@ public class ExportDialog extends JDialog
 		super(frm, "Create Subclass", ModalityType.APPLICATION_MODAL);
 		expoTarget = null;
 		init(this.getContentPane());
+		this.pack();
 	}
 
 
@@ -58,6 +60,10 @@ public class ExportDialog extends JDialog
 		
 		classes = CompFactory.createNewCheckbox("Export Classes");
 		config.add(classes);
+		
+		fileLbl = CompFactory.createNewLabel("No File Loaded", ComponentType.BODY);
+		config.add(fileLbl);
+		
 		Reset();
 		
 		JPanel btnPane = new JPanel();
@@ -78,13 +84,17 @@ public class ExportDialog extends JDialog
 			    }
 			    
 			    expoTarget = file;
+			    fileLbl.setText("File: " + expoTarget.getName());
 			}
 		});
 		btnPane.add(fileBtn);
 		
 		JButton expoBtn = CompFactory.createNewButton("Export", _->{
-			if(expoTarget != null) {
+			if(expoTarget != null && minSelected()) {
 				export = true;
+				setVisible(false);
+			}else {
+				Reset();
 				setVisible(false);
 			}
 		});
@@ -97,6 +107,11 @@ public class ExportDialog extends JDialog
 		btnPane.add(cancelBtn);
 	}
 	
+	private boolean minSelected() {
+		return rules.isSelected() || spells.isSelected() || monsters.isSelected()
+				|| items.isSelected() || feats.isSelected() || classes.isSelected();
+	}
+	
 	public void Reset() {
 		rules.setSelected(false);
 		spells.setSelected(false);
@@ -104,6 +119,7 @@ public class ExportDialog extends JDialog
 		items.setSelected(false);
 		feats.setSelected(false);
 		classes.setSelected(false);
+		fileLbl.setText("No File Loaded");
 		export = false;
 		expoTarget = null;
 	}
