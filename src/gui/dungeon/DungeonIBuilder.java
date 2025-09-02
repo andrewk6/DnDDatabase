@@ -55,6 +55,7 @@ public class DungeonIBuilder extends JInternalFrame {
 		this.gd = gd;
 		this.gd.RegisterDungeonFrame(this);
 		this.addInternalFrameListener(CompFactory.createNonCloseListener(this));
+		StyleContainer.SetIcon(this, StyleContainer.DUNGEON_BUILDER_ICON_FILE);
 
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Dungeon Files (*.dol)", "dol");
 		fChoose.setFileFilter(filter);

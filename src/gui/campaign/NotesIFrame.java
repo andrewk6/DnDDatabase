@@ -58,7 +58,7 @@ public class NotesIFrame extends JInternalFrame
 		ConfigureFrame(getContentPane());
 		BuildSidePane(getContentPane());
 		BuildMainPane(getContentPane());
-		StyleContainer.SetIcon(this, StyleContainer.ITEM_ICON_FILE);
+		StyleContainer.SetIcon(this, StyleContainer.CAMPAIGN_NOTE_ICON_FILE);
 	}
 	
 	private void ConfigureFrame(Container cPane) {

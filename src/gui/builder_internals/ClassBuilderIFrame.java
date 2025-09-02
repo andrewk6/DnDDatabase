@@ -120,6 +120,7 @@ public class ClassBuilderIFrame extends JInternalFrame implements DataChangeList
 		this.setIconifiable(true);
 		this.setMaximizable(true);
 		this.setClosable(true);
+		StyleContainer.SetIcon(this, StyleContainer.CLASS_BUILDER_ICON_FILE);
 	}
 	
 	private void Initialize(Container cPane) {

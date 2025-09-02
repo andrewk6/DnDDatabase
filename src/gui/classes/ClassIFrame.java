@@ -68,6 +68,7 @@ public class ClassIFrame extends JInternalFrame implements ContentTab
 		});
 		this.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
 		StyleContainer.ConfigIFrame(this, "Feats Database");
+		StyleContainer.SetIcon(this, StyleContainer.FEAT_ICON_FILE);
 		
 		this.getContentPane().setLayout(new BorderLayout());
 		Init(this.getContentPane());

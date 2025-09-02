@@ -75,6 +75,7 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
 		this.setIconifiable(true);
 		this.addInternalFrameListener(GuiDirector.getAllTabListener(gd, this));
 		this.addInternalFrameListener(CompFactory.createNonCloseListener(this));
+		StyleContainer.SetIcon(this, StyleContainer.DUNGEON_ICON_FILE);
 		this.gd.RegisterDungeonFrame(this);
 		
 		Initialize(this.getContentPane());
