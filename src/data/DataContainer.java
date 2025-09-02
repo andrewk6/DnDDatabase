@@ -30,7 +30,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
@@ -49,6 +52,7 @@ import data.items.MagicItem;
 import data.items.ToolSet;
 import data.items.Weapon;
 import data.players.classes.DnDClass;
+import gui.gui_helpers.ExportDialog;
 import gui.gui_helpers.structures.LoadListener;
 
 public class DataContainer {
@@ -133,6 +137,9 @@ public class DataContainer {
 	
 	private String lastCampPath;
 	private boolean initiatlized;
+	
+	private ExportDialog exportDialog;
+	private boolean exportReady;
 
 	public DataContainer() {
 		StartIOThread();
@@ -173,6 +180,11 @@ public class DataContainer {
 		initiatlized = true;
 	}
 	
+	public void buildExportDialog(JFrame frm) {
+		exportDialog = new ExportDialog(frm);
+		exportReady = true;
+	}
+	
 	public void registerLoadListener(LoadListener loader) {
 		loadListeners.add(loader);
 	}
@@ -208,6 +220,108 @@ public class DataContainer {
 	    });
 	    worker.setDaemon(false); // make it non-daemon so JVM waits for it to finish
 	    worker.start();
+	}
+	
+	public void ImportData() {
+		JFileChooser fChoose = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Export Files (*.exol)", "exol");
+		fChoose.setFileFilter(filter);
+		
+		int approve = fChoose.showOpenDialog(null);
+		
+		if(approve == JFileChooser.APPROVE_OPTION) {
+			try {
+				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fChoose.getSelectedFile()));
+				while(true) {
+					try {
+						Object obj = ois.readObject();
+						if(obj instanceof Rule)
+							ImportObject((Rule) obj, ((Rule)obj).name, ruleMap);
+						else if(obj instanceof Spell) 
+							ImportObject((Spell) obj, ((Spell)obj).name, spellMap);
+						else if(obj instanceof Monster) 
+							ImportObject((Monster) obj, ((Monster)obj).name, monstMap);
+						else if(obj instanceof Item) 
+							ImportObject((Item) obj, ((Item)obj).name, itemMap);
+						else if(obj instanceof Feat) 
+							ImportObject((Feat) obj, ((Feat)obj).name, featMap);
+						else if(obj instanceof DnDClass) 
+							ImportObject((DnDClass) obj, ((DnDClass)obj).name, classMap);
+						else throw new IllegalArgumentException("Not proper object");
+						
+					} catch (ClassNotFoundException e) {
+						ErrorLogger.log(e);
+						e.printStackTrace();
+					} catch (EOFException eof) {
+			            ois.close();
+			            break;
+			        }
+				}
+			} catch (IOException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+			}
+		}
+		SafeSaveData();
+		SortKeys();
+		notifyChange();
+	}
+	
+	private <T> void ImportObject(T obj, String key, HashMap<String, T> map) {
+		if(!map.keySet().contains(key)) {
+			map.put(key, obj);
+		}
+	}
+	
+	public void ExportData() {
+		if(exportReady)
+			exportDialog.openDialog();
+		else return;
+		
+		if(exportDialog.export) {
+			File out = exportDialog.expoTarget;
+			if(!out.exists()) {
+				try {
+					out.createNewFile();
+				} catch (IOException e) {
+					ErrorLogger.log(e);
+					e.printStackTrace();
+				}
+			}
+			
+			ioQueue.offer(()->{
+				WriteExport(out);
+			});
+		}
+	}
+	
+	private void WriteExport(File f) {
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+			if(exportDialog.getRules())
+				ExportMap(ruleMap, oos);
+			if(exportDialog.getSpells())
+				ExportMap(spellMap, oos);
+			if(exportDialog.getMonsters())
+				ExportMap(monstMap, oos);
+			if(exportDialog.getItems())
+				ExportMap(itemMap, oos);
+			if(exportDialog.getFeats())
+				ExportMap(featMap, oos);
+			if(exportDialog.getClasses())
+				ExportMap(classMap, oos);
+			oos.flush();
+			oos.close();
+		} catch (IOException e) {
+			ErrorLogger.log(e);
+			e.printStackTrace();
+		}
+	}
+	
+	private <T> void ExportMap(HashMap<String, T> exMap, ObjectOutputStream oos) throws IOException {
+		for(T obj : exMap.values()) {
+			oos.writeObject(obj);
+		}
 	}
 
 	private boolean ImportInsertHelpers() {
@@ -509,6 +623,7 @@ public class DataContainer {
 			shutDownAndWait();
 			SaveConfig();
 		}
+		System.out.println("Exiting now, out of shutdown and wait");
 		System.exit(0);
 	}
 	
@@ -849,6 +964,7 @@ public class DataContainer {
 	            Thread.currentThread().interrupt();
 	        }
 	    }
+	    System.out.println("Finished Shutdown/Wait loop");
 	}
 	
 	public ArrayList<String> matchMonsterTag(String tag){
