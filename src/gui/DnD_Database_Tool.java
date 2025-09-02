@@ -233,6 +233,18 @@ public class DnD_Database_Tool extends JFrame {
 		toolsMenu.add(CompFactory.createNewJMenuItem(
 				"Dice Calculator", ()->new DiceCalcIFrame(), dPane));
 		
+		JMenu dataExInMenu = new JMenu("Import/Export");
+		StyleContainer.SetFontMain(dataExInMenu);
+		toolsMenu.add(dataExInMenu);
+		
+		dataExInMenu.add(CompFactory.createNewJMenuItem("Export", _->{
+			data.ExportData();
+		}));
+		
+		dataExInMenu.add(CompFactory.createNewJMenuItem("Import", _->{
+			data.ImportData();
+		}));
+		
 		/*
 		 * DUNGEON MENU
 		 */
