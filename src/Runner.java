@@ -46,6 +46,7 @@ public class Runner
 					frame.registerLoadListener(load);
 					frame.init();
 					frame.setVisible(true);
+					data.buildExportDialog(frame);
 				} catch (Exception e) {
 					ErrorLogger.log(e);
 					e.printStackTrace();

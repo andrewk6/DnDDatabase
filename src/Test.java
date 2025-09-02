@@ -2,9 +2,12 @@ import java.awt.BorderLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
+import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.util.ArrayList;
@@ -32,8 +35,10 @@ import data.DataContainer.Abilities;
 import data.DataContainer.Proficiency;
 import data.DataContainer.Skills;
 import data.DataContainer.Source;
+import data.Feat;
 import data.Monster;
 import data.Rule;
+import data.Spell;
 import data.items.Item;
 import data.items.MagicItem;
 import data.items.Armor.ArmorType;
@@ -42,6 +47,7 @@ import data.players.classes.DnDClass;
 import data.players.classes.Subclass;
 import data.players.classes.DnDClass.HitDiceType;
 import data.players.classes.DnDClass.WeaponProficiency;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.DocumentHelper;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.StyleContainer;
@@ -52,64 +58,63 @@ public class Test extends JFrame {
 	public static void main(String[] args) throws BadLocationException {
 		DataContainer data = new DataContainer();
 		data.init();
+		boolean gui = false;
 		
-		HashMap<String, DnDClass> classMap = new HashMap<String, DnDClass>();
+		JFileChooser fChoose = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Export Files (*.exol)", "exol");
+		fChoose.setFileFilter(filter);
 		
-		/*
-		 * public enum HitDiceType {d12, d10, d8, d6};
-	public enum WeaponProficiency {Simple, All, SimpleMartialFinesseLight};
+		int approve = fChoose.showOpenDialog(null);
+		
+		if(approve == JFileChooser.APPROVE_OPTION) {
+			try {
+				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fChoose.getSelectedFile()));
+				while(true) {
+					try {
+						Object obj = ois.readObject();
+						if(obj instanceof Rule) 
+							System.out.println("Rule: " + ((Rule)obj).name);
+						else if(obj instanceof Spell) 
+							System.out.println("Spell: " + ((Spell)obj).name);
+						else if(obj instanceof Monster) 
+							System.out.println("Monster: " + ((Monster)obj).name);
+						else if(obj instanceof Item) 
+							System.out.println("Item: " + ((Item)obj).name);
+						else if(obj instanceof Feat) 
+							System.out.println("Feat: " + ((Feat)obj).name);
+						else if(obj instanceof DnDClass) 
+							System.out.println("Class: " + ((DnDClass)obj).name);
+						else System.out.println("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+						
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					} catch (EOFException eof) {
+			            ois.close();
+			            break;
+			        }
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if(gui)
+			guiStuff(data);
+		else
+			data.Exit();
+	}
 	
-	public HashMap<String, ClassAbility> abilities; 
-	public HashMap<String, Subclass> subclasses;
-	
-	public String name;
-	public StyledDocument desc;
-	
-	public HitDiceType hd;
-	public WeaponProficiency weaponProf;
-	public Abilities primaryAbility;
-	public Abilities[] saveingThrows = new Abilities[2];
-	
-	
-	public ArrayList<Skills> startProf;
-	public ArrayList<ArmorType> armorProf;
-	
-	public ArrayList<Item> startingEquip;
-	public int startingGoldNoEquip, startingGoldEquip;
-	public int numStartSkills;
-		 */
-//		for(PlayerClass p : data.getClasses().values()) {
-//			DnDClass c = new DnDClass();
-//			c.abilities = p.abilities;
-//			HashMap<String, Subclass> subs = new HashMap<String, Subclass>();
-//			for(String s : p.subAbilities.keySet()) {
-//				Subclass sub = new Subclass();
-//				sub.name = s;
-//				sub.src = Source.PlayersHandbook2024;
-//				sub.abilities = p.subAbilities.get(s);
-//				subs.put(s, sub);
-//			}
-//			c.subclasses = subs;
-//			c.name = p.name;
-//			c.desc = p.desc;
-//			c.hd = DnDClass.HitDiceType.valueOf(p.hd.toString());
-//			c.weaponProf = DnDClass.WeaponProficiency.valueOf(p.weaponProf.toString());
-//			c.primaryAbility = p.primaryAbility;
-//			c.savingThrows = p.saveingThrows;
-//			c.startProf = p.startProf;
-//			c.armorProf = p.armorProf;
-//			c.startingEquip = p.startingEquip;
-//			c.startingGoldNoEquip = p.startingGoldNoEquip;
-//			c.startingGoldEquip = p.startingGoldEquip;
-//			c.numStartSkills = p.numStartSkills;
-//			c.src = Source.PlayersHandbook2024;
-//			classMap.put(c.name, c);
-//		}
-//		
-//		for(DnDClass c : classMap.values())
-//			System.out.println(c.name);
-//		SaveStuff(classMap);
-		data.Exit();
+	private static void guiStuff(DataContainer data) {
+		SwingUtilities.invokeLater(()->{
+			JFrame frm = new JFrame();
+			frm.setSize(800, 800);
+			frm.addWindowListener(CompFactory.createSafeExitWindowListener(frm, data));
+			frm.setVisible(true);
+			data.buildExportDialog(frm);
+			frm.getContentPane().add(CompFactory.createNewButton("EXPORT", _->{
+				data.ExportData();
+			}));
+		});
 	}
 	
 	private static void SaveStuff(HashMap<String, DnDClass> out) {

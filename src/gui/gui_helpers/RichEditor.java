@@ -14,6 +14,8 @@ import data.items.Item;
 import data.items.MagicItem;
 import data.items.Weapon;
 import data.players.classes.DnDClass;
+import gui.classes.ClassPane;
+import gui.gui_helpers.structures.StyleContainer;
 import utils.ErrorLogger;
 
 import javax.swing.*;
@@ -50,12 +52,17 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     private final JTextPane rulePreviewPane = new JTextPane();
     private final JScrollPane ruleScrollPane = new JScrollPane(rulePreviewPane);
     
+    private final JWindow specialPreviewWindow = new JWindow();
+    private final JPanel specialPreviewPane = new JPanel();
+    private final JScrollPane specialScrollPane = new JScrollPane(specialPreviewPane);
+    
     private final Map<Integer, String> ruleOffsets = new HashMap<>();
     private final Map<Integer, String> spellOffsets = new HashMap<>();
     private final Map<Integer, String> monstOffsets = new HashMap<>();
     private final Map<Integer, String> featOffsets = new HashMap<>();
     private final Map<Integer, String> itemOffsets = new HashMap<>();
     private final Map<Integer, String> playerOffsets = new HashMap<>();
+    private final Map<Integer, String> classOffsets = new HashMap<>();
 
     private int atPosition = -1;
     private String currentPartial = "";
@@ -66,6 +73,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     private Style itemStyle;
     private Style playerStyle;
     private Style featStyle;
+    private Style classStyle;
     
     private int ampPosition = -1;
 //	private final List<String> ampSuggestions = Arrays.asList(
@@ -84,6 +92,22 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 //		);
 	
 	public HashMap<String, String> replacements;
+	
+	public static void main(String[]args) {
+		DataContainer data = new DataContainer();
+		data.init();
+		
+		SwingUtilities.invokeLater(()->{
+			JFrame frm = new JFrame();
+			frm.addWindowListener(CompFactory.createSafeExitWindowListener(frm, data));
+			frm.setSize(new Dimension(800, 800));
+			Container c = frm.getContentPane();
+			
+			c.setLayout(new BorderLayout());
+			c.add(new RichEditor(data), BorderLayout.CENTER);
+			frm.setVisible(true);
+		});
+	}
 
     public RichEditor(DataContainer data) {
         super();
@@ -136,6 +160,11 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         StyleConstants.setForeground(featStyle, Color.PINK);
         StyleConstants.setItalic(featStyle, true);
         StyleConstants.setUnderline(featStyle, true);
+        
+        classStyle = doc.addStyle("ClassStyle", null);
+        StyleConstants.setForeground(classStyle, Color.PINK);
+        StyleConstants.setItalic(classStyle, true);
+        StyleConstants.setUnderline(classStyle, true);
 
         editor.setTransferHandler(new TransferHandler() {
             @Override
@@ -206,7 +235,15 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         rulePreviewWindow.getContentPane().add(ruleScrollPane);
         ruleScrollPane.setPreferredSize(new Dimension(300, 200));
         rulePreviewWindow.pack();
-
+        
+        specialPreviewPane.setLayout(new BorderLayout());
+        specialPreviewWindow.getContentPane().setLayout(new BorderLayout());
+        specialPreviewWindow.add(specialScrollPane, BorderLayout.CENTER);
+        specialScrollPane.setPreferredSize(new Dimension(600, 600));
+        specialScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        specialScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        specialPreviewWindow.pack();
+        
         editor.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -216,6 +253,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 String spellName = spellOffsets.get(pos);
                 String monstName = monstOffsets.get(pos);
                 String featName = featOffsets.get(pos);
+                String className = classOffsets.get(pos);
 //                System.out.println("Rule:" + ruleName +"\nSpell: " + spellName);
                 if (ruleName != null) {
                 	showRulePreview(ruleName, e.getLocationOnScreen());
@@ -225,8 +263,11 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 	showFeatPreview(featName, e.getLocationOnScreen());
                 }else if(monstName != null){
                 	showMonstPreview(monstName, e.getLocationOnScreen());
+                }else if(className != null){
+                	showClassPreview(className, e.getLocationOnScreen());
                 }else {
                     rulePreviewWindow.setVisible(false);
+                    specialPreviewWindow.setVisible(false);
                 }
             }
         });
@@ -236,6 +277,17 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 JScrollBar verticalScrollBar = ruleScrollPane.getVerticalScrollBar();
                 int scrollAmount = e.getUnitsToScroll() * verticalScrollBar.getUnitIncrement();
                 verticalScrollBar.setValue(verticalScrollBar.getValue() + scrollAmount);
+                e.consume();
+            } else if(specialPreviewWindow.isVisible()) {
+            	JScrollBar verticalScrollBar = specialScrollPane.getVerticalScrollBar();
+                JScrollBar horizontalScrollBar = specialScrollPane.getHorizontalScrollBar();
+                if (e.isShiftDown() && horizontalScrollBar != null) {
+                	 int scrollAmount = e.getUnitsToScroll() * horizontalScrollBar.getUnitIncrement();
+                     horizontalScrollBar.setValue(horizontalScrollBar.getValue() + scrollAmount);
+                }else if (verticalScrollBar != null) {
+                    int scrollAmount = e.getUnitsToScroll() * verticalScrollBar.getUnitIncrement();
+                    verticalScrollBar.setValue(verticalScrollBar.getValue() + scrollAmount);
+                }
                 e.consume();
             } else {
                 Component parent = editor.getParent();
@@ -306,6 +358,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             clearStaleItemOffsets();
             clearStalePlayerOffsets();
             clearStaleFeatOffsets();
+            clearStaleClassOffsets();
             SwingUtilities.invokeLater(() -> resetStyleAfterDeletion());
         }
         public void changedUpdate(DocumentEvent e) {}
@@ -374,6 +427,12 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             		matches.add(key + " (feat)");
             	}
             }
+            
+            for(String key : classMap.keySet()) {
+            	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+            		matches.add(key + " (class)");
+            	}
+            }
 
             Collections.sort(matches);
             if (!matches.isEmpty()) {
@@ -423,6 +482,12 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 for(String key : featMap.keySet()) {
                 	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
                 		matches.add(key + " (feat)");
+                	}
+                }
+                
+                for(String key : classMap.keySet()) {
+                	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+                		matches.add(key + " (class)");
                 	}
                 }
                 
@@ -510,6 +575,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 boolean isItem = selected.endsWith(" (item)");
                 boolean isPlayer = selected.endsWith(" (player)");
                 boolean isFeat = selected.endsWith(" (feat)");
+                boolean isClass = selected.endsWith(" (class)");
                 String plainName;
                 if(isSpell)
                 	plainName = selected.substring(0, selected.length() - 8);
@@ -521,6 +587,8 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 	plainName = selected.substring(0, selected.length() - " (feat)".length());
                 else if(isPlayer)
                 	plainName = selected.substring(0, selected.length() - " (player)".length());
+                else if(isClass)
+                	plainName = selected.substring(0, selected.length() - " (class)".length());
                 else
                 	plainName =  selected;
                 int caretPos = editor.getCaretPosition();
@@ -543,6 +611,9 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 }else if(isPlayer) {
                 	styleWithAttr = new SimpleAttributeSet(playerStyle);
                 	styleWithAttr.addAttribute("playerLink", plainName);
+                }else if (isClass){
+                	styleWithAttr = new SimpleAttributeSet(classStyle);
+                	styleWithAttr.addAttribute("classLink", plainName);
                 }else {
                 	styleWithAttr = new SimpleAttributeSet(ruleStyle);
                 	styleWithAttr.addAttribute("ruleLink", plainName);
@@ -564,6 +635,8 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 		featOffsets.put(i, plainName);
                 	}else if(isPlayer){
                 		playerOffsets.put(i, plainName);
+                	}else if (isClass) {
+                		classOffsets.put(i, plainName);
                 	}else {
                 		ruleOffsets.put(i, plainName);
                 	}
@@ -664,6 +737,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         rulePreviewWindow.setVisible(true);
     }
     
+    
     private void showSpellPreview(String ruleName, Point screenLocation) {
         Spell spell = spellMap.get(ruleName);
         if (spell == null) return;
@@ -684,16 +758,22 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         rulePreviewWindow.setVisible(true);
     }
     
+    private void showClassPreview(String className, Point screenLocation) {
+        DnDClass classs = classMap.get(className);
+        if (classs == null) return;
+
+        rulePreviewPane.setStyledDocument(classs.desc);
+        rulePreviewWindow.setLocation(screenLocation.x + 15, screenLocation.y + 15);
+        rulePreviewWindow.pack();
+        rulePreviewWindow.setVisible(true);
+    }
+    
     private void showMonstPreview(String ruleName, Point screenLocation) {
-//        Monster m = monstMap.get(ruleName);
-//        if (m == null) return;
-//        
-//        rulePreviewPane.setText(m.name);
-//        rulePreviewWindow.setLocation(screenLocation.x + 15, screenLocation.y + 15);
-//        rulePreviewWindow.pack();
-//        rulePreviewWindow.setVisible(true);
-    	
-    	System.out.println("Maybe display monster one day");
+    	specialPreviewPane.removeAll();
+    	specialPreviewPane.add(new MonsterDispPane(data, ruleName, null), BorderLayout.CENTER);
+    	specialPreviewWindow.setLocation(screenLocation.x + 15, screenLocation.y + 15);
+    	specialPreviewWindow.pack();
+    	specialPreviewWindow.setVisible(true);
     }
 
     private void resetStyleAfterDeletion() {
@@ -767,6 +847,17 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             Element elem = doc.getCharacterElement(pos);
             AttributeSet attrs = elem.getAttributes();
             return attrs.getAttribute("featLink") == null;
+        });
+    }
+    
+    private void clearStaleClassOffsets() {
+        StyledDocument doc = editor.getStyledDocument();
+        classOffsets.entrySet().removeIf(entry -> {
+            int pos = entry.getKey();
+            if (pos >= doc.getLength()) return true;
+            Element elem = doc.getCharacterElement(pos);
+            AttributeSet attrs = elem.getAttributes();
+            return attrs.getAttribute("classLink") == null;
         });
     }
     
@@ -864,6 +955,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         this.itemMap = data.getItems();
         this.featMap = data.getFeats();
         this.playerMap = data.getParty();
+        this.classMap = data.getClasses();
     }
 
 	@Override
