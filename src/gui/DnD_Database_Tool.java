@@ -34,6 +34,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import data.DataContainer;
 import data.campaign.Campaign;
+import gui.builder_internals.BastionBuilderIFrame;
 import gui.builder_internals.ClassBuilderIFrame;
 import gui.builder_internals.FeatBuilderIFrame;
 import gui.builder_internals.ItemBuilderIFrame;
@@ -69,6 +70,7 @@ public class DnD_Database_Tool extends JFrame {
 	private ItemIFrame iFrame;
 	private FeatIFrame fFrame;
 	private ClassIFrame cFrame;
+	private BastionIFrame bFrame;
 	
 	//Campaign Label
 	private JLabel camp;
@@ -85,6 +87,7 @@ public class DnD_Database_Tool extends JFrame {
 	ItemBuilderIFrame iBuildFrame;
 	FeatBuilderIFrame fBuildFrame;
 	ClassBuilderIFrame cBuildFrame;
+	BastionBuilderIFrame bBuildFrame;
 
 	private final List<LoadListener> loadListeners = new ArrayList<LoadListener>();
 
@@ -165,6 +168,10 @@ public class DnD_Database_Tool extends JFrame {
 		dPane.add(cFrame);
 		cFrame.setVisible(false);
 		
+		bFrame = new BastionIFrame(data, gd);
+		dPane.add(bFrame);
+		bFrame.setVisible(false);
+		
 		rBuildFrame = new RuleBuilderIFrame(data);
 		dPane.add(rBuildFrame);
 		rBuildFrame.setVisible(false);
@@ -197,6 +204,10 @@ public class DnD_Database_Tool extends JFrame {
 		dPane.add(cBuildFrame);
 		cBuildFrame.setVisible(false);
 		
+		bBuildFrame = new BastionBuilderIFrame(data);
+		dPane.add(bBuildFrame);
+		bBuildFrame.setVisible(false);
+		
 		dViewFrame = new DungeonIViewer(data, gd);
 		dPane.add(dViewFrame);
 		dViewFrame.setVisible(false);
@@ -217,9 +228,15 @@ public class DnD_Database_Tool extends JFrame {
 		dataMenu.add(CompFactory.createNewJMenuItem("Rules", rFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Spells", sFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Monsters", mFrame));
-		dataMenu.add(CompFactory.createNewJMenuItem("Class", cFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Items", iFrame));
-		dataMenu.add(CompFactory.createNewJMenuItem("Feats", fFrame));
+		//Player SubMenu
+		JMenu playerMenu = new JMenu("Player Databases");
+		StyleContainer.SetFontMain(playerMenu);
+		dataMenu.add(playerMenu);
+		
+		playerMenu.add(CompFactory.createNewJMenuItem("Class", cFrame));
+		playerMenu.add(CompFactory.createNewJMenuItem("Feats", fFrame));
+		playerMenu.add(CompFactory.createNewJMenuItem("Bastions", bFrame));
 		
 		/*
 		 * TOOLS MENU
@@ -316,8 +333,9 @@ public class DnD_Database_Tool extends JFrame {
 		buildMenu.add(CompFactory.createNewJMenuItem("Monster Builder", mBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Quick Insert Builder", qBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Item Buider", iBuildFrame));
-		buildMenu.add(CompFactory.createNewJMenuItem("Feat Builder", fBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Class Builder", cBuildFrame));
+		buildMenu.add(CompFactory.createNewJMenuItem("Feat Builder", fBuildFrame));
+		buildMenu.add(CompFactory.createNewJMenuItem("Bastion Room Builder", bBuildFrame));
 		
 		/*
 		 * LOADED CAMPAIGN
