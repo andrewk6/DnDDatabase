@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.swing.text.StyledDocument;
 
+import data.DataContainer.Source;
+
 public class Feat implements Serializable{
 	private static final long serialVersionUID = 810856765469994989L;
 	
@@ -14,4 +16,5 @@ public class Feat implements Serializable{
 	public StyledDocument desc;
 	public String name;
 	public FeatType type;
+	public Source src;
 }

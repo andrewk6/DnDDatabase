@@ -30,6 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.naming.ldap.SortKey;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -52,6 +53,7 @@ import data.items.MagicItem;
 import data.items.ToolSet;
 import data.items.Weapon;
 import data.players.BastionRoom;
+import data.players.Species;
 import data.players.classes.DnDClass;
 import gui.gui_helpers.ExportDialog;
 import gui.gui_helpers.structures.LoadListener;
@@ -102,6 +104,7 @@ public class DataContainer {
 	public static final String ITEMS_FILE_NAME = "Items.iol";
 	public static final String FEATS_FILE_NAME = "Feats.fol";
 	public static final String CLASS_FILE_NAME = "Classes.clol";
+	public static final String SPECIES_FILE_NAME = "Species.spol";
 	public static final String BASTION_ROOM_FILE_NAME = "Bastions.baol";
 	public static final String CONFIG_FILE_NAME = "Config.confol";
 	public static final String EXTRAS_FILE_NAME = "Extras.exol";
@@ -116,6 +119,7 @@ public class DataContainer {
 	public static final int FEATS = 6;
 	public static final int CLASSES = 7;
 	public static final int BASTION_ROOMS = 8;
+	public static final int SPECIES = 9;
 
 	private HashMap<String, Rule> ruleMap;
 	private HashMap<String, Spell> spellMap;
@@ -123,6 +127,7 @@ public class DataContainer {
 	private HashMap<String, Item> itemMap;
 	private HashMap<String, Feat> featMap;
 	private HashMap<String, DnDClass> classMap;
+	private HashMap<String, Species> speciesMap;
 	private HashMap<String, BastionRoom> bastionRoomMap;
 	private HashMap<String, StyledDocument> insertMap;
 	private HashMap<String, StyledDocument> bastionRules;
@@ -130,7 +135,7 @@ public class DataContainer {
 	
 	private ArrayList<String> ruleKeysSorted, spellKeysSorted, monstKeysSorted, insertKeysSorted,
 		weaponKeysSorted, armorKeysSorted, gearKeysSorted, toolKeysSorted, magicItemKeysSorted, featKeysSorted,
-		classKeysSorted, bastionRoomKeysSorted;
+		classKeysSorted, bastionRoomKeysSorted, speciesKeysSorted;
 	
 
 	private final AtomicInteger runningTasks = new AtomicInteger(0);
@@ -164,6 +169,7 @@ public class DataContainer {
         tasks.add(this::ImportItems);
         tasks.add(this::ImportFeats);
         tasks.add(this::ImportClassMap);
+        tasks.add(this::ImportSpeciesMap);
         tasks.add(this::ImportBastionRooms);
         tasks.add(this::ImportBastionRules);
         
@@ -344,7 +350,6 @@ public class DataContainer {
 			}
 		}else
 			insertHFile = new File(INSERT_FILE_NAME);
-		System.out.println(insertHFile.getAbsolutePath());
 		if(insertHFile.exists()) {
 			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(insertHFile))) {
 				insertMap = (HashMap<String, StyledDocument>) ois.readObject();
@@ -384,7 +389,6 @@ public class DataContainer {
 			}
 		}else
 			bastRuleFile = new File(BASTION_RULES);
-		System.out.println(bastRuleFile.getAbsolutePath());
 		if(bastRuleFile.exists()) {
 			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(bastRuleFile))) {
 				bastionRules = (HashMap<String, StyledDocument>) ois.readObject();
@@ -640,6 +644,42 @@ public class DataContainer {
 		return false;
 	}
 	
+	private boolean ImportSpeciesMap() {
+		speciesMap = new HashMap<String, Species>();
+		speciesKeysSorted = new ArrayList<String>();
+		File speciesFile;
+		
+		if(dbFolder.exists()) {
+			if(dbFolder.isDirectory()) {
+				speciesFile = new File(dbFolder.getPath() + File.separator + SPECIES_FILE_NAME);
+			}else {
+				speciesFile = new File(SPECIES_FILE_NAME);
+			}
+		}else {
+			speciesFile = new File(SPECIES_FILE_NAME);
+		}
+		
+		if (speciesFile.exists()) {
+			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(speciesFile))) {
+				while (true) {
+					try {
+						Species s = (Species) ois.readObject();
+						speciesMap.put(s.name, s);
+						speciesKeysSorted.add(s.name);
+					} catch (EOFException eof) {
+						ois.close();
+						return true;
+					}
+				}
+			} catch (IOException | ClassNotFoundException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return false;
+	}
+	
 	private boolean ImportBastionRooms() {
 		bastionRoomMap = new HashMap<String, BastionRoom>();
 		bastionRoomKeysSorted = new ArrayList<String>();
@@ -788,6 +828,13 @@ public class DataContainer {
 		notifyChange(DataContainer.CLASSES);
 	}
 	
+	public void SetSpeciesMap(HashMap<String, Species> sMap) {
+		this.speciesMap = sMap;
+		this.speciesKeysSorted = new ArrayList<String>(sMap.keySet());
+		SortKeys(DataContainer.SPECIES);
+		notifyChange(DataContainer.SPECIES);
+	}
+	
 	public void SetBastionRoomMap(HashMap<String, BastionRoom> bMap) {
 		this.bastionRoomMap = bMap;
 		this.classKeysSorted = new ArrayList<String>(bMap.keySet());
@@ -810,7 +857,7 @@ public class DataContainer {
 	private boolean SaveData() {
 		return SaveRules() && SaveSpells() && SaveMonsters() && 
 				SaveInserts() && SaveItems() && SaveCampaign() && SaveFeats()
-				&& SaveClasses() && SaveBastionRooms();
+				&& SaveClasses() && SaveSpecies() && SaveBastionRooms();
 	}
 
 	private boolean SaveData(int saveOpt) {
@@ -830,6 +877,8 @@ public class DataContainer {
 			return SaveFeats();
 		else if(saveOpt == CLASSES)
 			return SaveClasses();
+		else if(saveOpt == SPECIES)
+			return SaveSpecies();
 		else if(saveOpt == BASTION_ROOMS)
 			return SaveBastionRooms();
 		else throw  new IllegalArgumentException("Invalid save option");
@@ -1040,6 +1089,32 @@ public class DataContainer {
 		}
 	}
 	
+	private boolean SaveSpecies() {
+		File speciesFile = new File(dbFolder.getPath() + File.separator + DataContainer.SPECIES_FILE_NAME);
+		if(!speciesFile.exists()) {
+			try {
+				speciesFile.createNewFile();
+			} catch (IOException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(speciesFile));
+			for (String s : speciesMap.keySet()) {
+				oos.writeObject(speciesMap.get(s));
+			}
+			oos.flush();
+			oos.close();
+			return true;
+		} catch (IOException e) {
+			ErrorLogger.log(e);
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	private boolean SaveBastionRooms() {
 		File bFile = new File(dbFolder.getPath() + File.separator + DataContainer.BASTION_ROOM_FILE_NAME);
 		if(!bFile.exists()) {
@@ -1120,6 +1195,7 @@ public class DataContainer {
 		Collections.sort(magicItemKeysSorted);
 		Collections.sort(featKeysSorted);
 		Collections.sort(classKeysSorted);
+		Collections.sort(speciesKeysSorted);
 		Collections.sort(bastionRoomKeysSorted);
 	}
 	
@@ -1139,6 +1215,7 @@ public class DataContainer {
 		case DataContainer.FEATS: Collections.sort(featKeysSorted); break;
 		case DataContainer.CLASSES: Collections.sort(classKeysSorted); break;
 		case DataContainer.BASTION_ROOMS: Collections.sort(bastionRoomKeysSorted); break;
+		case DataContainer.SPECIES: Collections.sort(speciesKeysSorted); break;
 		default: throw new IllegalArgumentException("Invalid Map Type.");
 		}
 	}
@@ -1180,6 +1257,12 @@ public class DataContainer {
 		if(classMap == null)
 			return null;
 		return Collections.unmodifiableMap(classMap);
+	}
+	
+	public Map<String, Species> getSpecies(){
+		if(speciesMap == null)
+			return null;
+		return Collections.unmodifiableMap(speciesMap);
 	}
 	
 	public Map<String, BastionRoom> getBastionRooms(){
@@ -1240,6 +1323,10 @@ public class DataContainer {
 	
 	public List<String> getClassKeysSorted(){
 		return Collections.unmodifiableList(classKeysSorted);
+	}
+	
+	public List<String> getSpeciesKeysSorted(){
+		return Collections.unmodifiableList(speciesKeysSorted);
 	}
 	
 	public List<String> getBastionRoomKeysSorted(){

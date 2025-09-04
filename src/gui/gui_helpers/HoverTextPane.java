@@ -167,9 +167,10 @@ public class HoverTextPane extends JTextPane {
             String playerName = (String) attr.getAttribute("playerLink");
             String featName = (String) attr.getAttribute("featLink");
             String className = (String) attr.getAttribute("classLink");
+            String speciesName = (String)attr.getAttribute("speciesLink");
             
             String combo = ruleName + spellName + monsterName + 
-            		playerName + featName + className;
+            		playerName + featName + className + speciesName;
             combo = combo.replace("null", "");
             if(itemName != null|| playerName != null) {
             	if(itemName != null) {
@@ -192,20 +193,23 @@ public class HoverTextPane extends JTextPane {
             	}
             }else if(gd.getComboFrame() != null && combo.length() > 0) {
             	if(ruleName != null && spellName == null && monsterName == null
-            			&& featName == null && className == null)
+            			&& featName == null && className == null && speciesName == null)
             		gd.getComboFrame().AddTab(data.getRules().get(ruleName));
             	else if(ruleName == null && spellName != null && monsterName == null
-            			&& featName == null && className == null)
+            			&& featName == null && className == null && speciesName == null)
             		gd.getComboFrame().AddTab(data.getSpells().get(spellName));
             	else if(ruleName == null && spellName == null && monsterName != null
-            			&& featName == null && className == null)
+            			&& featName == null && className == null && speciesName == null)
             		gd.getComboFrame().AddTab(data.getMonsters().get(monsterName));
             	else if(ruleName == null && spellName == null && monsterName == null
-            			&& featName != null && className == null)
+            			&& featName != null && className == null && speciesName == null)
             		gd.getComboFrame().AddTab(data.getFeats().get(featName));
             	else if(ruleName == null && spellName == null && monsterName == null
-            			&& featName == null && className != null)
+            			&& featName == null && className != null && speciesName == null)
             		gd.getComboFrame().AddTab(data.getClasses().get(className));
+            	else if(ruleName == null && spellName == null && monsterName == null
+            			&& featName == null && className == null && speciesName != null)
+            		gd.getComboFrame().AddTab(data.getSpecies().get(speciesName));
             	else if(gd.getComboFrame() instanceof ComboIFrame)
             		((ComboIFrame) gd.getComboFrame()).AddTabDirector(combo);
             }else {
@@ -249,6 +253,11 @@ public class HoverTextPane extends JTextPane {
                 	if(gd.getClFrame() != null) {
                 		gd.getClFrame().AddTab(data.getClasses().get(className));
                 		gd.popClFrame();
+                	}
+                }else if(speciesName != null && data.getSpecies().containsKey(speciesName)) {
+                	if(gd.getSpFrame() != null) {
+                		gd.getSpFrame().AddTab(data.getSpecies().get(speciesName));
+                		gd.popSpFrame();
                 	}
                 }
             }
