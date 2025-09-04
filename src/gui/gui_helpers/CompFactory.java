@@ -1,7 +1,10 @@
 package gui.gui_helpers;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyVetoException;
@@ -199,4 +202,14 @@ public class CompFactory
         setFont(combo, font);
         return combo;
     }
+	
+	public static MouseListener createSideMouseListener(JLabel lbl, Runnable r) {
+		return new MouseListener() {
+			public void mouseClicked(MouseEvent e) {r.run();}
+			public void mousePressed(MouseEvent e) {}
+			public void mouseReleased(MouseEvent e) {}
+			public void mouseEntered(MouseEvent e) {lbl.setFont(lbl.getFont().deriveFont(Font.BOLD));}
+			public void mouseExited(MouseEvent e) {lbl.setFont(lbl.getFont().deriveFont(Font.PLAIN));}
+		};
+	}
 }

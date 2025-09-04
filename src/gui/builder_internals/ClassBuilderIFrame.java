@@ -95,6 +95,15 @@ public class ClassBuilderIFrame extends JInternalFrame implements DataChangeList
 			classMap = new HashMap<String, DnDClass>(data.getClasses());
 		else
 			classMap = new HashMap<String, DnDClass>();
+		
+		itemNames = new ArrayList<String>();
+		itemNames.addAll(data.getArmorKeysSorted());
+		itemNames.addAll(data.getWeaponKeysSorted());
+		itemNames.addAll(data.getGearKeysSorted());
+		itemNames.addAll(data.getToolKeysSorted());
+		
+		Initialize(this.getContentPane());
+		
 		this.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
 		this.addInternalFrameListener(new InternalFrameListener() {
 			public void internalFrameOpened(InternalFrameEvent e) {}
@@ -106,14 +115,6 @@ public class ClassBuilderIFrame extends JInternalFrame implements DataChangeList
 			public void internalFrameDeactivated(InternalFrameEvent e) {}
 		});
 		this.setSize(800, 800);
-		
-		itemNames = new ArrayList<String>();
-		itemNames.addAll(data.getArmorKeysSorted());
-		itemNames.addAll(data.getWeaponKeysSorted());
-		itemNames.addAll(data.getGearKeysSorted());
-		itemNames.addAll(data.getToolKeysSorted());
-		
-		Initialize(this.getContentPane());
 		pack();
 		this.setSize(new Dimension(800, 800));
 		this.setResizable(true);

@@ -51,6 +51,7 @@ import data.items.Item;
 import data.items.MagicItem;
 import data.items.ToolSet;
 import data.items.Weapon;
+import data.players.BastionRoom;
 import data.players.classes.DnDClass;
 import gui.gui_helpers.ExportDialog;
 import gui.gui_helpers.structures.LoadListener;
@@ -82,7 +83,8 @@ public class DataContainer {
 	}
 	
 	public enum Source{
-		PlayersHandbook2024, DungeonMastersGuide2024, MonsterManual2024, VecnaEveOfRuin, Custom
+		PlayersHandbook2024, DungeonMastersGuide2024, MonsterManual2024, VecnaEveOfRuin, Custom, 
+		TashasCauldronOfEverything, XanathersGuideToEverything,
 	}
 	
 	public enum PlayerClass{
@@ -100,8 +102,10 @@ public class DataContainer {
 	public static final String ITEMS_FILE_NAME = "Items.iol";
 	public static final String FEATS_FILE_NAME = "Feats.fol";
 	public static final String CLASS_FILE_NAME = "Classes.clol";
+	public static final String BASTION_ROOM_FILE_NAME = "Bastions.baol";
 	public static final String CONFIG_FILE_NAME = "Config.confol";
 	public static final String EXTRAS_FILE_NAME = "Extras.exol";
+	public static final String BASTION_RULES = "BastionRules.baol";
 	
 	public static final int RULES = 0;
 	public static final int SPELLS = 1;
@@ -111,6 +115,7 @@ public class DataContainer {
 	public static final int CAMPAIGN = 5;
 	public static final int FEATS = 6;
 	public static final int CLASSES = 7;
+	public static final int BASTION_ROOMS = 8;
 
 	private HashMap<String, Rule> ruleMap;
 	private HashMap<String, Spell> spellMap;
@@ -118,12 +123,14 @@ public class DataContainer {
 	private HashMap<String, Item> itemMap;
 	private HashMap<String, Feat> featMap;
 	private HashMap<String, DnDClass> classMap;
+	private HashMap<String, BastionRoom> bastionRoomMap;
 	private HashMap<String, StyledDocument> insertMap;
+	private HashMap<String, StyledDocument> bastionRules;
 	private Campaign camp;
 	
 	private ArrayList<String> ruleKeysSorted, spellKeysSorted, monstKeysSorted, insertKeysSorted,
 		weaponKeysSorted, armorKeysSorted, gearKeysSorted, toolKeysSorted, magicItemKeysSorted, featKeysSorted,
-		classKeysSorted;
+		classKeysSorted, bastionRoomKeysSorted;
 	
 
 	private final AtomicInteger runningTasks = new AtomicInteger(0);
@@ -157,6 +164,8 @@ public class DataContainer {
         tasks.add(this::ImportItems);
         tasks.add(this::ImportFeats);
         tasks.add(this::ImportClassMap);
+        tasks.add(this::ImportBastionRooms);
+        tasks.add(this::ImportBastionRules);
         
         ExecutorService executor = Executors.newFixedThreadPool(tasks.size());
         try {
@@ -356,6 +365,40 @@ public class DataContainer {
 				insertMap = new HashMap<String, StyledDocument>();
 				insertKeysSorted = new ArrayList<String>();
 				return true;
+			} catch (IOException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+	
+	private boolean ImportBastionRules() {
+		File bastRuleFile;
+		
+		if(dbFolder.exists()) {
+			if(dbFolder.isDirectory()) {
+				bastRuleFile = new File(dbFolder.getPath() + File.separator + BASTION_RULES);
+			}else {
+				bastRuleFile = new File(BASTION_RULES);
+			}
+		}else
+			bastRuleFile = new File(BASTION_RULES);
+		System.out.println(bastRuleFile.getAbsolutePath());
+		if(bastRuleFile.exists()) {
+			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(bastRuleFile))) {
+				bastionRules = (HashMap<String, StyledDocument>) ois.readObject();
+				ois.close();
+				return true;
+			} catch (IOException | ClassNotFoundException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+				return false;
+			}
+		}else {
+			try {
+				bastRuleFile.createNewFile();
+				bastionRules = new HashMap<String, StyledDocument>();
 			} catch (IOException e) {
 				ErrorLogger.log(e);
 				e.printStackTrace();
@@ -597,6 +640,42 @@ public class DataContainer {
 		return false;
 	}
 	
+	private boolean ImportBastionRooms() {
+		bastionRoomMap = new HashMap<String, BastionRoom>();
+		bastionRoomKeysSorted = new ArrayList<String>();
+		File bastFile;
+		
+		if(dbFolder.exists()) {
+			if(dbFolder.isDirectory()) {
+				bastFile = new File(dbFolder.getPath() + File.separator + BASTION_ROOM_FILE_NAME);
+			}else {
+				bastFile = new File(BASTION_ROOM_FILE_NAME);
+			}
+		}else {
+			bastFile = new File(BASTION_ROOM_FILE_NAME);
+		}
+		if (bastFile.exists()) {
+			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(bastFile))) {
+				while (true) {
+					try {
+						BastionRoom s = (BastionRoom) ois.readObject();
+						bastionRoomMap.put(s.name, s);
+						bastionRoomKeysSorted.add(s.name);
+					} catch (EOFException eof) {
+						// End of file reached
+						return true;
+					}
+				}
+			} catch (IOException | ClassNotFoundException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+				return false;
+			}
+		}
+
+		return false;
+	}
+	
 	private void notifyChange() {
 		for(DataChangeListener tar : updateListeners)
 			tar.onMapUpdated();
@@ -709,6 +788,13 @@ public class DataContainer {
 		notifyChange(DataContainer.CLASSES);
 	}
 	
+	public void SetBastionRoomMap(HashMap<String, BastionRoom> bMap) {
+		this.bastionRoomMap = bMap;
+		this.classKeysSorted = new ArrayList<String>(bMap.keySet());
+		SortKeys(DataContainer.BASTION_ROOMS);
+		notifyChange(DataContainer.BASTION_ROOMS);
+	}
+	
 	public void SafeSaveData() {
 		System.out.println("Safe Save Enter");
 		ioQueue.offer(this::SaveData);
@@ -723,7 +809,8 @@ public class DataContainer {
 	
 	private boolean SaveData() {
 		return SaveRules() && SaveSpells() && SaveMonsters() && 
-				SaveInserts() && SaveItems() && SaveCampaign() && SaveFeats();
+				SaveInserts() && SaveItems() && SaveCampaign() && SaveFeats()
+				&& SaveClasses() && SaveBastionRooms();
 	}
 
 	private boolean SaveData(int saveOpt) {
@@ -743,6 +830,8 @@ public class DataContainer {
 			return SaveFeats();
 		else if(saveOpt == CLASSES)
 			return SaveClasses();
+		else if(saveOpt == BASTION_ROOMS)
+			return SaveBastionRooms();
 		else throw  new IllegalArgumentException("Invalid save option");
 //		System.out.println("Save Complete");
 	}
@@ -951,6 +1040,32 @@ public class DataContainer {
 		}
 	}
 	
+	private boolean SaveBastionRooms() {
+		File bFile = new File(dbFolder.getPath() + File.separator + DataContainer.BASTION_ROOM_FILE_NAME);
+		if(!bFile.exists()) {
+			try {
+				bFile.createNewFile();
+			} catch (IOException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(bFile));
+			for (String s : bastionRoomMap.keySet()) {
+				oos.writeObject(bastionRoomMap.get(s));
+			}
+			oos.flush();
+			oos.close();
+			return true;
+		} catch (IOException e) {
+			ErrorLogger.log(e);
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	public void shutDownAndWait() {
 		System.out.println("Finishing saves before shutdown");
 		isRunning = false;  // tell worker to stop after finishing current + queued tasks
@@ -1005,6 +1120,7 @@ public class DataContainer {
 		Collections.sort(magicItemKeysSorted);
 		Collections.sort(featKeysSorted);
 		Collections.sort(classKeysSorted);
+		Collections.sort(bastionRoomKeysSorted);
 	}
 	
 	private void SortKeys(int mapType) {
@@ -1022,16 +1138,17 @@ public class DataContainer {
 			break;
 		case DataContainer.FEATS: Collections.sort(featKeysSorted); break;
 		case DataContainer.CLASSES: Collections.sort(classKeysSorted); break;
+		case DataContainer.BASTION_ROOMS: Collections.sort(bastionRoomKeysSorted); break;
 		default: throw new IllegalArgumentException("Invalid Map Type.");
 		}
 	}
 
-	public boolean UpdateData() {
-		boolean importStatus = ImportRuleMap() && ImportSpellMap();
-		SortKeys();
-		return importStatus;
-
-	}
+//	public boolean UpdateData() {
+//		boolean importStatus = ImportRuleMap() && ImportSpellMap();
+//		SortKeys();
+//		return importStatus;
+//
+//	}
 	
 	public String getCampaignName() {
 		return camp.saveLoc.getName();
@@ -1063,6 +1180,18 @@ public class DataContainer {
 		if(classMap == null)
 			return null;
 		return Collections.unmodifiableMap(classMap);
+	}
+	
+	public Map<String, BastionRoom> getBastionRooms(){
+		if(bastionRoomMap == null)
+			return null;
+		return Collections.unmodifiableMap(bastionRoomMap);
+	}
+	
+	public Map<String, StyledDocument> getBastionRules(){
+		if(bastionRules == null)
+			return null;
+		return Collections.unmodifiableMap(bastionRules);
 	}
 	
 	public Map<String, Item> getItems(){
@@ -1111,6 +1240,10 @@ public class DataContainer {
 	
 	public List<String> getClassKeysSorted(){
 		return Collections.unmodifiableList(classKeysSorted);
+	}
+	
+	public List<String> getBastionRoomKeysSorted(){
+		return Collections.unmodifiableList(bastionRoomKeysSorted);
 	}
 	
 	public HashMap<String, Monster> getUnsafe(){
