@@ -35,16 +35,19 @@ import data.Rule;
 import data.Spell;
 import data.dungeon.Dungeon;
 import data.dungeon.DungeonFloor;
+import data.players.Species;
 import data.players.classes.DnDClass;
 import gui.classes.ClassPane;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.MonsterDispPane;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.AllTab;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import gui.species.SpeciesPane;
 import utils.ErrorLogger;
 
 public class DungeonIViewer extends JInternalFrame implements AllTab
@@ -360,6 +363,25 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
 			btnFlow.add(removeFeat);
 			mainPane.setSelectedComponent(cPane);
 		}
+	}
+	
+	public void AddTab(Species s) {
+		if(!hasTab(s.name)) {
+    		JPanel tab = new JPanel();
+    		tab.setLayout(new BorderLayout());
+    		mainPane.addTab(s.name, tab);
+    		
+    		tab.add(new SpeciesPane(data, gd, s), BorderLayout.CENTER);
+    		tab.add(CompFactory.createButtonFlowPane(FlowLayout.RIGHT, new JButton[] {
+    				CompFactory.createNewButton("Remove " + s.name + " Tab", _->{
+    					mainPane.removeTabAt(mainPane.indexOfComponent(tab));
+    				})
+    		}), BorderLayout.SOUTH);
+    	}
+	}
+	
+	private void test(JPanel p) {
+		
 	}
 	
 	private boolean hasTab(String n) {

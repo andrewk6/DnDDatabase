@@ -37,6 +37,7 @@ import gui.dungeon.DungeonIBuilder;
 import gui.dungeon.DungeonIViewer;
 import gui.gui_helpers.PlayerNameTargets;
 import gui.initative.InitiativeIFrame;
+import gui.species.SpeciesIFrame;
 import utils.ErrorLogger;
 
 public class GuiDirector
@@ -48,6 +49,7 @@ public class GuiDirector
 	private ItemIFrame iFrame;
 	private FeatIFrame fFrame;
 	private ClassIFrame clFrame;
+	private SpeciesIFrame spFrame;
 	
 	private PartyIFrame pFrame;
 	private InitiativeIFrame initFrame;
@@ -82,6 +84,8 @@ public class GuiDirector
 			fFrame = (FeatIFrame) frame;
 		else if(frame instanceof ClassIFrame)
 			clFrame = (ClassIFrame) frame;
+		else if(frame instanceof SpeciesIFrame)
+			spFrame = (SpeciesIFrame) frame;
 //		else if (fr)
 	}
 	
@@ -101,6 +105,9 @@ public class GuiDirector
 		}else if(frame instanceof ClassIFrame) {
 			if(clFrame == frame)
 				clFrame = null;
+		}else if(frame instanceof SpeciesIFrame) {
+			if(spFrame == frame)
+				spFrame = null;
 		}
 	}
 	
@@ -246,6 +253,23 @@ public class GuiDirector
 			clFrame.toFront();
 			if(!clFrame.isVisible())
 				clFrame.setVisible(true);
+			dPane.revalidate();
+			dPane.repaint();
+		});
+	}
+	
+	public void popSpFrame() {
+		SwingUtilities.invokeLater(()->{
+			if(spFrame.isIcon())
+				try {
+					spFrame.setIcon(false);
+				} catch (PropertyVetoException e) {
+					ErrorLogger.log(e);
+					e.printStackTrace();
+				}
+			spFrame.toFront();
+			if(!spFrame.isVisible())
+				spFrame.setVisible(true);
 			dPane.revalidate();
 			dPane.repaint();
 		});
@@ -528,6 +552,10 @@ public class GuiDirector
 	
 	public ClassIFrame getClFrame() {
 		return clFrame;
+	}
+	
+	public SpeciesIFrame getSpFrame() {
+		return spFrame;
 	}
 	
 	public JDesktopPane getDesktop() {

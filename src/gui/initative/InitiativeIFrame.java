@@ -6,11 +6,13 @@ import data.Monster;
 import data.Rule;
 import data.Spell;
 import data.campaign.Player;
+import data.players.Species;
 import data.players.classes.DnDClass;
 import gui.campaign.PlayerPane;
 import gui.classes.ClassPane;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.FilterCombo;
 import gui.gui_helpers.HoverTextPane;
@@ -20,6 +22,7 @@ import gui.gui_helpers.structures.AllTab;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import gui.species.SpeciesPane;
 import utils.DiceCalculator;
 import utils.ErrorLogger;
 import utils.IllegalDiceNotationException;
@@ -742,6 +745,22 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 			btnFlow.add(removeRule);
 			tabs.setSelectedComponent(rPane);
 		}
+    }
+    
+    public void AddTab(Species s) {
+    	if(!hasTab(s.name)) {
+    		JPanel tab = new JPanel();
+    		tab.setLayout(new BorderLayout());
+    		tabs.addTab(s.name, tab);
+    		tabsUI.setTabColor(tabs.indexOfComponent(tab), Color.YELLOW);
+    		
+    		tab.add(new SpeciesPane(data, gd, s), BorderLayout.CENTER);
+    		tab.add(CompFactory.createButtonFlowPane(FlowLayout.RIGHT, new JButton[] {
+    				CompFactory.createNewButton("Remove " + s.name + " Tab", _->{
+    					tabs.removeTabAt(tabs.indexOfComponent(tab));
+    				})
+    		}), BorderLayout.SOUTH);
+    	}
     }
     
     private boolean hasTab(String n) {

@@ -67,10 +67,10 @@ public class Test extends JFrame {
 	public static void main(String[] args) throws BadLocationException {
 		DataContainer data = new DataContainer();
 		data.init();
-		for(StyledDocument d : data.getBastionRules().values())
-			System.out.println(d.getText(0, d.getLength()));
 		boolean gui = false;
-		
+		for(Feat f : data.getFeats().values())
+			System.out.println(f.name + ": " + f.src);
+//		data.SafeSaveData(DataContainer.FEATS);
 		if(gui)
 			guiStuff(data);
 		else

@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.swing.text.StyledDocument;
 
+import data.DataContainer.Source;
+
 public class Species implements Serializable
 {
 	/**
@@ -13,5 +15,5 @@ public class Species implements Serializable
 	
 	public String name;
 	public StyledDocument desc;
-	
+	public Source src;
 }
