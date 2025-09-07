@@ -58,7 +58,7 @@ public class NotesIFrame extends JInternalFrame
 		ConfigureFrame(getContentPane());
 		BuildSidePane(getContentPane());
 		BuildMainPane(getContentPane());
-		StyleContainer.SetIcon(this, StyleContainer.ITEM_ICON_FILE);
+		StyleContainer.SetIcon(this, StyleContainer.CAMPAIGN_NOTE_ICON_FILE);
 	}
 	
 	private void ConfigureFrame(Container cPane) {
@@ -226,9 +226,13 @@ public class NotesIFrame extends JInternalFrame
 	
 	private void LoadEditorConf(String key) {
 		if(noteTitle.getText().length() > 0 || edit.getStyledDocument().getLength() > 0) {
-			int loadConf = JOptionPane.showConfirmDialog(edit, "Would you like to load, you will lose any unsaved work",
-					"Load Confirmation", JOptionPane.YES_NO_OPTION);
-			if(loadConf == JOptionPane.YES_OPTION) {
+			if(editChck.isSelected()) {
+				int loadConf = JOptionPane.showConfirmDialog(edit, "Would you like to load, you will lose any unsaved work",
+						"Load Confirmation", JOptionPane.YES_NO_OPTION);
+				if(loadConf == JOptionPane.YES_OPTION) {
+					LoadEditor(key);
+				}
+			}else{
 				LoadEditor(key);
 			}
 		}else {

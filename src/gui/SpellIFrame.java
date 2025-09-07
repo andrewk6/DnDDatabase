@@ -32,11 +32,14 @@ import javax.swing.event.InternalFrameListener;
 
 import data.DataChangeListener;
 import data.DataContainer;
+import data.DataContainer.MapType;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 
 public class SpellIFrame extends JInternalFrame implements ContentTab, DataChangeListener{
 	private GuiDirector gd;
@@ -106,6 +109,7 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.SPELL_ICON_FILE));
 			this.setFrameIcon(icon);
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.SPELL_ICON_FILE));
 			this.setFrameIcon(icon);
 		}
@@ -195,7 +199,7 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 		sPane.add(spellTitle, BorderLayout.NORTH);
 		
 		HoverTextPane spellDesc = new HoverTextPane(data, gd, dPane);
-		spellDesc.SetSpellTabbedPane(this);
+//		spellDesc.SetSpellTabbedPane(this);
 		spellDesc.setDocument(data.getSpells().get(key).spellDoc);
 		JScrollPane spellScroll = new JScrollPane(spellDesc);
 		spellScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -205,8 +209,7 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 		btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		sPane.add(btnFlow, BorderLayout.SOUTH);
 		
-		JButton removeBtn = new JButton("Remove " + key);
-		removeBtn.addActionListener(e ->{
+		JButton removeBtn = CompFactory.createNewButton("Remove " + key, _->{
 			int index = spellTab.indexOfComponent(sPane);
 		    if (index != -1) {
 		    	spellTab.removeTabAt(index);
@@ -223,7 +226,7 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 		cardPane.setLayout(new CardLayout());
 		cPane.add(cardPane, BorderLayout.CENTER);
 		
-		JLabel noLoad = new JLabel("Np Spells Selected");
+		JLabel noLoad = new JLabel("No Spells Selected");
 		StyleContainer.SetFontHeader(noLoad);
 		cardPane.add(noLoad, "noload");
 		
@@ -244,7 +247,7 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 	}
 
 	@Override
-	public void onMapUpdated(int mapType) {
+	public void onMapUpdated(MapType mapType) {
 		FillSidePane();
 	}
 

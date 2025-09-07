@@ -3,6 +3,8 @@ package gui.gui_helpers;
 import builders.monster_builder.AttackInsertForm;
 import data.DataChangeListener;
 import data.DataContainer;
+import data.DataContainer.MapType;
+import data.Feat;
 import data.Monster;
 import data.Rule;
 import data.Spell;
@@ -12,6 +14,12 @@ import data.items.Gear;
 import data.items.Item;
 import data.items.MagicItem;
 import data.items.Weapon;
+import data.players.Background;
+import data.players.Species;
+import data.players.classes.DnDClass;
+import gui.classes.ClassPane;
+import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -38,18 +46,31 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     private Map<String, Spell> spellMap;
     private Map<String, Monster> monstMap;
     private Map<String, Item> itemMap;
+    private Map<String, Feat> featMap;
     private Map<String, StyledDocument> insertMap;
     private Map<String, Player> playerMap;
+    private Map<String, DnDClass> classMap;
+    private Map<String, Species> speciesMap;
+    private Map<String, Background> backgroundMap;
+//    private Map<String, Species> 
 
     private final JWindow rulePreviewWindow = new JWindow();
     private final JTextPane rulePreviewPane = new JTextPane();
     private final JScrollPane ruleScrollPane = new JScrollPane(rulePreviewPane);
     
+    private final JWindow specialPreviewWindow = new JWindow();
+    private final JPanel specialPreviewPane = new JPanel();
+    private final JScrollPane specialScrollPane = new JScrollPane(specialPreviewPane);
+    
     private final Map<Integer, String> ruleOffsets = new HashMap<>();
     private final Map<Integer, String> spellOffsets = new HashMap<>();
     private final Map<Integer, String> monstOffsets = new HashMap<>();
+    private final Map<Integer, String> featOffsets = new HashMap<>();
     private final Map<Integer, String> itemOffsets = new HashMap<>();
     private final Map<Integer, String> playerOffsets = new HashMap<>();
+    private final Map<Integer, String> classOffsets = new HashMap<>();
+    private final Map<Integer, String> speciesOffsets = new HashMap<>();
+    private final Map<Integer, String> backgroundOffsets = new HashMap<>();
 
     private int atPosition = -1;
     private String currentPartial = "";
@@ -59,6 +80,10 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     private Style monstStyle;
     private Style itemStyle;
     private Style playerStyle;
+    private Style featStyle;
+    private Style classStyle;
+    private Style speciesStyle;
+    private Style backgroundStyle;
     
     private int ampPosition = -1;
 //	private final List<String> ampSuggestions = Arrays.asList(
@@ -77,6 +102,22 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 //		);
 	
 	public HashMap<String, String> replacements;
+	
+	public static void main(String[]args) {
+		DataContainer data = new DataContainer();
+		data.init();
+		
+		SwingUtilities.invokeLater(()->{
+			JFrame frm = new JFrame();
+			frm.addWindowListener(CompFactory.createSafeExitWindowListener(frm, data));
+			frm.setSize(new Dimension(800, 800));
+			Container c = frm.getContentPane();
+			
+			c.setLayout(new BorderLayout());
+			c.add(new RichEditor(data), BorderLayout.CENTER);
+			frm.setVisible(true);
+		});
+	}
 
     public RichEditor(DataContainer data) {
         super();
@@ -121,9 +162,29 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         StyleConstants.setUnderline(itemStyle, true);
         
         playerStyle = doc.addStyle("PlayerStyle", null);
-        StyleConstants.setForeground(playerStyle, Color.PINK);
+        StyleConstants.setForeground(playerStyle, Color.BLACK);
         StyleConstants.setItalic(playerStyle, true);
         StyleConstants.setUnderline(playerStyle, true);
+        
+        featStyle = doc.addStyle("FeatStyle", null);
+        StyleConstants.setForeground(featStyle, Color.PINK);
+        StyleConstants.setItalic(featStyle, true);
+        StyleConstants.setUnderline(featStyle, true);
+        
+        classStyle = doc.addStyle("ClassStyle", null);
+        StyleConstants.setForeground(classStyle, Color.MAGENTA);
+        StyleConstants.setItalic(classStyle, true);
+        StyleConstants.setUnderline(classStyle, true);
+        
+        speciesStyle = doc.addStyle("SpeciesStyle", null);
+        StyleConstants.setForeground(speciesStyle, Color.MAGENTA);
+        StyleConstants.setItalic(speciesStyle, true);
+        StyleConstants.setUnderline(speciesStyle, true);
+        
+        backgroundStyle = doc.addStyle("BackgroundStyle", null);
+        StyleConstants.setForeground(backgroundStyle, Color.MAGENTA);
+        StyleConstants.setItalic(backgroundStyle, true);
+        StyleConstants.setUnderline(backgroundStyle, true);
 
         editor.setTransferHandler(new TransferHandler() {
             @Override
@@ -141,6 +202,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                     editor.getDocument().insertString(caretPos, data, null);
                     return true;
                 } catch (Exception e) {
+                	ErrorLogger.log(e);
                     e.printStackTrace();
                     return false;
                 }
@@ -193,7 +255,15 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         rulePreviewWindow.getContentPane().add(ruleScrollPane);
         ruleScrollPane.setPreferredSize(new Dimension(300, 200));
         rulePreviewWindow.pack();
-
+        
+        specialPreviewPane.setLayout(new BorderLayout());
+        specialPreviewWindow.getContentPane().setLayout(new BorderLayout());
+        specialPreviewWindow.add(specialScrollPane, BorderLayout.CENTER);
+        specialScrollPane.setPreferredSize(new Dimension(600, 600));
+        specialScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        specialScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        specialPreviewWindow.pack();
+        
         editor.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -202,15 +272,28 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 String ruleName = ruleOffsets.get(pos);
                 String spellName = spellOffsets.get(pos);
                 String monstName = monstOffsets.get(pos);
+                String featName = featOffsets.get(pos);
+                String className = classOffsets.get(pos);
+                String speciesName = speciesOffsets.get(pos);
+                String backgroundName = backgroundOffsets.get(pos);
 //                System.out.println("Rule:" + ruleName +"\nSpell: " + spellName);
                 if (ruleName != null) {
                 	showRulePreview(ruleName, e.getLocationOnScreen());
                 } else if(spellName != null) {
                 	showSpellPreview(spellName, e.getLocationOnScreen());
+                }else if(featName != null){
+                	showFeatPreview(featName, e.getLocationOnScreen());
                 }else if(monstName != null){
                 	showMonstPreview(monstName, e.getLocationOnScreen());
+                }else if(className != null){
+                	showClassPreview(className, e.getLocationOnScreen());
+                }else if(speciesName != null){
+                	showSpeciesPreview(speciesName, e.getLocationOnScreen());
+                }else if(backgroundName != null) {
+                	showBackgroundPreview(backgroundName, e.getLocationOnScreen());
                 }else {
                     rulePreviewWindow.setVisible(false);
+                    specialPreviewWindow.setVisible(false);
                 }
             }
         });
@@ -220,6 +303,17 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 JScrollBar verticalScrollBar = ruleScrollPane.getVerticalScrollBar();
                 int scrollAmount = e.getUnitsToScroll() * verticalScrollBar.getUnitIncrement();
                 verticalScrollBar.setValue(verticalScrollBar.getValue() + scrollAmount);
+                e.consume();
+            } else if(specialPreviewWindow.isVisible()) {
+            	JScrollBar verticalScrollBar = specialScrollPane.getVerticalScrollBar();
+                JScrollBar horizontalScrollBar = specialScrollPane.getHorizontalScrollBar();
+                if (e.isShiftDown() && horizontalScrollBar != null) {
+                	 int scrollAmount = e.getUnitsToScroll() * horizontalScrollBar.getUnitIncrement();
+                     horizontalScrollBar.setValue(horizontalScrollBar.getValue() + scrollAmount);
+                }else if (verticalScrollBar != null) {
+                    int scrollAmount = e.getUnitsToScroll() * verticalScrollBar.getUnitIncrement();
+                    verticalScrollBar.setValue(verticalScrollBar.getValue() + scrollAmount);
+                }
                 e.consume();
             } else {
                 Component parent = editor.getParent();
@@ -262,6 +356,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 					setTextStyle();
 					aForm.dispose();
 				} catch (BadLocationException e) {
+					ErrorLogger.log(e);
 					e.printStackTrace();
 				}
     		}
@@ -275,6 +370,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             field.setAccessible(true);
             return (JTextPane) field.get(this);
         } catch (Exception e) {
+        	ErrorLogger.log(e);
             throw new RuntimeException("Failed to access editorTextPane", e);
         }
     }
@@ -287,6 +383,10 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             clearStaleMonstOffsets();
             clearStaleItemOffsets();
             clearStalePlayerOffsets();
+            clearStaleFeatOffsets();
+            clearStaleClassOffsets();
+            clearStaleSpeciesOffsets();
+            clearStaleBackgroundOffsets();
             SwingUtilities.invokeLater(() -> resetStyleAfterDeletion());
         }
         public void changedUpdate(DocumentEvent e) {}
@@ -350,6 +450,29 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             		matches.add(key + " (player)");
             	}
             }
+            for(String key : featMap.keySet()) {
+            	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+            		matches.add(key + " (feat)");
+            	}
+            }
+            
+            for(String key : classMap.keySet()) {
+            	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+            		matches.add(key + " (class)");
+            	}
+            }
+            
+            for(String key : speciesMap.keySet()) {
+            	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+            		matches.add(key + " (species)");
+            	}
+            }
+            
+            for(String key : backgroundMap.keySet()) {
+            	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+            		matches.add(key + " (background)");
+            	}
+            }
 
             Collections.sort(matches);
             if (!matches.isEmpty()) {
@@ -358,6 +481,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 suggestionPopup.setVisible(false);
             }
         } catch (BadLocationException e) {
+        	ErrorLogger.log(e);
             e.printStackTrace();
         }
     }
@@ -395,6 +519,30 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 	}
                 }
                 
+                for(String key : featMap.keySet()) {
+                	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+                		matches.add(key + " (feat)");
+                	}
+                }
+                
+                for(String key : classMap.keySet()) {
+                	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+                		matches.add(key + " (class)");
+                	}
+                }
+                
+                for(String key : speciesMap.keySet()) {
+                	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+                		matches.add(key + " (species)");
+                	}
+                }
+                
+                for(String key : backgroundMap.keySet()) {
+                	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+                		matches.add(key + " (background)");
+                	}
+                }
+                
                 if(data.isCampaignLoaded())
                 	for(String key : playerMap.keySet()) {
                 		if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
@@ -429,6 +577,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             
             
         } catch (BadLocationException e) {
+        	ErrorLogger.log(e);
             e.printStackTrace();
         }
     	
@@ -463,6 +612,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             suggestionPopup.show(editor, caretCoords.x, caretCoords.y + 20);
             suggestionList.requestFocusInWindow();
         } catch (BadLocationException e) {
+        	ErrorLogger.log(e);
             e.printStackTrace();
         }
     }
@@ -476,6 +626,10 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 boolean isMonster = selected.endsWith(" (creature)");
                 boolean isItem = selected.endsWith(" (item)");
                 boolean isPlayer = selected.endsWith(" (player)");
+                boolean isFeat = selected.endsWith(" (feat)");
+                boolean isClass = selected.endsWith(" (class)");
+                boolean isSpecies = selected.endsWith(" (species)");
+                boolean isBackground = selected.endsWith(" (background)");
                 String plainName;
                 if(isSpell)
                 	plainName = selected.substring(0, selected.length() - 8);
@@ -483,8 +637,16 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 	 plainName = selected.substring(0, selected.length() -11);
                 else if(isItem)
                 	plainName = selected.substring(0, selected.length() - " (item)".length());
+                else if(isFeat)
+                	plainName = selected.substring(0, selected.length() - " (feat)".length());
                 else if(isPlayer)
                 	plainName = selected.substring(0, selected.length() - " (player)".length());
+                else if(isClass)
+                	plainName = selected.substring(0, selected.length() - " (class)".length());
+                else if(isSpecies)
+                	plainName = selected.substring(0, selected.length() - " (species)".length());
+                else if(isBackground)
+                	plainName = selected.substring(0, selected.length() - " (background)".length());
                 else
                 	plainName =  selected;
                 int caretPos = editor.getCaretPosition();
@@ -501,9 +663,21 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 }else if(isItem) {
                 	styleWithAttr = new SimpleAttributeSet(itemStyle);
                 	styleWithAttr.addAttribute("itemLink", plainName);
+                }else if (isFeat){
+                	styleWithAttr = new SimpleAttributeSet(featStyle);
+                	styleWithAttr.addAttribute("featLink", plainName);
                 }else if(isPlayer) {
                 	styleWithAttr = new SimpleAttributeSet(playerStyle);
                 	styleWithAttr.addAttribute("playerLink", plainName);
+                }else if (isClass){
+                	styleWithAttr = new SimpleAttributeSet(classStyle);
+                	styleWithAttr.addAttribute("classLink", plainName);
+                }else if (isSpecies){
+                	styleWithAttr = new SimpleAttributeSet(speciesStyle);
+                	styleWithAttr.addAttribute("speciesLink", plainName);
+                }else if (isBackground){
+                	styleWithAttr = new SimpleAttributeSet(backgroundStyle);
+                	styleWithAttr.addAttribute("backgroundLink", plainName);
                 }else {
                 	styleWithAttr = new SimpleAttributeSet(ruleStyle);
                 	styleWithAttr.addAttribute("ruleLink", plainName);
@@ -521,13 +695,22 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 		monstOffsets.put(i, plainName);
                 	}else if(isItem) {
                 		itemOffsets.put(i, plainName);
+                	}else if(isFeat){
+                		featOffsets.put(i, plainName);
                 	}else if(isPlayer){
                 		playerOffsets.put(i, plainName);
+                	}else if (isClass) {
+                		classOffsets.put(i, plainName);
+                	}else if(isSpecies){
+                		speciesOffsets.put(i, plainName);
+                	}else if (isBackground){
+                		backgroundOffsets.put(i, plainName);
                 	}else {
                 		ruleOffsets.put(i, plainName);
                 	}
                 }
             } catch (BadLocationException e) {
+            	ErrorLogger.log(e);
                 e.printStackTrace();
             }
         }else if(ampPosition >= 0 && selected != null)
@@ -542,6 +725,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 				else
 					DocumentHelper.insertWithReplacements(doc, insertMap.get(selected), ampPosition, replacements);
 			} catch (BadLocationException e) {
+				ErrorLogger.log(e);
 				e.printStackTrace();
 			}
         }
@@ -605,6 +789,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 }
             }
         } catch (BadLocationException e) {
+        	ErrorLogger.log(e);
             e.printStackTrace();
         }
     }
@@ -620,6 +805,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         rulePreviewWindow.setVisible(true);
     }
     
+    
     private void showSpellPreview(String ruleName, Point screenLocation) {
         Spell spell = spellMap.get(ruleName);
         if (spell == null) return;
@@ -630,16 +816,52 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         rulePreviewWindow.setVisible(true);
     }
     
+    private void showFeatPreview(String featName, Point screenLocation) {
+    	Feat feat = featMap.get(featName);
+        if (feat == null) return;
+        
+        rulePreviewPane.setStyledDocument(feat.desc);
+        rulePreviewWindow.setLocation(screenLocation.x + 15, screenLocation.y + 15);
+        rulePreviewWindow.pack();
+        rulePreviewWindow.setVisible(true);
+    }
+    
+    private void showClassPreview(String className, Point screenLocation) {
+        DnDClass classs = classMap.get(className);
+        if (classs == null) return;
+
+        rulePreviewPane.setStyledDocument(classs.desc);
+        rulePreviewWindow.setLocation(screenLocation.x + 15, screenLocation.y + 15);
+        rulePreviewWindow.pack();
+        rulePreviewWindow.setVisible(true);
+    }
+    
+    private void showSpeciesPreview(String speciesName, Point screenLocation) {
+    	Species s = speciesMap.get(speciesName);
+        if (s == null) return;
+
+        rulePreviewPane.setStyledDocument(s.desc);
+        rulePreviewWindow.setLocation(screenLocation.x + 15, screenLocation.y + 15);
+        rulePreviewWindow.pack();
+        rulePreviewWindow.setVisible(true);
+    }
+    
     private void showMonstPreview(String ruleName, Point screenLocation) {
-//        Monster m = monstMap.get(ruleName);
-//        if (m == null) return;
-//        
-//        rulePreviewPane.setText(m.name);
-//        rulePreviewWindow.setLocation(screenLocation.x + 15, screenLocation.y + 15);
-//        rulePreviewWindow.pack();
-//        rulePreviewWindow.setVisible(true);
+    	specialPreviewPane.removeAll();
+    	specialPreviewPane.add(new MonsterDispPane(data, ruleName, null), BorderLayout.CENTER);
+    	specialPreviewWindow.setLocation(screenLocation.x + 15, screenLocation.y + 15);
+    	specialPreviewWindow.pack();
+    	specialPreviewWindow.setVisible(true);
+    }
+    
+    private void showBackgroundPreview(String backName, Point screenLocation) {
+    	Background b = backgroundMap.get(backName);
+    	if(b == null) return;
     	
-    	System.out.println("Maybe display monster one day");
+    	rulePreviewPane.setStyledDocument(b.desc);
+    	rulePreviewWindow.setLocation(screenLocation.x + 15, screenLocation.y + 15);
+        rulePreviewWindow.pack();
+        rulePreviewWindow.setVisible(true);
     }
 
     private void resetStyleAfterDeletion() {
@@ -705,7 +927,49 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             return attrs.getAttribute("playerLink") == null;
         });
     }
+    private void clearStaleFeatOffsets() {
+        StyledDocument doc = editor.getStyledDocument();
+        featOffsets.entrySet().removeIf(entry -> {
+            int pos = entry.getKey();
+            if (pos >= doc.getLength()) return true;
+            Element elem = doc.getCharacterElement(pos);
+            AttributeSet attrs = elem.getAttributes();
+            return attrs.getAttribute("featLink") == null;
+        });
+    }
     
+    private void clearStaleClassOffsets() {
+        StyledDocument doc = editor.getStyledDocument();
+        classOffsets.entrySet().removeIf(entry -> {
+            int pos = entry.getKey();
+            if (pos >= doc.getLength()) return true;
+            Element elem = doc.getCharacterElement(pos);
+            AttributeSet attrs = elem.getAttributes();
+            return attrs.getAttribute("classLink") == null;
+        });
+    }
+    
+    private void clearStaleSpeciesOffsets() {
+    	StyledDocument doc = editor.getStyledDocument();
+        speciesOffsets.entrySet().removeIf(entry -> {
+            int pos = entry.getKey();
+            if (pos >= doc.getLength()) return true;
+            Element elem = doc.getCharacterElement(pos);
+            AttributeSet attrs = elem.getAttributes();
+            return attrs.getAttribute("speciesLink") == null;
+        });
+    }
+    
+    private void clearStaleBackgroundOffsets() {
+    	StyledDocument doc = editor.getStyledDocument();
+        backgroundOffsets.entrySet().removeIf(entry -> {
+            int pos = entry.getKey();
+            if (pos >= doc.getLength()) return true;
+            Element elem = doc.getCharacterElement(pos);
+            AttributeSet attrs = elem.getAttributes();
+            return attrs.getAttribute("backgroundLink") == null;
+        });
+    }    
     
     private void checkForSlash() {
         int caretPos = editor.getCaretPosition();
@@ -733,12 +997,14 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                             insertRangedAttack(insertPos);
                         }
                     } catch (BadLocationException ex) {
+                    	ErrorLogger.log(ex);
                         ex.printStackTrace();
                     }
                 });
             }
 
         } catch (BadLocationException e) {
+        	ErrorLogger.log(e);
             e.printStackTrace();
         }
     }
@@ -796,7 +1062,11 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         this.monstMap = data.getMonsters();
         this.insertMap = data.getInserts();
         this.itemMap = data.getItems();
+        this.featMap = data.getFeats();
         this.playerMap = data.getParty();
+        this.classMap = data.getClasses();
+        this.speciesMap = data.getSpecies();
+        this.backgroundMap = data.getBackgrounds();
     }
 
 	@Override
@@ -805,14 +1075,19 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 	}
 
 	@Override
-	public void onMapUpdated(int mapType) {
+	public void onMapUpdated(MapType mapType) {
 		switch(mapType) {
-		case DataContainer.RULES: this.ruleMap = data.getRules(); break;
-		case DataContainer.SPELLS: this.spellMap = data.getSpells(); break;
-		case DataContainer.MONSTERS: this.monstMap = data.getMonsters(); break;
-		case DataContainer.INSERTS: this.insertMap = data.getInserts(); break;
-		case DataContainer.ITEMS: this.itemMap = data.getItems(); break;
-		case DataContainer.CAMPAIGN: this.playerMap = data.getParty(); break;
+		case MapType.RULES: this.ruleMap = data.getRules(); break;
+		case MapType.SPELLS: this.spellMap = data.getSpells(); break;
+		case MapType.MONSTERS: this.monstMap = data.getMonsters(); break;
+		case MapType.INSERTS: this.insertMap = data.getInserts(); break;
+		case MapType.FEATS: this.featMap = data.getFeats(); break;
+		case MapType.ITEMS: this.itemMap = data.getItems(); break;
+		case MapType.CAMPAIGN: this.playerMap = data.getParty(); break;
+		case MapType.CLASSES: this.classMap = data.getClasses(); break;
+		case MapType.SPECIES: this.speciesMap = data.getSpecies(); break;
+		case MapType.BACKGROUND: this.backgroundMap = data.getBackgrounds(); break;
+		case MapType.BASTION_ROOMS: break;
 		default: System.out.println("Invalid map type: " + mapType);
 		}
 		

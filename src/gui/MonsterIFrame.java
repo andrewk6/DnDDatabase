@@ -34,6 +34,7 @@ import javax.swing.JCheckBox;
 
 import data.DataChangeListener;
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.Monster;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
@@ -42,6 +43,7 @@ import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 
 public class MonsterIFrame extends JInternalFrame implements ContentTab, DataChangeListener{
 	private DataContainer data;
@@ -111,6 +113,7 @@ public class MonsterIFrame extends JInternalFrame implements ContentTab, DataCha
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.MONSTER_ICON_FILE));
 			this.setFrameIcon(icon);
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.MONSTER_ICON_FILE));
 			this.setFrameIcon(icon);
 		}
@@ -304,7 +307,7 @@ public class MonsterIFrame extends JInternalFrame implements ContentTab, DataCha
 			btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			monstDisp.add(btnFlow, BorderLayout.SOUTH);
 			
-			JButton removeMonst = new JButton("Remove Monster");
+			JButton removeMonst = new JButton("Remove " + key);
 			StyleContainer.SetFontBtn(removeMonst);
 			removeMonst.addActionListener(e ->{
 				int index = mPane.indexOfComponent(monstDisp);
@@ -342,7 +345,7 @@ public class MonsterIFrame extends JInternalFrame implements ContentTab, DataCha
 	}
 
 	@Override
-	public void onMapUpdated(int mapType) {
+	public void onMapUpdated(MapType mapType) {
 		FillSidePane();
 	}
 }

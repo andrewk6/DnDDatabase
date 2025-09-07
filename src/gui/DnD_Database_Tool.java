@@ -23,6 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -32,19 +33,32 @@ import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.campaign.Campaign;
+import gui.background.BackgroundIFrame;
+import gui.builder_internals.BackgroundBuilderIFrame;
+import gui.builder_internals.BastionBuilderIFrame;
+import gui.builder_internals.ClassBuilderIFrame;
+import gui.builder_internals.FeatBuilderIFrame;
 import gui.builder_internals.ItemBuilderIFrame;
 import gui.builder_internals.MonsterBuilderIFrame;
 import gui.builder_internals.QuickInsertBuilderIFrame;
 import gui.builder_internals.RuleBuilderIFrame;
+import gui.builder_internals.SpeciesBuilderIFrame;
 import gui.builder_internals.SpellBuilderIFrame;
 import gui.campaign.NotesIFrame;
 import gui.campaign.PartyIFrame;
+import gui.classes.ClassIFrame;
+import gui.dungeon.DungeonIBuilder;
+import gui.dungeon.DungeonIViewer;
 import gui.gui_helpers.CompFactory;
+import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.LoadListener;
 import gui.gui_helpers.structures.StyleContainer;
 import gui.initative.InitiativeIFrame;
+import gui.species.SpeciesIFrame;
+import utils.ErrorLogger;
 
 public class DnD_Database_Tool extends JFrame {
 	
@@ -59,6 +73,18 @@ public class DnD_Database_Tool extends JFrame {
 	private SpellIFrame sFrame;
 	private MonsterIFrame mFrame;
 	private ItemIFrame iFrame;
+	private FeatIFrame fFrame;
+	private ClassIFrame cFrame;
+	private SpeciesIFrame spFrame;
+	private BackgroundIFrame bFrame;
+	private BastionIFrame brFrame;
+	
+	//Campaign Label
+	private JLabel camp;
+	
+	//Dungeon Frames
+	DungeonIBuilder dBuildFrame;
+	DungeonIViewer dViewFrame;
 	
 	//Builder Frames
 	RuleBuilderIFrame rBuildFrame;
@@ -66,7 +92,11 @@ public class DnD_Database_Tool extends JFrame {
 	MonsterBuilderIFrame mBuildFrame;
 	QuickInsertBuilderIFrame qBuildFrame;
 	ItemBuilderIFrame iBuildFrame;
-	
+	FeatBuilderIFrame fBuildFrame;
+	ClassBuilderIFrame cBuildFrame;
+	SpeciesBuilderIFrame spBuildIFrame;
+	BackgroundBuilderIFrame bBuildFrame;
+	BastionBuilderIFrame brBuildFrame;
 
 	private final List<LoadListener> loadListeners = new ArrayList<LoadListener>();
 
@@ -106,6 +136,7 @@ public class DnD_Database_Tool extends JFrame {
 			this.setIconImage(ImageIO.read(this.getClass().
 					getResourceAsStream("/" + StyleContainer.PROGRAM_ICON_FILE)));
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			System.out.println("Failed load icon");
 		}
 		
@@ -138,6 +169,26 @@ public class DnD_Database_Tool extends JFrame {
 		dPane.add(iFrame);
 		iFrame.setVisible(false);
 		
+		fFrame = new FeatIFrame(data, gd);
+		dPane.add(fFrame);
+		fFrame.setVisible(false);
+		
+		cFrame = new ClassIFrame(data, gd);
+		dPane.add(cFrame);
+		cFrame.setVisible(false);
+		
+		spFrame = new SpeciesIFrame(data, gd);
+		dPane.add(spFrame);
+		spFrame.setVisible(false);
+		
+		bFrame = new BackgroundIFrame(data, gd);
+		dPane.add(bFrame);
+		bFrame.setVisible(false);
+		
+		brFrame = new BastionIFrame(data, gd);
+		dPane.add(brFrame);
+		brFrame.setVisible(false);
+		
 		rBuildFrame = new RuleBuilderIFrame(data);
 		dPane.add(rBuildFrame);
 		rBuildFrame.setVisible(false);
@@ -157,6 +208,34 @@ public class DnD_Database_Tool extends JFrame {
 		iBuildFrame = new ItemBuilderIFrame(data);
 		dPane.add(iBuildFrame);
 		iBuildFrame.setVisible(false);
+		
+		dBuildFrame = new DungeonIBuilder(data, gd);
+		dPane.add(dBuildFrame);
+		dBuildFrame.setVisible(false);
+		
+		fBuildFrame = new FeatBuilderIFrame(data, gd);
+		dPane.add(fBuildFrame);
+		fBuildFrame.setVisible(false);
+		
+		cBuildFrame = new ClassBuilderIFrame(data, gd);
+		dPane.add(cBuildFrame);
+		cBuildFrame.setVisible(false);
+		
+		spBuildIFrame = new SpeciesBuilderIFrame(data);
+		dPane.add(spBuildIFrame);
+		spBuildIFrame.setVisible(false);
+		
+		bBuildFrame = new BackgroundBuilderIFrame(data);
+		dPane.add(bBuildFrame);
+		bBuildFrame.setVisible(false);
+		
+		brBuildFrame = new BastionBuilderIFrame(data);
+		dPane.add(brBuildFrame);
+		brBuildFrame.setVisible(false);
+		
+		dViewFrame = new DungeonIViewer(data, gd);
+		dPane.add(dViewFrame);
+		dViewFrame.setVisible(false);
 	}
 	
 	private void BuildMenuBar() {
@@ -175,6 +254,16 @@ public class DnD_Database_Tool extends JFrame {
 		dataMenu.add(CompFactory.createNewJMenuItem("Spells", sFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Monsters", mFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Items", iFrame));
+		//Player SubMenu
+		JMenu playerMenu = new JMenu("Player Databases");
+		StyleContainer.SetFontMain(playerMenu);
+		dataMenu.add(playerMenu);
+		
+		playerMenu.add(CompFactory.createNewJMenuItem("Class", cFrame));
+		playerMenu.add(CompFactory.createNewJMenuItem("Species", spFrame));
+		playerMenu.add(CompFactory.createNewJMenuItem("Background", bFrame));
+		playerMenu.add(CompFactory.createNewJMenuItem("Feats", fFrame));
+		playerMenu.add(CompFactory.createNewJMenuItem("Bastions", brFrame));
 		
 		/*
 		 * TOOLS MENU
@@ -187,6 +276,29 @@ public class DnD_Database_Tool extends JFrame {
 				"Initiative Tracker", ()->new InitiativeIFrame(data, gd, dPane), dPane));
 		toolsMenu.add(CompFactory.createNewJMenuItem(
 				"Dice Calculator", ()->new DiceCalcIFrame(), dPane));
+		
+		JMenu dataExInMenu = new JMenu("Import/Export");
+		StyleContainer.SetFontMain(dataExInMenu);
+		toolsMenu.add(dataExInMenu);
+		
+		dataExInMenu.add(CompFactory.createNewJMenuItem("Export", _->{
+			data.ExportData();
+		}));
+		
+		dataExInMenu.add(CompFactory.createNewJMenuItem("Import", _->{
+			data.ImportData();
+		}));
+		
+		/*
+		 * DUNGEON MENU
+		 */
+		
+		JMenu dungeonMenu = new JMenu("Dungeons");
+		StyleContainer.SetFontHeader(dungeonMenu);
+		menu.add(dungeonMenu);
+		
+		dungeonMenu.add(CompFactory.createNewJMenuItem("Dungeon Builder", dBuildFrame));
+		dungeonMenu.add(CompFactory.createNewJMenuItem("Dungeon Viewer", dViewFrame));
 		
 		/*
 		 * CAMPAIGN MENU
@@ -227,6 +339,7 @@ public class DnD_Database_Tool extends JFrame {
 	            if(!campBtnsLoaded)
 	            	AddCampaignButtons(campMenu, cMenu);
 	            updateQuickLoad(campMenu, cMenu);
+	            camp.setText(data.getCampaignName());
 	        }
 		});
 		cMenu.add(loadCamp);
@@ -247,12 +360,22 @@ public class DnD_Database_Tool extends JFrame {
 		buildMenu.add(CompFactory.createNewJMenuItem("Monster Builder", mBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Quick Insert Builder", qBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Item Buider", iBuildFrame));
+		buildMenu.add(CompFactory.createNewJMenuItem("Class Builder", cBuildFrame));
+		buildMenu.add(CompFactory.createNewJMenuItem("Species Builder", spBuildIFrame));
+		buildMenu.add(CompFactory.createNewJMenuItem("Background Builder", bBuildFrame));
+		buildMenu.add(CompFactory.createNewJMenuItem("Feat Builder", fBuildFrame));
+		buildMenu.add(CompFactory.createNewJMenuItem("Bastion Room Builder", brBuildFrame));
 		
 		/*
-		 * EXIT BUTTON
+		 * LOADED CAMPAIGN
 		 */
 		menu.add(Box.createHorizontalGlue());
 		
+		camp = CompFactory.createNewLabel("", ComponentType.HEADER);
+		menu.add(camp);
+		/*
+		 * EXIT BUTTON
+		 */		
 		JButton exitButton = new JButton("Exit");
 		exitButton.setFocusable(false);
 		StyleContainer.SetFontBtn(exitButton);
@@ -291,7 +414,7 @@ public class DnD_Database_Tool extends JFrame {
 		 */
 		JMenuItem saveCamp = CompFactory.createNewJMenuItem("Save Campaign");
 		saveCamp.addActionListener(e -> {
-			data.SafeSaveData(DataContainer.CAMPAIGN);
+			data.SafeSaveData(MapType.CAMPAIGN);
 		});
 		cMenu.add(saveCamp);
 		
@@ -431,6 +554,7 @@ public class DnD_Database_Tool extends JFrame {
 				}
 			};
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			dPane = new JDesktopPane();
 		}
 		getContentPane().add(dPane);

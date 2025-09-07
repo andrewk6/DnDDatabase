@@ -6,6 +6,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
 import data.DataContainer.Source;
+import utils.ErrorLogger;
 
 public class Spell implements Comparable<Spell>, Serializable
 {
@@ -30,6 +31,7 @@ public class Spell implements Comparable<Spell>, Serializable
 		try {
 			return name + ": " + descrBasic +"\n" + spellDoc.getText(0, spellDoc.getLength());
 		} catch (BadLocationException e) {
+			ErrorLogger.log(e);
 			e.printStackTrace();
 			return "Bad Spell ToString";
 		}

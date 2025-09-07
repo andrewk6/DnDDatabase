@@ -54,6 +54,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
 import data.*;
+import data.DataContainer.MapType;
 import data.DataContainer.Proficiency;
 import data.DataContainer.Skills;
 import gui.gui_helpers.DocumentHelper;
@@ -1022,7 +1023,7 @@ public class MonsterBuilder extends JFrame {
 //		}
 		
 		data.SetMonstersMap(monstMap);
-		data.SafeSaveData(DataContainer.MONSTERS);
+		data.SafeSaveData(MapType.MONSTERS);
 		return true;
 	}
 	

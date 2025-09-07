@@ -18,6 +18,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 
 import builders.utlities.*;
+import utils.ErrorLogger;
 
 public class RichEditorBase extends JPanel {
 	private final JTextPane editorTextPane;
@@ -144,6 +145,7 @@ public class RichEditorBase extends JPanel {
 				if (rows <= 0 || cols <= 0)
 					throw new NumberFormatException();
 			} catch (NumberFormatException ex) {
+				ErrorLogger.log(ex);
 				JOptionPane.showMessageDialog(dialog, "Please enter valid positive numbers.", "Invalid Input",
 						JOptionPane.ERROR_MESSAGE);
 				return;
@@ -282,6 +284,7 @@ public class RichEditorBase extends JPanel {
 	            i = elem.getEndOffset();
 	        }
 	    } catch (BadLocationException e) {
+	    	ErrorLogger.log(e);
 	        e.printStackTrace();
 	    }
 

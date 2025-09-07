@@ -31,7 +31,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
+import data.DataChangeListener;
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.items.MagicItem;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
@@ -39,7 +41,7 @@ import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
-public class MagicItemPanel extends JPanel{
+public class MagicItemPanel extends JPanel implements DataChangeListener{
 	private GuiDirector gd;
 	private DataContainer data;
 	private JDesktopPane dPane;
@@ -55,6 +57,7 @@ public class MagicItemPanel extends JPanel{
 
 	public MagicItemPanel(DataContainer data, GuiDirector guiD, JDesktopPane dPane) {
 		this.data = data;
+		this.data.registerListener(this);
 		this.dPane = dPane;
 		gd = guiD;
 		
@@ -81,11 +84,11 @@ public class MagicItemPanel extends JPanel{
 		miGridPane.setLayout(new GridLayout(0,1));
 		FillSidePane();
 		
-		JScrollPane spellGridScroll = new JScrollPane(miGridPane);
-		spellGridScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		spellGridScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane miGridScroll = new JScrollPane(miGridPane);
+		miGridScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		miGridScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		
-		sPane.add(spellGridScroll, BorderLayout.CENTER);
+		sPane.add(miGridScroll, BorderLayout.CENTER);
 		add(sPane, BorderLayout.WEST);
 	}
 	
@@ -123,53 +126,6 @@ public class MagicItemPanel extends JPanel{
 		});
 	}
 	
-//	public void CheckTabs() {
-//		if(miTab.getTabCount() == 1) {
-//			CardLayout cl = (CardLayout) cardPane.getLayout();
-//			cl.show(cardPane, "spelltabs");
-//		}else if(miTab.getTabCount() <= 0) {
-//			CardLayout cl = (CardLayout) cardPane.getLayout();
-//			cl.show(cardPane, "noload");
-//		}
-//	}
-	
-//	public void AddSpellTab(String key) {
-//		JPanel sPane = new JPanel();
-//		sPane.setLayout(new BorderLayout());
-//		miTab.addTab(key, sPane);
-//		
-//		JTextField spellTitle = new JTextField(key);
-//		spellTitle.setEditable(false);
-//		spellTitle.setFocusable(false);
-//		spellTitle.setHorizontalAlignment(JTextField.CENTER);
-//		StyleContainer.SetFontHeader(spellTitle);
-//		sPane.add(spellTitle, BorderLayout.NORTH);
-//		
-//		HoverTextPane spellDesc = new HoverTextPane(data, gd, dPane);
-//		spellDesc.SetSpellTabbedPane(this);
-//		spellDesc.setDocument(data.getSpells().get(key).spellDoc);
-//		JScrollPane spellScroll = new JScrollPane(spellDesc);
-//		spellScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-//		sPane.add(spellScroll, BorderLayout.CENTER);
-//		
-//		JPanel btnFlow = new JPanel();
-//		btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
-//		sPane.add(btnFlow, BorderLayout.SOUTH);
-//		
-//		JButton removeBtn = new JButton("Remove " + key);
-//		removeBtn.addActionListener(e ->{
-//			int index = miTab.indexOfComponent(sPane);
-//		    if (index != -1) {
-//		    	miTab.removeTabAt(index);
-//		    }
-//			CheckTabs();
-//		});
-//		btnFlow.add(removeBtn);
-//		CheckTabs();
-//		miTab.setSelectedComponent(sPane);
-//	}
-
-	
 	private void BuildContent() {
 		cardPane = new JPanel();
 		cardPane.setLayout(new CardLayout());
@@ -178,9 +134,6 @@ public class MagicItemPanel extends JPanel{
 		JLabel noLoad = new JLabel("No Magic Item Selected");
 		StyleContainer.SetFontHeader(noLoad);
 		cardPane.add(noLoad, "noload");
-		
-//		miTab = new JTabbedPane();
-//		cardPane.add(miTab, "spelltabs");
 		
 		miPane = new JPanel();
 		miPane.setLayout(new BorderLayout());
@@ -229,23 +182,15 @@ public class MagicItemPanel extends JPanel{
 		});
 				
 	}
-	
-//	public JTabbedPane GetTabs() {
-//		return miTab;
-//	}
 
-//	private void BuildContent(Container cPane) {
-//		hPane = new HoverTextPane(data, dPane);
-//		JScrollPane spellScroller = new JScrollPane(hPane);
-//		spellScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-//		cPane.add(spellScroller, BorderLayout.CENTER);
-//		
-//		spellTitle = new JTextField("NO SPELL SELECTED");
-//		spellTitle.setToolTipText("Name of the spell");
-//		spellTitle.setEditable(false);
-//		spellTitle.setFocusable(false);
-//		spellTitle.setHorizontalAlignment(JTextField.CENTER);
-//		StyleContainer.SetFontHeader(spellTitle);
-//		cPane.add(spellTitle, BorderLayout.NORTH);
-//	}
+	@Override
+	public void onMapUpdated() {
+		FillSidePane();
+	}
+
+	@Override
+	public void onMapUpdated(MapType mapType) {
+		if(mapType == MapType.ITEMS)
+			FillSidePane();
+	}
 }

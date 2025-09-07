@@ -32,6 +32,7 @@ import javax.swing.event.InternalFrameListener;
 import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
+import data.DataContainer.MapType;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.StyleContainer;
@@ -115,7 +116,7 @@ public class QuickInsertBuilderIFrame extends JInternalFrame
 		StyleContainer.SetFontBtn(saveBtn);
 		saveBtn.addActionListener(e -> {
 			data.setInserts(inMap);
-			data.SafeSaveData(DataContainer.INSERTS);
+			data.SafeSaveData(MapType.INSERTS);
 		});
 		sidePane.add(saveBtn, BorderLayout.SOUTH);
 		

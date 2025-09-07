@@ -29,6 +29,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
+import data.DataContainer.MapType;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.StyleContainer;
@@ -46,6 +47,7 @@ public class QuickInsertBuilder extends JFrame
 	
 	public static void main(String[]args) {
 		DataContainer d = new DataContainer();
+		d.init();
 		SwingUtilities.invokeLater(()->{
 			QuickInsertBuilder insertBuild = new QuickInsertBuilder(d);
 			insertBuild.setVisible(true);
@@ -68,7 +70,7 @@ public class QuickInsertBuilder extends JFrame
 						null, new String[] {"Save/Exit", "Exit", "Cancel"}, 0);
 				if(opt == 0) {
 					data.setInserts(inMap);
-					data.SafeSaveData(DataContainer.INSERTS);
+					data.SafeSaveData(MapType.INSERTS);
 					data.Exit();
 				}else if(opt == 1) {
 					data.Exit();
@@ -126,7 +128,7 @@ public class QuickInsertBuilder extends JFrame
 		StyleContainer.SetFontBtn(saveBtn);
 		saveBtn.addActionListener(e -> {
 			data.setInserts(inMap);
-			data.SafeSaveData(DataContainer.INSERTS);
+			data.SafeSaveData(MapType.INSERTS);
 		});
 		sidePane.add(saveBtn, BorderLayout.SOUTH);
 		

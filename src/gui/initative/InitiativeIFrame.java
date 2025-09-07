@@ -1,21 +1,36 @@
 package gui.initative;
 
 import data.DataContainer;
+import data.Feat;
 import data.Monster;
 import data.Rule;
 import data.Spell;
 import data.campaign.Player;
+import data.players.Background;
+import data.players.Species;
+import data.players.classes.DnDClass;
+import gui.background.BackgroundPane;
 import gui.campaign.PlayerPane;
+import gui.classes.ClassPane;
+import gui.gui_helpers.CompFactory;
+import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.FilterCombo;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.MonsterDispPane;
+import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.structures.AllTab;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import gui.species.SpeciesPane;
+import utils.DiceCalculator;
+import utils.ErrorLogger;
+import utils.IllegalDiceNotationException;
 
 import javax.imageio.ImageIO;
+import javax.script.ScriptException;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.InternalFrameEvent;
@@ -58,6 +73,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             DataContainer data = new DataContainer();
+            data.init();
             JFrame frame = new JFrame("Initiative Tracker Test");
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
             frame.addWindowListener(StyleContainer.GetDefaultCloseListener(data));
@@ -78,6 +94,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         this.data = data;
         this.gd = gd;
         this.dPane = dPane;
+        this.gd.RegisterInitiativeFrame(this);
         tabsUI = new ColorTabbedPaneUI();
         this.setBounds(20, 20, 800, 600);
         this.setLayout(new BorderLayout());
@@ -91,7 +108,6 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
         tabs = new JTabbedPane();
         tabs.setUI(tabsUI);
-        System.out.println("Tabs UI class: " + tabs.getUI().getClass().getName());
         tabs.addTab("Initiative Tracker", buildTrackerPanel());
         this.add(tabs, BorderLayout.CENTER);
         
@@ -102,6 +118,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.INIT_ICON_FILE));
 			this.setFrameIcon(icon);
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.INIT_ICON_FILE));
 			this.setFrameIcon(icon);
 		}
@@ -112,7 +129,10 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 			public void internalFrameIconified(InternalFrameEvent e) {}
 			public void internalFrameDeiconified(InternalFrameEvent e) {}
 			public void internalFrameDeactivated(InternalFrameEvent e) {}
-			public void internalFrameClosing(InternalFrameEvent e) {gd.lockPlayerEdits(false);}
+			public void internalFrameClosing(InternalFrameEvent e) {
+				gd.lockPlayerEdits(false);
+				gd.DegisterInitiativeFrame(InitiativeIFrame.this);
+				}
 			public void internalFrameClosed(InternalFrameEvent e) {}
 			public void internalFrameActivated(InternalFrameEvent e) {}
 		});
@@ -244,6 +264,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
                 int init = Integer.parseInt(initField.getText().trim());
                 addInitiativeEntry(new InitiativeEntry(PLAYER_ID, name, init, null));
             } catch (NumberFormatException ignored) {
+            	ErrorLogger.log(ignored);
                 JOptionPane.showMessageDialog(this, "Invalid initiative value.");
             }
         }
@@ -281,8 +302,9 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
                 if (!value.isEmpty()) {
                     try {
                         int init = Integer.parseInt(value);
-                        addInitiativeEntry(new InitiativeEntry(UUID.fromString("" + -1), name, init, null));
+                        addInitiativeEntry(new InitiativeEntry(PLAYER_ID, name, init, null));
                     } catch (NumberFormatException ex) {
+                    	ErrorLogger.log(ex);
                         JOptionPane.showMessageDialog(this, "Invalid initiative for " + name + ": " + value);
                     }
                 }
@@ -295,9 +317,11 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         String[] names = data.getMonsterKeysSorted().toArray(new String[0]);
         Map<String, Monster> monsters = data.getMonsters();
 
-        FilterCombo monsterSelector = new FilterCombo(data.getMonsterKeysSorted());
+        FilterCombo monsterSelector = new FilterCombo(data.getMonsterKeysSorted(), 20);
         JTextField overrideBonus = new JTextField(5);
         JLabel initBonusLabel = new JLabel("Init Bonus: +0");
+        ReminderField numEnemies = CompFactory.createReminderField("Num Enemies", true, ComponentType.BODY);
+        numEnemies.setColumns(5);
 
         monsterSelector.addActionListener(e -> {
             String selected = (String) monsterSelector.getSelectedItem();
@@ -324,28 +348,61 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         header.add(new JLabel("Monster:"), BorderLayout.WEST);
         header.add(monsterSelector, BorderLayout.CENTER);
         
-        JPanel panel = new JPanel();
-        request.add(panel, BorderLayout.CENTER);
-      panel.add(initBonusLabel);
-      panel.add(new JLabel("Bonus:"));
-      panel.add(overrideBonus);
+        JPanel config = new JPanel();
+        config.setLayout(new BorderLayout());
+        request.add(config, BorderLayout.CENTER);
         
+        JPanel bonusPane = new JPanel();
+        config.add(bonusPane, BorderLayout.NORTH);
+        
+        JPanel numPane = new JPanel();
+        config.add(numPane, BorderLayout.SOUTH);
+        
+        bonusPane.add(initBonusLabel);
+        bonusPane.add(new JLabel("Bonus:"));
+        bonusPane.add(overrideBonus);
+        numPane.add(new JLabel("Number Enemies:"));
+        numPane.add(numEnemies); 
 
         int result = JOptionPane.showConfirmDialog(this, request, "Add Monster", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
+        	int numEnemy;
+        	if(numEnemies.getText().length() > 0)
+        		numEnemy = Math.max(1, Integer.parseInt(numEnemies.getText()));
+        	else
+        		numEnemy = 1;
             String selected = (String) monsterSelector.getSelectedItem();
             Monster m = monsters.get(selected);
             if (m == null) return;
 
-            try {
-                int bonus = Integer.parseInt(overrideBonus.getText().trim());
-                int roll = bonus + new Random().nextInt(20) + 1;
-                UUID id = UUID.randomUUID();
-                addInitiativeEntry(new InitiativeEntry(id, m.name, roll, m));
-            } catch (NumberFormatException ignored) {
-                JOptionPane.showMessageDialog(this, "Invalid bonus.");
+            for(int it = 0; it < numEnemy; it ++) {
+            	try {
+            		
+                    int bonus = Integer.parseInt(overrideBonus.getText().trim());
+                    System.out.println();
+                    int val = DiceCalculator.parseDiceExpression("1d20 + " + bonus);
+//                    int roll = bonus + new Random().nextInt(20) + 1;
+                    UUID id = UUID.randomUUID();
+                    addInitiativeEntry(new InitiativeEntry(id, m.name, val, m));
+                } catch (NumberFormatException ignored) {
+                	ErrorLogger.log(ignored);
+                    JOptionPane.showMessageDialog(this, "Invalid bonus.");
+                } catch (IllegalDiceNotationException e1) {
+					e1.printStackTrace();
+				} catch (ScriptException e1) {
+					e1.printStackTrace();
+				}
             }
         }
+    }
+    
+    public void importMonsterInit(ArrayList<Monster> monsts) {
+    	for(Monster m : monsts) {
+    		 int bonus = m.GetInitBonus();
+             int roll = bonus + new Random().nextInt(20) + 1;
+             UUID id = UUID.randomUUID();
+             addInitiativeEntry(new InitiativeEntry(id, m.name, roll, m));
+    	}
     }
 
     private void addInitiativeEntry(InitiativeEntry entry) {
@@ -492,6 +549,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
                 out.writeObject(saved);
                 out.writeInt(currentIndex);
             } catch (IOException ex) {
+            	ErrorLogger.log(ex);
                 JOptionPane.showMessageDialog(this, "Failed to save: " + ex.getMessage());
             }
         }
@@ -514,6 +572,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
                 updateInitiativeList();
                 advanceTurn(); // Load active turn
             } catch (IOException | ClassNotFoundException ex) {
+            	ErrorLogger.log(ex);
                 JOptionPane.showMessageDialog(this, "Failed to load: " + ex.getMessage());
             }
         }
@@ -587,6 +646,72 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 			tabs.setSelectedComponent(sPane);
 		}
     }
+    
+    @Override
+	public void AddTab(Feat f) {
+		if(!hasTab(f.name)) {
+			JPanel fPane = new JPanel();
+			fPane.setLayout(new BorderLayout());
+			tabs.addTab(f.name, fPane);
+			tabsUI.setTabColor(tabs.indexOfTab(f.name), Color.YELLOW);
+
+			JTextField fTitle = new JTextField(f.name);
+			fTitle.setEditable(false);
+			fTitle.setFocusable(false);
+			fTitle.setHorizontalAlignment(JTextField.CENTER);
+			StyleContainer.SetFontHeader(fTitle);
+			fPane.add(fTitle, BorderLayout.NORTH);
+
+			HoverTextPane fDesc = new HoverTextPane(data, gd, gd.getDesktop());
+			fDesc.setDocument(data.getFeats().get(f.name).desc);
+			JScrollPane fScroll = new JScrollPane(fDesc);
+			fScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			fPane.add(fScroll, BorderLayout.CENTER);
+
+			JPanel btnFlow = new JPanel();
+			btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			fPane.add(btnFlow, BorderLayout.SOUTH);
+
+			JButton removeFeat = new JButton("Remove " + f.name);
+			StyleContainer.SetFontBtn(removeFeat);
+			removeFeat.addActionListener(e -> {
+				int index = tabs.indexOfComponent(fPane);
+				if (index != -1) {
+					tabs.removeTabAt(index);
+				}
+			});
+			btnFlow.add(removeFeat);
+			tabs.setSelectedComponent(fPane);
+		}
+	}
+    
+    public void AddTab(DnDClass c) {
+		if(!hasTab(c.name)) {
+			JPanel cPane = new JPanel();
+			cPane.setLayout(new BorderLayout());
+			tabs.addTab(c.name, cPane);
+			tabsUI.setTabColor(tabs.indexOfTab(c.name), Color.lightGray);
+			
+			ClassPane classDisp = new ClassPane(data, c, gd);
+			cPane.add(classDisp, BorderLayout.CENTER);
+
+			JPanel btnFlow = new JPanel();
+			btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			cPane.add(btnFlow, BorderLayout.SOUTH);
+
+			JButton removeFeat = new JButton("Remove " + c.name);
+			StyleContainer.SetFontBtn(removeFeat);
+			removeFeat.addActionListener(e -> {
+				int index = tabs.indexOfComponent(cPane);
+				if (index != -1) {
+					tabs.removeTabAt(index);
+				}
+			});
+			btnFlow.add(removeFeat);
+			tabs.setSelectedComponent(cPane);
+		}
+	}
+    
     public void AddTab(Rule r) {
     	if(!hasTab(r.name)) {
 			JPanel rPane = new JPanel();
@@ -623,6 +748,39 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 			tabs.setSelectedComponent(rPane);
 		}
     }
+    
+    public void AddTab(Species s) {
+    	if(!hasTab(s.name)) {
+    		JPanel tab = new JPanel();
+    		tab.setLayout(new BorderLayout());
+    		tabs.addTab(s.name, tab);
+    		tabsUI.setTabColor(tabs.indexOfComponent(tab), Color.YELLOW);
+    		
+    		tab.add(new SpeciesPane(data, gd, s), BorderLayout.CENTER);
+    		tab.add(CompFactory.createButtonFlowPane(FlowLayout.RIGHT, new JButton[] {
+    				CompFactory.createNewButton("Remove " + s.name + " Tab", _->{
+    					tabs.removeTabAt(tabs.indexOfComponent(tab));
+    				})
+    		}), BorderLayout.SOUTH);
+    		tabs.setSelectedComponent(tab);
+    	}
+    }
+    
+	public void AddTab(Background b) {
+		if(!hasTab(b.name)) {
+    		JPanel tab = new JPanel();
+    		tab.setLayout(new BorderLayout());
+    		tabs.addTab(b.name, tab);
+    		
+    		tab.add(new BackgroundPane(b, data, gd), BorderLayout.CENTER);
+    		tab.add(CompFactory.createButtonFlowPane(FlowLayout.RIGHT, new JButton[] {
+    				CompFactory.createNewButton("Remove " + b.name + " Tab", _->{
+    					tabs.removeTabAt(tabs.indexOfComponent(tab));
+    				})
+    		}), BorderLayout.SOUTH);
+    		tabs.setSelectedComponent(tab);
+    	}
+	}
     
     private boolean hasTab(String n) {
 		 for (int i = 0; i < tabs.getTabCount(); i++) {

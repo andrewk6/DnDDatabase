@@ -16,6 +16,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.items.Item;
 import gui.gui_helpers.structures.StyleContainer;
 
@@ -127,7 +128,7 @@ public class ItemBuilder extends JFrame
 		itemMap.putAll(miBuild.getMagicItemMap());
 		
 		data.SetItemMap(itemMap);
-		data.SafeSaveData(DataContainer.ITEMS);
+		data.SafeSaveData(MapType.ITEMS);
 		return true;
 	}
 }

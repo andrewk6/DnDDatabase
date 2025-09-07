@@ -32,12 +32,14 @@ import javax.swing.event.InternalFrameListener;
 
 import data.DataChangeListener;
 import data.DataContainer;
+import data.DataContainer.MapType;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import utils.ErrorLogger;
 
 public class RuleIFrame extends JInternalFrame implements ContentTab, DataChangeListener{
 	private DataContainer data;
@@ -85,6 +87,7 @@ public class RuleIFrame extends JInternalFrame implements ContentTab, DataChange
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.RULE_ICON_FILE));
 			this.setFrameIcon(icon);
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.RULE_ICON_FILE));
 			this.setFrameIcon(icon);
 		}		
@@ -166,7 +169,7 @@ public class RuleIFrame extends JInternalFrame implements ContentTab, DataChange
 		
 		HoverTextPane ruleDesc = new HoverTextPane(data, gd, dPane);
 		ruleDesc.setDocument(data.getRules().get(key).ruleDoc);
-		ruleDesc.SetRuleTabbedPane(this);
+//		ruleDesc.SetRuleTabbedPane(this);
 		JScrollPane rScroll = new JScrollPane(ruleDesc);
 		rScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		rPane.add(rScroll, BorderLayout.CENTER);
@@ -247,7 +250,7 @@ public class RuleIFrame extends JInternalFrame implements ContentTab, DataChange
 	}
 
 	@Override
-	public void onMapUpdated(int mapType) {
+	public void onMapUpdated(MapType mapType) {
 		FillSidePane();
 		
 	}

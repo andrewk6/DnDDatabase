@@ -16,32 +16,53 @@ import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.JTextComponent;
 
 import data.DataContainer;
 import gui.gui_helpers.CustomDesktopIcon;
+import gui.gui_helpers.ReminderField;
+import utils.ErrorLogger;
 
 public class StyleContainer {
 	public final static Font BTN_FONT_MAIN = new Font("Monospaced", Font.BOLD, 24);
 	public final static Font FNT_BODY_PLAIN = new Font("Monospaced", Font.PLAIN, 16);
 	public final static Font FNT_HEADER_BOLD = new Font("Monospaced", Font.BOLD, 18);
 	
-	public final static String RULE_ICON_FILE = "rule_ico.png";
-	public final static String SPELL_ICON_FILE = "spell_ico.png";
+	
 	public final static String BACKGROUND_FILE = "background.jpg";
 	public final static String PROGRAM_ICON_FILE = "main_icon.png";
+	
+	public final static String RULE_ICON_FILE = "rule_ico.png";
+	public final static String SPELL_ICON_FILE = "spell_ico.png";
 	public final static String MONSTER_ICON_FILE = "monster_ico.png";
+	public final static String DUNGEON_ICON_FILE = "dungeon_icon.png";
 	public final static String ITEM_ICON_FILE = "items_ico.png";
+	public final static String CLASS_ICON_FILE = "class_icon.png";
+	public final static String BACKGROUND_ICON_FILE = "background_icon.png";
+	public final static String SPECIES_ICON_FILE = "species_icon.png";
+	public final static String FEAT_ICON_FILE = "feat_icon.png";
+	public final static String BASTION_ICON_FILE = "bastion_icon.png";
 	public final static String FULL_ICON_FILE = "full_ico.png";
+	
 	public final static String INIT_ICON_FILE = "init_ico.png";
 	public final static String PARTY_ICON_FILE = "party_ico.png";
+	public final static String CAMPAIGN_NOTE_ICON_FILE = "camp_note_icon.png";
 	public final static String DICE_CALC_ICON_FILE = "dice_calc_ico.png";
+	
 	public static final String RULE_BUILDER_ICON_FILE = "builder_rule_ico.png";
 	public static final String SPELL_BUILDER_ICON_FILE = "builder_spell_ico.png";
 	public static final String MONSTER_BUILDER_ICON_FILE = "builder_monster_ico.png";
 	public static final String ITEM_BUILDER_ICON_FILE = "builder_item_ico.png";
+	public static final String DUNGEON_BUILDER_ICON_FILE = "builder_dungeon_ico.png";
+	public static final String FEAT_BUILDER_ICON_FILE = "builder_feat_ico.png";
+	public static final String CLASS_BUILDER_ICON_FILE = "builder_class_ico.png";
+	public static final String BACKGROUND_BUILDER_ICON_FILE = "builder_background_icon.png";
+	public static final String SPECIES_BUILDER_ICON_FILE = "builder_species_icon.png";
+	public static final String BASTION_ROOM_BUILD_ICON_FILE = "builder_bastion_room_icon.png";
+	
 	public final static int ICON_SIZE = 64;
 
 	public static void SetLookAndFeel() {
@@ -50,8 +71,19 @@ public class StyleContainer {
 			UIManager.put("ComboBox.disabledForeground", UIManager.getColor("ComboBox.foreground"));
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e) {
+			ErrorLogger.log(e);
 			e.printStackTrace();
 		}
+	}
+	
+	
+	public static void ConfigIFrame(JInternalFrame iFrame, String title) {
+		iFrame.setSize(800, 800);
+		iFrame.setTitle(title);
+		iFrame.setIconifiable(true);
+		iFrame.setClosable(true);
+		iFrame.setMaximizable(true);
+		iFrame.setResizable(true);
 	}
 	
 	public static void SetIcon(JInternalFrame iFrame, String file) {
@@ -62,6 +94,7 @@ public class StyleContainer {
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(file));
 			iFrame.setFrameIcon(icon);
 		} catch (IOException e) {
+			ErrorLogger.log(e);
 			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(file));
 			iFrame.setFrameIcon(icon);
 			System.out.println("IO Exception");
@@ -71,7 +104,9 @@ public class StyleContainer {
 	public static void SetFontMain(Component comp) {
 		if (comp instanceof JLabel || comp instanceof AbstractButton || // JButton, JToggleButton, JCheckBox,
 																		// JRadioButton
-				comp instanceof JTextComponent || comp instanceof JComboBox) {
+				comp instanceof JTextComponent || comp instanceof JComboBox
+				|| comp instanceof JList
+				|| comp instanceof ReminderField) {
 			comp.setFont(FNT_BODY_PLAIN);
 		}
 	}
@@ -79,7 +114,9 @@ public class StyleContainer {
 	public static void SetFontHeader(Component comp) {
 		if (comp instanceof JLabel || comp instanceof AbstractButton || // JButton, JToggleButton, JCheckBox,
 																		// JRadioButton
-				comp instanceof JTextComponent || comp instanceof JComboBox) {
+				comp instanceof JTextComponent || comp instanceof JComboBox  
+				|| comp instanceof ReminderField
+				|| comp instanceof JList) {
 			comp.setFont(FNT_HEADER_BOLD);
 		}
 	}

@@ -39,6 +39,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.Rule;
 import data.Spell;
 import gui.gui_helpers.CompFactory;
@@ -232,7 +233,7 @@ public class SpellBuilderIFrame extends JInternalFrame {
 	
 	public void Save() {
 		data.setSpellMap(spellMap);
-		data.SafeSaveData(DataContainer.SPELLS);
+		data.SafeSaveData(MapType.SPELLS);
 		
 	}
 }

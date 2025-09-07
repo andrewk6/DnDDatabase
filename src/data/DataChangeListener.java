@@ -1,7 +1,9 @@
 package data;
 
+import data.DataContainer.MapType;
+
 public interface DataChangeListener{
 	public void onMapUpdated();
 	
-	public void onMapUpdated(int mapType);
+	public void onMapUpdated(MapType mapType);
 }
