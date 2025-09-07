@@ -397,7 +397,7 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
     		mainPane.setSelectedComponent(tab);
     	}
 	}
-	
+
 	private void test(JPanel p) {
 		
 	}

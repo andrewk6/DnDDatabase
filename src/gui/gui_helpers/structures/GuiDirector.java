@@ -297,7 +297,7 @@ public class GuiDirector
 			dPane.repaint();
 		});
 	}
-	
+
 	public void handleFrame(String key, boolean item) {
 		if(item) {
 			popIFrame();
@@ -584,7 +584,7 @@ public class GuiDirector
 	public BackgroundIFrame getBFrame() {
 		return bFrame;
 	}
-	
+
 	public JDesktopPane getDesktop() {
 		return dPane;
 	}

@@ -488,7 +488,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
     	if (entries.isEmpty()) return;
         currentIndex = (currentIndex + 1) % entries.size();
 
-        // **use your helper instead of setSelectedIndex(…)**
+        // **use your helper instead of setSelectedIndex(Â…)**
         selectionModel.setProgrammaticSelection(currentIndex);
 
         loadEntry(entries.get(currentIndex));

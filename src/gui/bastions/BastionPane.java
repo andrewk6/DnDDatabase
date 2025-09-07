@@ -19,7 +19,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.StyledDocument;
-
 import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;

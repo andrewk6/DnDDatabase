@@ -111,7 +111,7 @@ public class DataContainer {
 	public static final String CONFIG_FILE_NAME = "Config.confol";
 	public static final String EXTRAS_FILE_NAME = "Extras.exol";
 	public static final String BASTION_RULES = "BastionRules.baol";
-	
+
 	public enum MapType {
 		RULES, SPELLS, MONSTERS, INSERTS, ITEMS, CAMPAIGN, FEATS, CLASSES, 
 		SPECIES, BACKGROUND, BASTION_ROOMS
@@ -132,7 +132,7 @@ public class DataContainer {
 	
 	private ArrayList<String> ruleKeysSorted, spellKeysSorted, monstKeysSorted, insertKeysSorted,
 		weaponKeysSorted, armorKeysSorted, gearKeysSorted, toolKeysSorted, magicItemKeysSorted, featKeysSorted,
-		classKeysSorted, bastionRoomKeysSorted, speciesKeysSorted, backgroundKeysSorted;
+  classKeysSorted, bastionRoomKeysSorted, speciesKeysSorted, backgroundKeysSorted;
 	
 
 	private final AtomicInteger runningTasks = new AtomicInteger(0);
@@ -717,7 +717,7 @@ public class DataContainer {
 		}
 		return false;
 	}
-	
+
 	private boolean ImportBastionRooms() {
 		bastionRoomMap = new HashMap<String, BastionRoom>();
 		bastionRoomKeysSorted = new ArrayList<String>();
@@ -885,6 +885,20 @@ public class DataContainer {
 		this.classKeysSorted = new ArrayList<String>(bMap.keySet());
 		SortKeys(MapType.BASTION_ROOMS);
 		notifyChange(MapType.BASTION_ROOMS);
+	}
+	
+	public void SetSpeciesMap(HashMap<String, Species> sMap) {
+		this.speciesMap = sMap;
+		this.speciesKeysSorted = new ArrayList<String>(sMap.keySet());
+		SortKeys(DataContainer.SPECIES);
+		notifyChange(DataContainer.SPECIES);
+	}
+	
+	public void SetBastionRoomMap(HashMap<String, BastionRoom> bMap) {
+		this.bastionRoomMap = bMap;
+		this.classKeysSorted = new ArrayList<String>(bMap.keySet());
+		SortKeys(DataContainer.BASTION_ROOMS);
+		notifyChange(DataContainer.BASTION_ROOMS);
 	}
 	
 	public void SafeSaveData() {
@@ -1178,7 +1192,7 @@ public class DataContainer {
 			return false;
 		}
 	}
-	
+
 	private boolean SaveBastionRooms() {
 		File bFile = new File(dbFolder.getPath() + File.separator + DataContainer.BASTION_ROOM_FILE_NAME);
 		if(!bFile.exists()) {
@@ -1329,7 +1343,7 @@ public class DataContainer {
 			return null;
 		return Collections.unmodifiableMap(backgroundMap);
 	}
-	
+
 	public Map<String, BastionRoom> getBastionRooms(){
 		if(bastionRoomMap == null)
 			return null;
@@ -1397,7 +1411,7 @@ public class DataContainer {
 	public List<String> getBackgroundKeysSorted(){
 		return Collections.unmodifiableList(backgroundKeysSorted);
 	}
-	
+
 	public List<String> getBastionRoomKeysSorted(){
 		return Collections.unmodifiableList(bastionRoomKeysSorted);
 	}

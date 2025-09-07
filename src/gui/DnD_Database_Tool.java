@@ -188,7 +188,7 @@ public class DnD_Database_Tool extends JFrame {
 		brFrame = new BastionIFrame(data, gd);
 		dPane.add(brFrame);
 		brFrame.setVisible(false);
-		
+    
 		rBuildFrame = new RuleBuilderIFrame(data);
 		dPane.add(rBuildFrame);
 		rBuildFrame.setVisible(false);
@@ -232,7 +232,7 @@ public class DnD_Database_Tool extends JFrame {
 		brBuildFrame = new BastionBuilderIFrame(data);
 		dPane.add(brBuildFrame);
 		brBuildFrame.setVisible(false);
-		
+    
 		dViewFrame = new DungeonIViewer(data, gd);
 		dPane.add(dViewFrame);
 		dViewFrame.setVisible(false);
@@ -263,7 +263,6 @@ public class DnD_Database_Tool extends JFrame {
 		playerMenu.add(CompFactory.createNewJMenuItem("Species", spFrame));
 		playerMenu.add(CompFactory.createNewJMenuItem("Background", bFrame));
 		playerMenu.add(CompFactory.createNewJMenuItem("Feats", fFrame));
-		playerMenu.add(CompFactory.createNewJMenuItem("Bastions", brFrame));
 		
 		/*
 		 * TOOLS MENU

@@ -173,6 +173,7 @@ public class HoverTextPane extends JTextPane {
             String combo = ruleName + spellName + monsterName + 
             		playerName + featName + className + speciesName +
             		backgroundName;
+          
             combo = combo.replace("null", "");
             if(itemName != null|| playerName != null) {
             	if(itemName != null) {

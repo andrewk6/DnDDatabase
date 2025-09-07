@@ -87,7 +87,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     
     private int ampPosition = -1;
 //	private final List<String> ampSuggestions = Arrays.asList(
-//		    "<b>(Recharge 5–6).</b>", 
+//		    "<b>(Recharge 5â€“6).</b>", 
 //		    
 //		    "<b>Spider Climb.</b> The NAME can climb difficult surfaces, "
 //		    + "including along ceilings, without needing to make an ability check.", 
@@ -387,6 +387,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             clearStaleClassOffsets();
             clearStaleSpeciesOffsets();
             clearStaleBackgroundOffsets();
+          
             SwingUtilities.invokeLater(() -> resetStyleAfterDeletion());
         }
         public void changedUpdate(DocumentEvent e) {}
@@ -630,6 +631,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 boolean isClass = selected.endsWith(" (class)");
                 boolean isSpecies = selected.endsWith(" (species)");
                 boolean isBackground = selected.endsWith(" (background)");
+              
                 String plainName;
                 if(isSpell)
                 	plainName = selected.substring(0, selected.length() - 8);

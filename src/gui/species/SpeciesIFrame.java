@@ -132,7 +132,5 @@ public class SpeciesIFrame extends JInternalFrame implements ContentTab, DataCha
 	public void onMapUpdated(MapType mapType) {
 		if(mapType == MapType.SPECIES)
 			FillSidePane();
-	}
-	
-	
+	}	
 }

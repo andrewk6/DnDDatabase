@@ -66,7 +66,7 @@ public class CompFactory
 	        return label;
 	    }
 	};
-	
+
 	private static <T> void setFont(Component c, ComponentType font) {
 		switch(font) {
 		case ComponentType.HEADER: StyleContainer.SetFontHeader(c); break;

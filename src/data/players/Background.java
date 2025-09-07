@@ -27,7 +27,6 @@ public class Background implements Serializable
 	public Feat startFeat;
 	public ArrayList<Skills> skills;
 	public String toolProf;
-	
 	public ArrayList<Item> startEquip;
 	public int startGoldWithEquip;
 	

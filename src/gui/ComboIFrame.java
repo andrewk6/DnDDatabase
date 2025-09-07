@@ -533,7 +533,7 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 				CheckTabs();
 	    	}
 	    }
-	 
+
 	 public void AddTab(Background b) {
 	    	if(!hasTab(b.name)) {
 	    		JPanel tab = new JPanel();
