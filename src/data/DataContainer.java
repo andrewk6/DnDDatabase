@@ -253,6 +253,12 @@ public class DataContainer {
 							ImportObject((Feat) obj, ((Feat)obj).name, featMap);
 						else if(obj instanceof DnDClass) 
 							ImportObject((DnDClass) obj, ((DnDClass)obj).name, classMap);
+						else if(obj instanceof Species)
+							ImportObject((Species) obj, ((Species)obj).name, speciesMap);
+						else if(obj instanceof Background)
+							ImportObject((Background)obj, ((Background)obj).name, backgroundMap);
+						else if(obj instanceof BastionRoom)
+							ImportObject((BastionRoom)obj, ((BastionRoom)obj).name, bastionRoomMap);
 						else throw new IllegalArgumentException("Not proper object");
 						
 					} catch (ClassNotFoundException e) {
@@ -294,7 +300,6 @@ public class DataContainer {
 					e.printStackTrace();
 				}
 			}
-			
 			ioQueue.offer(()->{
 				WriteExport(out);
 			});
@@ -316,6 +321,12 @@ public class DataContainer {
 				ExportMap(featMap, oos);
 			if(exportDialog.getClasses())
 				ExportMap(classMap, oos);
+			if(exportDialog.getBackgrounds())
+				ExportMap(backgroundMap, oos);
+			if(exportDialog.getSpecies())
+				ExportMap(speciesMap, oos);
+			if(exportDialog.getBastionRooms())
+				ExportMap(bastionRoomMap, oos);
 			oos.flush();
 			oos.close();
 		} catch (IOException e) {

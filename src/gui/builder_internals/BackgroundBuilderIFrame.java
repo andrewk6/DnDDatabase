@@ -103,8 +103,7 @@ public class BackgroundBuilderIFrame extends JInternalFrame
 	private void ConfigFrame() {
 		this.addInternalFrameListener(CompFactory.createNonCloseListener(this));
 		StyleContainer.ConfigIFrame(this, "Background Room Builder");
-		/*StyleContainer.SetIcon(this, StyleContainer.BASTION_ROOM_BUILD_ICON_FILE);*/ 
-		//TODO: Background Builder icon
+		StyleContainer.SetIcon(this, StyleContainer.BACKGROUND_BUILDER_ICON_FILE);
 	}
 	
 	private void BuildContent(Container cPane) {

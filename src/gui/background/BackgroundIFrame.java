@@ -47,7 +47,7 @@ public class BackgroundIFrame extends JInternalFrame implements DataChangeListen
 	private void ConfigFrame() {
 		getContentPane().setLayout(new BorderLayout());
 		StyleContainer.ConfigIFrame(this, "Background Database");
-		/*StyleContainer.SetIcon(this, StyleContainer.BASTION_ICON_FILE);*/ //TODO: Background icon file
+		StyleContainer.SetIcon(this, StyleContainer.BACKGROUND_ICON_FILE);
 		addInternalFrameListener(CompFactory.createNonCloseListener(this));
 		this.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
 		gd.NotifyFocus(this);

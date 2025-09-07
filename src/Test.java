@@ -122,7 +122,6 @@ public class Test extends JFrame {
 				oos.flush();
 				oos.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		});

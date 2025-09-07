@@ -20,7 +20,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
+import data.DataChangeListener;
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.players.classes.ClassAbility;
 import data.players.classes.DnDClass;
 import gui.FeatIFrame;
@@ -31,7 +33,7 @@ import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
-public class ClassIFrame extends JInternalFrame implements ContentTab
+public class ClassIFrame extends JInternalFrame implements ContentTab, DataChangeListener
 {
 	private DataContainer data;
 	private GuiDirector gd;
@@ -42,6 +44,7 @@ public class ClassIFrame extends JInternalFrame implements ContentTab
 	
 	public ClassIFrame(DataContainer data, GuiDirector gd) {
 		this.data = data;
+		this.data.registerListener(this);
 		this.gd = gd;
 		toFront();
 		addInternalFrameListener(new InternalFrameListener() {
@@ -150,6 +153,17 @@ public class ClassIFrame extends JInternalFrame implements ContentTab
 	
 	public JTabbedPane GetTabs() {
 		return tabs;
+	}
+
+	@Override
+	public void onMapUpdated() {
+		FillSidePane();
+	}
+
+	@Override
+	public void onMapUpdated(MapType mapType) {
+		if(mapType == MapType.CLASSES)
+			FillSidePane();
 	}
 	
 }

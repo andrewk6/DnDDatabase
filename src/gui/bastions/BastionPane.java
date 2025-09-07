@@ -20,13 +20,15 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.StyledDocument;
 
+import data.DataChangeListener;
 import data.DataContainer;
+import data.DataContainer.MapType;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.GuiDirector;
 
-public class BastionPane extends JPanel
+public class BastionPane extends JPanel implements DataChangeListener
 {
 	public static void main(String[]args) {
 		DataContainer data = new DataContainer();
@@ -179,5 +181,16 @@ public class BastionPane extends JPanel
 		
 		roomSide.revalidate();
 		roomSide.repaint();
+	}
+
+	@Override
+	public void onMapUpdated() {
+		FillRoomSide();
+	}
+
+	@Override
+	public void onMapUpdated(MapType mapType) {
+		if(mapType == MapType.BASTION_ROOMS)
+			FillRoomSide();
 	}
 }

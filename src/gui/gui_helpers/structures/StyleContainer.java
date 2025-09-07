@@ -39,9 +39,11 @@ public class StyleContainer {
 	public final static String SPELL_ICON_FILE = "spell_ico.png";
 	public final static String MONSTER_ICON_FILE = "monster_ico.png";
 	public final static String DUNGEON_ICON_FILE = "dungeon_icon.png";
-	public final static String FEAT_ICON_FILE = "feat_icon.png";
-	public final static String CLASS_ICON_FILE = "class_icon.png";
 	public final static String ITEM_ICON_FILE = "items_ico.png";
+	public final static String CLASS_ICON_FILE = "class_icon.png";
+	public final static String BACKGROUND_ICON_FILE = "background_icon.png";
+	public final static String SPECIES_ICON_FILE = "species_icon.png";
+	public final static String FEAT_ICON_FILE = "feat_icon.png";
 	public final static String BASTION_ICON_FILE = "bastion_icon.png";
 	public final static String FULL_ICON_FILE = "full_ico.png";
 	
@@ -57,6 +59,8 @@ public class StyleContainer {
 	public static final String DUNGEON_BUILDER_ICON_FILE = "builder_dungeon_ico.png";
 	public static final String FEAT_BUILDER_ICON_FILE = "builder_feat_ico.png";
 	public static final String CLASS_BUILDER_ICON_FILE = "builder_class_ico.png";
+	public static final String BACKGROUND_BUILDER_ICON_FILE = "builder_background_icon.png";
+	public static final String SPECIES_BUILDER_ICON_FILE = "builder_species_icon.png";
 	public static final String BASTION_ROOM_BUILD_ICON_FILE = "builder_bastion_room_icon.png";
 	
 	public final static int ICON_SIZE = 64;

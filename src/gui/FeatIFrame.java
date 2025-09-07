@@ -97,20 +97,6 @@ public class FeatIFrame extends JInternalFrame implements ContentTab, DataChange
 		getContentPane().setLayout(new BorderLayout());
 		StyleContainer.ConfigIFrame(this, "Feats Database");
 		StyleContainer.SetIcon(this, StyleContainer.FEAT_ICON_FILE);
-//		setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
-		
-		//TODO: Add in an icon for the feat frames
-//		try {
-//			
-//			BufferedImage iconImage = ImageIO.read(
-//				    getClass().getResource("/"+ StyleContainer.SPELL_ICON_FILE));
-//			setDesktopIcon(new CustomDesktopIcon(this, iconImage));
-//			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.SPELL_ICON_FILE));
-//			this.setFrameIcon(icon);
-//		} catch (IOException e) {
-//			ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource(StyleContainer.SPELL_ICON_FILE));
-//			this.setFrameIcon(icon);
-//		}
 	}
 	
 	public void BuildSidePane(Container cPane){

@@ -46,6 +46,7 @@ import javax.swing.text.StyledDocument;
 import data.DataContainer;
 import data.DataContainer.MapType;
 import data.Rule;
+import gui.gui_helpers.DocumentHelper;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.StyleContainer;
 
@@ -114,7 +115,7 @@ public class RuleBuilderIFrame extends JInternalFrame{
 		addBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (rulesName.getText().length() > 0 && rulesDesc.getText().length() > 0) {
-					StyledDocument styledDoc = rulesDesc.getStyledDocument();
+					StyledDocument styledDoc = DocumentHelper.deepCopyDocument(rulesDesc.getStyledDocument());
 					rulesList.put(rulesName.getText(),
 							new Rule(rulesName.getText(), rulesDesc.getText(),
 							rulesDesc.convertDocumentToHTML(), styledDoc));
