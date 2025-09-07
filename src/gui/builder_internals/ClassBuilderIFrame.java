@@ -36,6 +36,7 @@ import builders.class_builder.SubclassPaneBuilder;
 import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.Abilities;
+import data.DataContainer.MapType;
 import data.DataContainer.Skills;
 import data.DataContainer.Source;
 import data.items.Item;
@@ -136,7 +137,7 @@ public class ClassBuilderIFrame extends JInternalFrame implements DataChangeList
 		
 		JButton save = CompFactory.createNewButton("Save", _->{
 			data.SetClassMap(classMap);
-			data.SafeSaveData(DataContainer.CLASSES);
+			data.SafeSaveData(MapType.CLASSES);
 		});
 		sideOPane.add(save, BorderLayout.SOUTH);
 		
@@ -628,7 +629,7 @@ public class ClassBuilderIFrame extends JInternalFrame implements DataChangeList
 	}
 
 	@Override
-	public void onMapUpdated(int mapType) {
+	public void onMapUpdated(MapType mapType) {
 		classDesc.onMapUpdated(mapType);
 	}
 }

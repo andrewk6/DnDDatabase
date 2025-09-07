@@ -168,9 +168,11 @@ public class HoverTextPane extends JTextPane {
             String featName = (String) attr.getAttribute("featLink");
             String className = (String) attr.getAttribute("classLink");
             String speciesName = (String)attr.getAttribute("speciesLink");
+            String backgroundName = (String)attr.getAttribute("backgroundLink");
             
             String combo = ruleName + spellName + monsterName + 
-            		playerName + featName + className + speciesName;
+            		playerName + featName + className + speciesName +
+            		backgroundName;
             combo = combo.replace("null", "");
             if(itemName != null|| playerName != null) {
             	if(itemName != null) {
@@ -193,23 +195,33 @@ public class HoverTextPane extends JTextPane {
             	}
             }else if(gd.getComboFrame() != null && combo.length() > 0) {
             	if(ruleName != null && spellName == null && monsterName == null
-            			&& featName == null && className == null && speciesName == null)
+            			&& featName == null && className == null && speciesName == null
+            			&& backgroundName == null)
             		gd.getComboFrame().AddTab(data.getRules().get(ruleName));
             	else if(ruleName == null && spellName != null && monsterName == null
-            			&& featName == null && className == null && speciesName == null)
+            			&& featName == null && className == null && speciesName == null
+            			&& backgroundName == null)
             		gd.getComboFrame().AddTab(data.getSpells().get(spellName));
             	else if(ruleName == null && spellName == null && monsterName != null
-            			&& featName == null && className == null && speciesName == null)
+            			&& featName == null && className == null && speciesName == null
+            			&& backgroundName == null)
             		gd.getComboFrame().AddTab(data.getMonsters().get(monsterName));
             	else if(ruleName == null && spellName == null && monsterName == null
-            			&& featName != null && className == null && speciesName == null)
+            			&& featName != null && className == null && speciesName == null
+            			&& backgroundName == null)
             		gd.getComboFrame().AddTab(data.getFeats().get(featName));
             	else if(ruleName == null && spellName == null && monsterName == null
-            			&& featName == null && className != null && speciesName == null)
+            			&& featName == null && className != null && speciesName == null
+            			&& backgroundName == null)
             		gd.getComboFrame().AddTab(data.getClasses().get(className));
             	else if(ruleName == null && spellName == null && monsterName == null
-            			&& featName == null && className == null && speciesName != null)
+            			&& featName == null && className == null && speciesName != null
+            			&& backgroundName == null)
             		gd.getComboFrame().AddTab(data.getSpecies().get(speciesName));
+            	else if(ruleName == null && spellName == null && monsterName == null
+            			&& featName == null && className == null && speciesName == null
+            			&& backgroundName != null)
+            		gd.getComboFrame().AddTab(data.getBackgrounds().get(backgroundName));
             	else if(gd.getComboFrame() instanceof ComboIFrame)
             		((ComboIFrame) gd.getComboFrame()).AddTabDirector(combo);
             }else {
@@ -258,6 +270,11 @@ public class HoverTextPane extends JTextPane {
                 	if(gd.getSpFrame() != null) {
                 		gd.getSpFrame().AddTab(data.getSpecies().get(speciesName));
                 		gd.popSpFrame();
+                	}
+                }else if(backgroundName != null && data.getBackgrounds().containsKey(backgroundName)) {
+                	if(gd.getBFrame() != null) {
+                		gd.getBFrame().AddTab(data.getBackgrounds().get(backgroundName));
+                		gd.popBFrame();
                 	}
                 }
             }

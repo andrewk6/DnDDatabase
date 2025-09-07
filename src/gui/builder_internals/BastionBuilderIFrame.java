@@ -27,6 +27,7 @@ import javax.swing.event.InternalFrameListener;
 import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.players.BastionRoom;
 import data.players.BastionRoom.Order;
 import data.players.BastionRoom.SpaceRequired;
@@ -121,7 +122,7 @@ public class BastionBuilderIFrame extends JInternalFrame
 		
 		JButton saveBtn = CompFactory.createNewButton("Save", _->{
 			data.SetBastionRoomMap(bastRoomMap);
-			data.SafeSaveData(DataContainer.BASTION_ROOMS);
+			data.SafeSaveData(MapType.BASTION_ROOMS);
 		});
 		sideWrapper.add(saveBtn, BorderLayout.SOUTH);
 	}

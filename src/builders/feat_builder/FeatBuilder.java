@@ -25,6 +25,7 @@ import javax.swing.SwingUtilities;
 
 import data.DataChangeListener;
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.Feat;
 import data.Feat.FeatType;
 import gui.gui_helpers.CompFactory;
@@ -128,7 +129,7 @@ public class FeatBuilder extends JFrame implements DataChangeListener
 		
 		JButton saveBtn = CompFactory.createNewButton("Save", _->{
 			data.setFeatMap(featMap);
-			data.SafeSaveData(DataContainer.FEATS);
+			data.SafeSaveData(MapType.FEATS);
 		});
 		sPane.add(saveBtn, BorderLayout.SOUTH);
 		
@@ -215,7 +216,7 @@ public class FeatBuilder extends JFrame implements DataChangeListener
 		edit.onMapUpdated();
 	}
 	
-	public void onMapUpdated(int mapType) {
+	public void onMapUpdated(MapType mapType) {
 		edit.onMapUpdated(mapType);
 	}
 }

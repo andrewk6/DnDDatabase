@@ -6,6 +6,7 @@ import data.Feat;
 import data.Monster;
 import data.Rule;
 import data.Spell;
+import data.players.Background;
 import data.players.Species;
 import data.players.classes.DnDClass;
 
@@ -19,4 +20,5 @@ public interface AllTab extends ContentTab
 	public void AddTab(Feat f);
 	public void AddTab(DnDClass c);
 	public void AddTab(Species s);
+	public void AddTab(Background b);
 }

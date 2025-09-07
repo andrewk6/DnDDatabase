@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -20,10 +21,12 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.ListModel;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.text.StyledDocument;
@@ -44,6 +47,25 @@ public class CompFactory
 	public enum ScrollPolicy{
 		VERTICAL, HORIZONTAL, BOTH
 	}
+	
+	private final static DefaultListCellRenderer seperateItems = new DefaultListCellRenderer() {
+	    @Override
+	    public Component getListCellRendererComponent(JList<?> list,
+	                                                  Object value,
+	                                                  int index,
+	                                                  boolean isSelected,
+	                                                  boolean cellHasFocus) {
+	        String display = value.toString();
+	        if (index < list.getModel().getSize() - 1) {
+	            display += " | "; 
+	        }
+	        JLabel label = (JLabel) super.getListCellRendererComponent(list, display, index, isSelected, cellHasFocus);
+	        
+	        // Use the font from the list itself or apply a custom one
+	        label.setFont(list.getFont());
+	        return label;
+	    }
+	};
 	
 	private static <T> void setFont(Component c, ComponentType font) {
 		switch(font) {
@@ -167,6 +189,15 @@ public class CompFactory
         return combo;
     }
 	
+	public static <T> JList<T> createJList(ListModel<T> model, ComponentType font){
+		JList<T> list = new JList<T>(model);
+		setFont(list, font);
+		list.setCellRenderer(seperateItems);
+		list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		list.setVisibleRowCount(-1);
+		return list;
+	}
+	
 	public static HoverTextPane createHoverTextPane(DataContainer data, GuiDirector gd, 
 			StyledDocument doc, ComponentType font) {
 		HoverTextPane hPane = new HoverTextPane(data, gd, gd.getDesktop());
@@ -176,6 +207,16 @@ public class CompFactory
 		
 	}
 	
+	/**
+	 * Creates a {@link JPanel} containing the given buttons arranged using a {@link FlowLayout}.
+	 *
+	 * @param layout  the alignment constant for the {@code FlowLayout}
+	 *                (for example, {@link FlowLayout#LEFT}, {@link FlowLayout#CENTER},
+	 *                or {@link FlowLayout#RIGHT})
+	 * @param buttons the array of buttons to add to the panel; if {@code null} or empty,
+	 *                the panel will be created with no buttons
+	 * @return a {@code JPanel} with the specified layout containing the given buttons
+	 */
 	public static JPanel createButtonFlowPane(int layout, JButton[] buttons) {
 		JPanel out = new JPanel();
 		out.setLayout(new FlowLayout(layout));

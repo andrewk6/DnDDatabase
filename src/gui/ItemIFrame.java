@@ -16,6 +16,7 @@ import javax.swing.event.InternalFrameListener;
 
 import data.DataChangeListener;
 import data.DataContainer;
+import data.DataContainer.MapType;
 import gui.gui_helpers.structures.ContentFrame;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
@@ -132,7 +133,7 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChan
 	}
 
 	@Override
-	public void onMapUpdated(int mapType) {
+	public void onMapUpdated(MapType mapType) {
 		for (int i = tabs.getTabCount() - 1; i >= 0; i--) {
 		    tabs.removeTabAt(i);
 		}

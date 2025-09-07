@@ -34,6 +34,7 @@ import javax.swing.event.InternalFrameListener;
 
 import data.DataChangeListener;
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.Feat;
 import data.Feat.FeatType;
 import gui.gui_helpers.CustomDesktopIcon;
@@ -270,7 +271,7 @@ public class FeatIFrame extends JInternalFrame implements ContentTab, DataChange
 	}
 
 	@Override
-	public void onMapUpdated(int mapType) {
+	public void onMapUpdated(MapType mapType) {
 		FillSidePane();
 	}
 

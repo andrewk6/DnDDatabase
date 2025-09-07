@@ -16,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.JTextComponent;
@@ -99,7 +100,9 @@ public class StyleContainer {
 	public static void SetFontMain(Component comp) {
 		if (comp instanceof JLabel || comp instanceof AbstractButton || // JButton, JToggleButton, JCheckBox,
 																		// JRadioButton
-				comp instanceof JTextComponent || comp instanceof JComboBox) {
+				comp instanceof JTextComponent || comp instanceof JComboBox
+				|| comp instanceof JList
+				|| comp instanceof ReminderField) {
 			comp.setFont(FNT_BODY_PLAIN);
 		}
 	}
@@ -108,7 +111,8 @@ public class StyleContainer {
 		if (comp instanceof JLabel || comp instanceof AbstractButton || // JButton, JToggleButton, JCheckBox,
 																		// JRadioButton
 				comp instanceof JTextComponent || comp instanceof JComboBox  
-				|| comp instanceof ReminderField) {
+				|| comp instanceof ReminderField
+				|| comp instanceof JList) {
 			comp.setFont(FNT_HEADER_BOLD);
 		}
 	}

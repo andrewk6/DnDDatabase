@@ -23,6 +23,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.players.BastionRoom;
 import data.players.BastionRoom.Order;
 import data.players.BastionRoom.SpaceRequired;
@@ -122,7 +123,7 @@ public class BastionRoomBuilder extends JFrame
 		
 		JButton saveBtn = CompFactory.createNewButton("Save", _->{
 			data.SetBastionRoomMap(bastRoomMap);
-			data.SafeSaveData(DataContainer.BASTION_ROOMS);
+			data.SafeSaveData(MapType.BASTION_ROOMS);
 		});
 		sideWrapper.add(saveBtn, BorderLayout.SOUTH);
 	}

@@ -35,8 +35,10 @@ import data.Rule;
 import data.Spell;
 import data.dungeon.Dungeon;
 import data.dungeon.DungeonFloor;
+import data.players.Background;
 import data.players.Species;
 import data.players.classes.DnDClass;
+import gui.background.BackgroundPane;
 import gui.classes.ClassPane;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.HoverTextPane;
@@ -377,6 +379,22 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
     					mainPane.removeTabAt(mainPane.indexOfComponent(tab));
     				})
     		}), BorderLayout.SOUTH);
+    	}
+	}
+	
+	public void AddTab(Background b) {
+		if(!hasTab(b.name)) {
+    		JPanel tab = new JPanel();
+    		tab.setLayout(new BorderLayout());
+    		mainPane.addTab(b.name, tab);
+    		
+    		tab.add(new BackgroundPane(b, data, gd), BorderLayout.CENTER);
+    		tab.add(CompFactory.createButtonFlowPane(FlowLayout.RIGHT, new JButton[] {
+    				CompFactory.createNewButton("Remove " + b.name + " Tab", _->{
+    					mainPane.removeTabAt(mainPane.indexOfComponent(tab));
+    				})
+    		}), BorderLayout.SOUTH);
+    		mainPane.setSelectedComponent(tab);
     	}
 	}
 	

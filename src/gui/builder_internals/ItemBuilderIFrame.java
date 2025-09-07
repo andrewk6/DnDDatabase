@@ -24,6 +24,7 @@ import builders.item_builder.MagicItemBuilder;
 import builders.item_builder.ToolSetBuilder;
 import builders.item_builder.WeaponBuilderPanel;
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.items.Item;
 import gui.gui_helpers.structures.StyleContainer;
 
@@ -117,7 +118,7 @@ public class ItemBuilderIFrame extends JInternalFrame
 		itemMap.putAll(miBuild.getMagicItemMap());
 		
 		data.SetItemMap(itemMap);
-		data.SafeSaveData(DataContainer.ITEMS);
+		data.SafeSaveData(MapType.ITEMS);
 		return true;
 	}
 }

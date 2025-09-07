@@ -34,6 +34,7 @@ import javax.swing.JCheckBox;
 
 import data.DataChangeListener;
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.Monster;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
@@ -344,7 +345,7 @@ public class MonsterIFrame extends JInternalFrame implements ContentTab, DataCha
 	}
 
 	@Override
-	public void onMapUpdated(int mapType) {
+	public void onMapUpdated(MapType mapType) {
 		FillSidePane();
 	}
 }

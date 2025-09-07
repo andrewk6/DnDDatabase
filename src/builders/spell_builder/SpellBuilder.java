@@ -36,6 +36,7 @@ import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.Rule;
 import data.Spell;
 import gui.gui_helpers.RichEditor;
@@ -296,7 +297,7 @@ public class SpellBuilder extends JFrame {
 	
 	public void Save() {
 		data.setSpellMap(spellMap);
-		data.SafeSaveData(DataContainer.SPELLS);
+		data.SafeSaveData(MapType.SPELLS);
 		
 	}
 }

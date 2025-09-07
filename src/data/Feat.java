@@ -17,4 +17,8 @@ public class Feat implements Serializable{
 	public String name;
 	public FeatType type;
 	public Source src;
+	
+	public String toString() {
+		return name;
+	}
 }

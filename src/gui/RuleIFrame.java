@@ -32,6 +32,7 @@ import javax.swing.event.InternalFrameListener;
 
 import data.DataChangeListener;
 import data.DataContainer;
+import data.DataContainer.MapType;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
@@ -249,7 +250,7 @@ public class RuleIFrame extends JInternalFrame implements ContentTab, DataChange
 	}
 
 	@Override
-	public void onMapUpdated(int mapType) {
+	public void onMapUpdated(MapType mapType) {
 		FillSidePane();
 		
 	}

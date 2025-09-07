@@ -30,6 +30,7 @@ import gui.ItemIFrame;
 import gui.MonsterIFrame;
 import gui.RuleIFrame;
 import gui.SpellIFrame;
+import gui.background.BackgroundIFrame;
 import gui.campaign.PartyIFrame;
 import gui.campaign.PlayerPane;
 import gui.classes.ClassIFrame;
@@ -50,6 +51,7 @@ public class GuiDirector
 	private FeatIFrame fFrame;
 	private ClassIFrame clFrame;
 	private SpeciesIFrame spFrame;
+	private BackgroundIFrame bFrame;
 	
 	private PartyIFrame pFrame;
 	private InitiativeIFrame initFrame;
@@ -86,7 +88,8 @@ public class GuiDirector
 			clFrame = (ClassIFrame) frame;
 		else if(frame instanceof SpeciesIFrame)
 			spFrame = (SpeciesIFrame) frame;
-//		else if (fr)
+		else if(frame instanceof BackgroundIFrame)
+			bFrame = (BackgroundIFrame) frame;
 	}
 	
 	public void DeRegister(ContentTab frame) {
@@ -108,6 +111,9 @@ public class GuiDirector
 		}else if(frame instanceof SpeciesIFrame) {
 			if(spFrame == frame)
 				spFrame = null;
+		}else if(frame instanceof BackgroundIFrame) {
+			if(bFrame == frame)
+				bFrame = null;
 		}
 	}
 	
@@ -270,6 +276,23 @@ public class GuiDirector
 			spFrame.toFront();
 			if(!spFrame.isVisible())
 				spFrame.setVisible(true);
+			dPane.revalidate();
+			dPane.repaint();
+		});
+	}
+	
+	public void popBFrame() {
+		SwingUtilities.invokeLater(()->{
+			if(bFrame.isIcon())
+				try {
+					bFrame.setIcon(false);
+				} catch (PropertyVetoException e) {
+					ErrorLogger.log(e);
+					e.printStackTrace();
+				}
+			bFrame.toFront();
+			if(!bFrame.isVisible())
+				bFrame.setVisible(true);
 			dPane.revalidate();
 			dPane.repaint();
 		});
@@ -556,6 +579,10 @@ public class GuiDirector
 	
 	public SpeciesIFrame getSpFrame() {
 		return spFrame;
+	}
+	
+	public BackgroundIFrame getBFrame() {
+		return bFrame;
 	}
 	
 	public JDesktopPane getDesktop() {

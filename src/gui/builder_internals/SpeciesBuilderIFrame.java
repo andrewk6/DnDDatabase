@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.DataContainer.Source;
 import data.players.Species;
 import gui.gui_helpers.CompFactory;
@@ -56,9 +57,8 @@ public class SpeciesBuilderIFrame extends JInternalFrame
 
 	private void ConfigFrame() {
 		this.addInternalFrameListener(CompFactory.createNonCloseListener(this));
-		StyleContainer.ConfigIFrame(this, "Bastion Room Builder");
-		StyleContainer.SetIcon(this, StyleContainer.BASTION_ROOM_BUILD_ICON_FILE);
-		
+		StyleContainer.ConfigIFrame(this, "Species Room Builder");
+		/*StyleContainer.SetIcon(this, StyleContainer.BASTION_ROOM_BUILD_ICON_FILE);*/ //TODO: Species Builder icon
 	}	
 	
 	private void BuildContent(Container cPane) {
@@ -194,6 +194,6 @@ public class SpeciesBuilderIFrame extends JInternalFrame
 	
 	private void Save() {
 		data.SetSpeciesMap(sMap);
-		data.SafeSaveData(DataContainer.SPECIES);
+		data.SafeSaveData(MapType.SPECIES);
 	}
 }

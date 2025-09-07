@@ -59,6 +59,7 @@ import javax.swing.text.StyledDocument;
 import builders.monster_builder.DmgStatSelect;
 import builders.monster_builder.SkillsSelectFrame;
 import data.*;
+import data.DataContainer.MapType;
 import data.DataContainer.Proficiency;
 import data.DataContainer.Skills;
 import gui.gui_helpers.DocumentHelper;
@@ -1126,7 +1127,7 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 	
 	public boolean WriteMonsters() {
 		data.SetMonstersMap(monstMap);
-		data.SafeSaveData(DataContainer.MONSTERS);
+		data.SafeSaveData(MapType.MONSTERS);
 		return true;
 	}
 	

@@ -37,12 +37,15 @@ import javax.swing.event.InternalFrameListener;
 
 import data.DataChangeListener;
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.Feat;
 import data.Monster;
 import data.Rule;
 import data.Spell;
+import data.players.Background;
 import data.players.Species;
 import data.players.classes.DnDClass;
+import gui.background.BackgroundPane;
 import gui.classes.ClassPane;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CustomDesktopIcon;
@@ -82,32 +85,6 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 		BuildSidePane(getContentPane());
 
 		toFront();
-//		addInternalFrameListener(new InternalFrameListener() {
-//			public void internalFrameOpened(InternalFrameEvent e) {
-//				gd.RegisterCombo(ComboIFrame.this);
-//			}
-//
-//			public void internalFrameIconified(InternalFrameEvent e) {
-//				gd.DeRegisterCombo(ComboIFrame.this);
-//			}
-//
-//			public void internalFrameDeiconified(InternalFrameEvent e) {
-//				gd.RegisterCombo(ComboIFrame.this);
-//			}
-//
-//			public void internalFrameDeactivated(InternalFrameEvent e) {}
-//
-//			public void internalFrameClosing(InternalFrameEvent e) {
-//				gd.RegisterCombo(ComboIFrame.this);
-//			}
-//
-//			public void internalFrameClosed(InternalFrameEvent e) {
-//			}
-//
-//			public void internalFrameActivated(InternalFrameEvent e) {
-//				gd.RegisterCombo(ComboIFrame.this);
-//			}
-//		});
 		
 		addInternalFrameListener(GuiDirector.getAllTabListener(guiD, this));
 		addInternalFrameListener(new InternalFrameListener() {
@@ -208,6 +185,7 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 			combinedKeysSet.addAll(data.getFeatKeysSorted());
 			combinedKeysSet.addAll(data.getClassKeysSorted());
 			combinedKeysSet.addAll(data.getSpeciesKeysSorted());
+			combinedKeysSet.addAll(data.getBackgroundKeysSorted());
 			List<String> keys = new ArrayList<>(combinedKeysSet);
 			Collections.sort(keys);
 
@@ -266,28 +244,39 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 		System.out.println(s);
 		if (data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
 				&& !data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
-				&& !data.getClassKeysSorted().contains(s) && !data.getSpeciesKeysSorted().contains(s)) {
+				&& !data.getClassKeysSorted().contains(s) && !data.getSpeciesKeysSorted().contains(s)
+				&& !data.getBackgroundKeysSorted().contains(s)) {
 			AddTab(data.getRules().get(s));
 		} else if (!data.getRuleKeysSorted().contains(s) && data.getSpellKeysSorted().contains(s)
 				&& !data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
-				&& !data.getClassKeysSorted().contains(s)&& !data.getSpeciesKeysSorted().contains(s)) {
+				&& !data.getClassKeysSorted().contains(s)&& !data.getSpeciesKeysSorted().contains(s)
+				&& !data.getBackgroundKeysSorted().contains(s)) {
 			AddTab(data.getSpells().get(s));
 		} else if (!data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
 				&& data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
-				&& !data.getClassKeysSorted().contains(s)&& !data.getSpeciesKeysSorted().contains(s)) {
+				&& !data.getClassKeysSorted().contains(s)&& !data.getSpeciesKeysSorted().contains(s)
+				&& !data.getBackgroundKeysSorted().contains(s)) {
 			AddTab(data.getMonsters().get(s));
 		} else if (!data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
 				&& !data.getMonsterKeysSorted().contains(s) && data.getFeatKeysSorted().contains(s)
-				&& !data.getClassKeysSorted().contains(s)&& !data.getSpeciesKeysSorted().contains(s)) {
+				&& !data.getClassKeysSorted().contains(s)&& !data.getSpeciesKeysSorted().contains(s)
+				&& !data.getBackgroundKeysSorted().contains(s)) {
 			AddTab(data.getFeats().get(s));
 		}else if (!data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
 				&& !data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
-				&& data.getClassKeysSorted().contains(s)&& !data.getSpeciesKeysSorted().contains(s)) {
+				&& data.getClassKeysSorted().contains(s)&& !data.getSpeciesKeysSorted().contains(s)
+				&& !data.getBackgroundKeysSorted().contains(s)) {
 			AddTab(data.getClasses().get(s));
 		}else if (!data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
 				&& !data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
-				&& !data.getClassKeysSorted().contains(s)&& data.getSpeciesKeysSorted().contains(s)) {
+				&& !data.getClassKeysSorted().contains(s)&& data.getSpeciesKeysSorted().contains(s)
+				&& !data.getBackgroundKeysSorted().contains(s)) {
 			AddTab(data.getSpecies().get(s));
+		}else if (!data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
+				&& !data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
+				&& !data.getClassKeysSorted().contains(s)&& data.getSpeciesKeysSorted().contains(s)
+				&& !data.getBackgroundKeysSorted().contains(s)) {
+			AddTab(data.getBackgrounds().get(s));
 		}else {
 			ArrayList<String> opts = new ArrayList<String>();
 			if (data.getRuleKeysSorted().contains(s))
@@ -302,6 +291,8 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 				opts.add("Class");
 			if(data.getSpeciesKeysSorted().contains(s))
 				opts.add("Species");
+			if(data.getBackgroundKeysSorted().contains(s))
+				opts.add("Background");
 
 			if (opts.size() > 0) {
 				String type = gd.showTypeSelectionDialog(SwingUtilities.getWindowAncestor(this), s, opts);
@@ -318,6 +309,8 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 						AddTab(data.getClasses().get(s));
 					else if(type.equals("Species"))
 						AddTab(data.getSpecies().get(s));
+					else if(type.equals("Background"))
+						AddTab(data.getBackgrounds().get(s));
 				}
 			}
 		}
@@ -540,37 +533,24 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 				CheckTabs();
 	    	}
 	    }
-	 /*
-	  * public void AddTab(Species s) {
-		 System.out.println("Adding Species");
-	    	if(!hasTab(s.name)) {
-	    		JPanel cPane = new JPanel();
-				cPane.setLayout(new BorderLayout());
-				tabs.addTab(s.name, cPane);
-				tabsUI.setTabColor(tabs.indexOfTab(s.name), Color.lightGray);
-				
-				SpeciesPane speciesDisp = new SpeciesPane(data, gd, s);
-				cPane.add(speciesDisp, BorderLayout.CENTER);
-
-				JPanel btnFlow = new JPanel();
-				btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
-				cPane.add(btnFlow, BorderLayout.SOUTH);
-
-				JButton removeFeat = new JButton("Remove " + s.name);
-				StyleContainer.SetFontBtn(removeFeat);
-				removeFeat.addActionListener(e -> {
-					int index = tabs.indexOfComponent(cPane);
-					if (index != -1) {
-						tabs.removeTabAt(index);
-					}
-					CheckTabs();
-				});
-				btnFlow.add(removeFeat);
-				tabs.setSelectedComponent(cPane);
+	 
+	 public void AddTab(Background b) {
+	    	if(!hasTab(b.name)) {
+	    		JPanel tab = new JPanel();
+	    		tab.setLayout(new BorderLayout());
+	    		tabs.addTab(b.name, tab);
+	    		tabsUI.setTabColor(tabs.indexOfComponent(tab), Color.LIGHT_GRAY);
+	    		
+	    		tab.add(new BackgroundPane(b, data, gd), BorderLayout.CENTER);
+	    		tab.add(CompFactory.createButtonFlowPane(FlowLayout.RIGHT, new JButton[] {
+	    				CompFactory.createNewButton("Remove " + b.name + " Tab", _->{
+	    					tabs.removeTabAt(tabs.indexOfComponent(tab));
+	    				})
+	    		}), BorderLayout.SOUTH);
+	    		tabs.setSelectedComponent(tab);
 				CheckTabs();
 	    	}
 	    }
-	  */
 
 	public void CheckTabs() {
 		if (tabs.getTabCount() == 1) {
@@ -603,7 +583,7 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 	}
 
 	@Override
-	public void onMapUpdated(int mapType) {
+	public void onMapUpdated(MapType mapType) {
 		FillSidePane();
 	}
 }

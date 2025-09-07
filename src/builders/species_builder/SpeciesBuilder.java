@@ -20,6 +20,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.DataContainer.Source;
 import data.players.Species;
 import gui.gui_helpers.CompFactory;
@@ -199,6 +200,6 @@ public class SpeciesBuilder extends JFrame
 	
 	private void Save() {
 		data.SetSpeciesMap(sMap);
-		data.SafeSaveData(DataContainer.SPECIES);
+		data.SafeSaveData(MapType.SPECIES);
 	}
 }

@@ -24,4 +24,8 @@ public sealed class Item implements Serializable permits Weapon, Armor, ToolSet,
 	public Item(String name) {
 		this.name = name;
 	}
+	
+	public String toString() {
+		return name;
+	}
 }

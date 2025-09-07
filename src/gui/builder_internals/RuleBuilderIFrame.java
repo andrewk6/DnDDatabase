@@ -44,6 +44,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
+import data.DataContainer.MapType;
 import data.Rule;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.StyleContainer;
@@ -161,7 +162,7 @@ public class RuleBuilderIFrame extends JInternalFrame{
 		saveBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				data.setRuleMap(rulesList);
-				data.SafeSaveData(DataContainer.RULES);
+				data.SafeSaveData(MapType.RULES);
 			}
 		});
 		rulesPane.add(saveBtn, BorderLayout.SOUTH);

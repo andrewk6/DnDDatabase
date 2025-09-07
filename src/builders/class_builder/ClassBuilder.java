@@ -30,6 +30,7 @@ import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
 import data.DataContainer.Abilities;
+import data.DataContainer.MapType;
 import data.DataContainer.Skills;
 import data.DataContainer.Source;
 import data.items.Item;
@@ -118,7 +119,7 @@ public class ClassBuilder extends JFrame
 		
 		JButton save = CompFactory.createNewButton("Save", _->{
 			data.SetClassMap(classMap);
-			data.SafeSaveData(DataContainer.CLASSES);
+			data.SafeSaveData(MapType.CLASSES);
 		});
 		sideOPane.add(save, BorderLayout.SOUTH);
 		

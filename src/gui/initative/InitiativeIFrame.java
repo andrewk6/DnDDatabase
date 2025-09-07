@@ -6,8 +6,10 @@ import data.Monster;
 import data.Rule;
 import data.Spell;
 import data.campaign.Player;
+import data.players.Background;
 import data.players.Species;
 import data.players.classes.DnDClass;
+import gui.background.BackgroundPane;
 import gui.campaign.PlayerPane;
 import gui.classes.ClassPane;
 import gui.gui_helpers.CompFactory;
@@ -760,8 +762,25 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
     					tabs.removeTabAt(tabs.indexOfComponent(tab));
     				})
     		}), BorderLayout.SOUTH);
+    		tabs.setSelectedComponent(tab);
     	}
     }
+    
+	public void AddTab(Background b) {
+		if(!hasTab(b.name)) {
+    		JPanel tab = new JPanel();
+    		tab.setLayout(new BorderLayout());
+    		tabs.addTab(b.name, tab);
+    		
+    		tab.add(new BackgroundPane(b, data, gd), BorderLayout.CENTER);
+    		tab.add(CompFactory.createButtonFlowPane(FlowLayout.RIGHT, new JButton[] {
+    				CompFactory.createNewButton("Remove " + b.name + " Tab", _->{
+    					tabs.removeTabAt(tabs.indexOfComponent(tab));
+    				})
+    		}), BorderLayout.SOUTH);
+    		tabs.setSelectedComponent(tab);
+    	}
+	}
     
     private boolean hasTab(String n) {
 		 for (int i = 0; i < tabs.getTabCount(); i++) {
