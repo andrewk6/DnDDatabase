@@ -149,10 +149,27 @@ public class CompFactory
 		return cBox;
 	}
 	
+	public static ReminderField createReminderField(String tooltip, boolean numbersOnly,
+			int columns, ComponentType font) {
+		ReminderField field = new ReminderField(tooltip);
+		field.setColumns(columns);
+		if(numbersOnly)
+			field.setNumbersOnly();
+		setFont(field, font);
+		return field;
+	}
+	
 	public static ReminderField createReminderField(String tooltip, boolean numbersOnly, ComponentType font) {
 		ReminderField field = new ReminderField(tooltip);
 		if(numbersOnly)
 			field.setNumbersOnly();
+		setFont(field, font);
+		return field;
+	}
+	
+	public static ReminderField createReminderField(String tooltip, int columns, ComponentType font) {
+		ReminderField field = new ReminderField(tooltip);
+		field.setColumns(columns);
 		setFont(field, font);
 		return field;
 	}

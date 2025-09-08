@@ -6,7 +6,10 @@ import data.items.Armor;
 import data.items.Item;
 import data.items.MagicItem;
 import data.items.Weapon;
+import data.items.Armor.ArmorType;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
+import gui.gui_helpers.CompFactory.ComponentType;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -21,13 +24,14 @@ public class ArmorBuilder extends JPanel {
 
     private final JTextField nameField = new JTextField(15);
     private final ReminderField acField = new ReminderField(5);
-    private final JComboBox<Armor.ArmorType> typeBox = new JComboBox<>(Armor.ArmorType.values());
+    private final JComboBox<Armor.ArmorType> typeBox = 
+    		CompFactory.createEnumCombo(ArmorType.class, ComponentType.BODY);
     private final ReminderField minStrField = new ReminderField(5);
-    private final JCheckBox stealthDisadvBox = new JCheckBox("Stealth Disadvantage");
-    private final JCheckBox addDexBox = new JCheckBox("Add Dex to AC");
-    private final JCheckBox addDexCappedBox = new JCheckBox("Cap Dex Bonus");
-    private final JCheckBox customBox = new JCheckBox("Custom");
-    private final JComboBox<Source> sourceBox = new JComboBox<>(Source.values());
+    private final JCheckBox stealthDisadvBox = CompFactory.createNewCheckbox("Stealth Disadvantage");
+    private final JCheckBox addDexBox = CompFactory.createNewCheckbox("Add Dex to AC");
+    private final JCheckBox addDexCappedBox = CompFactory.createNewCheckbox("Cap Dex Bonus");
+    private final JCheckBox customBox = CompFactory.createNewCheckbox("Custom");
+    private final JComboBox<Source> sourceBox = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
 
     private final ReminderField weightField = new ReminderField(5);
     private final ReminderField[] costFields = {

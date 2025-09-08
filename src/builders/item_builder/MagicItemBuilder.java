@@ -5,8 +5,10 @@ import data.DataContainer.Source;
 import data.items.Item;
 import data.items.MagicItem;
 import data.items.MagicItem.Rarity;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
+import gui.gui_helpers.CompFactory.ComponentType;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -22,17 +24,23 @@ import java.util.Map;
 
 public class MagicItemBuilder extends JPanel {
 
-	private final JTextField nameField = new JTextField(15);
-	private final ReminderField weightField = new ReminderField();
-	private final ReminderField[] costFields = { new ReminderField(3), new ReminderField(3), new ReminderField(3),
-			new ReminderField(3), new ReminderField(3) };
-	private final JCheckBox attuneBox = new JCheckBox("Requires Attunement");
+	private final ReminderField nameField = 
+			CompFactory.createReminderField("Item name..", 15, ComponentType.HEADER);
+	private final ReminderField weightField = CompFactory.createReminderField("Weight...", ComponentType.BODY);
+	private final ReminderField[] costFields = { 
+			CompFactory.createReminderField("", 3, ComponentType.BODY), 
+			CompFactory.createReminderField("", 3, ComponentType.BODY),
+			CompFactory.createReminderField("", 3, ComponentType.BODY),
+			CompFactory.createReminderField("", 3, ComponentType.BODY), 
+			CompFactory.createReminderField("", 3, ComponentType.BODY)
+			};
+	private final JCheckBox attuneBox = CompFactory.createNewCheckbox("Requires Attunement");
 	private RichEditor descriptionEditor;
 	
-	private final JCheckBox customBox = new JCheckBox("Custom");
-	private final JComboBox<Source> sourceBox = new JComboBox<>(Source.values());
-	private final JTextField subtypeField = new JTextField(15);
-	private final JComboBox<Rarity> rarityBox = new JComboBox<>(Rarity.values());
+	private final JCheckBox customBox = CompFactory.createNewCheckbox("Custom");
+	private final JComboBox<Source> sourceBox = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
+	private final ReminderField subtypeField = CompFactory.createReminderField("Subtype...", 15, ComponentType.BODY);
+	private final JComboBox<Rarity> rarityBox = CompFactory.createEnumCombo(Rarity.class, ComponentType.BODY);
 	private JScrollPane descScroll;
 
 
@@ -76,8 +84,10 @@ public class MagicItemBuilder extends JPanel {
 				return size;
 			}
 		};
-		for (ReminderField field : costFields)
+		for (ReminderField field : costFields) {
 			field.setNumbersOnly();
+			field.setColumns(3);
+		}
 		weightField.setNumbersOnly();
 
 		// Left: List of items
