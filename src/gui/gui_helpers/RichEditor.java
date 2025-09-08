@@ -25,6 +25,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
+
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -593,23 +594,6 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         	ErrorLogger.log(e);
             e.printStackTrace();
         }
-    	
-//    	int caretPos = editor.getCaretPosition();
-//        try {
-//            String text = editor.getText(0, caretPos);
-//            
-//            // Handle @ mentions
-//            int lastAt = text.lastIndexOf("@");
-//            if (lastAt >= 0 && (lastAt == 0 || !Character.isLetterOrDigit(text.charAt(lastAt - 1)))) {
-//                atPosition = lastAt;
-//                currentPartial = text.substring(lastAt + 1, caretPos);
-//                List<String> matches = getMatches(currentPartial);
-//                if (!matches.isEmpty()) {
-//                    updateSuggestions(matches, caretPos);
-//                    return;
-//                }
-//            }
-
     }
 
     private void updateSuggestions(List<String> suggestions, int caretEnd) {

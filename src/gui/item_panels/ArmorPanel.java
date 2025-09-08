@@ -3,6 +3,9 @@ package gui.item_panels;
 import data.DataContainer;
 import data.items.Armor;
 import data.items.Item;
+import gui.gui_helpers.CompFactory;
+import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.structures.StyleContainer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -39,8 +42,7 @@ public class ArmorPanel extends JPanel {
         JPanel section = new JPanel(new BorderLayout());
         section.setOpaque(false);
 
-        JLabel header = new JLabel(title);
-        header.setFont(header.getFont().deriveFont(Font.BOLD, 14f));
+        JLabel header = CompFactory.createNewLabel(title, ComponentType.HEADER);
         header.setBorder(new EmptyBorder(0, 0, 5, 0));
 
         JTable table = new JTable(buildModel(type, armorKeys, allItems));
@@ -49,6 +51,7 @@ public class ArmorPanel extends JPanel {
         table.setRowHeight(24);
         table.getTableHeader().setReorderingAllowed(false);
         table.getTableHeader().setResizingAllowed(false);
+        table.setFont(StyleContainer.FNT_BODY_PLAIN);
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY));
