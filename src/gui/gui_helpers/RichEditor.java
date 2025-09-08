@@ -74,6 +74,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 
     private int atPosition = -1;
     private String currentPartial = "";
+    private boolean showMatches = false;
 
     private Style ruleStyle;
     private Style spellStyle;
@@ -223,6 +224,8 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                     insertSuggestion(suggestionList.getSelectedValue());
                 } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     suggestionPopup.setVisible(false);
+                    showMatches = false;
+                    System.out.println("Escape pressed: " + showMatches);
                     editor.requestFocusInWindow();
                 }
             }
@@ -248,6 +251,12 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         editor.registerKeyboardAction(e -> copyFunction(), 
         		KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK), 
         		JComponent.WHEN_FOCUSED);
+        
+        editor.registerKeyboardAction(_->{
+        	showMatches = false;
+        	System.out.println("Escape Key: " + showMatches);
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), 
+        		JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         
         rulePreviewPane.setEditable(false);
@@ -401,6 +410,8 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                     suggestionList.setSelectedIndex(0);
                 } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     suggestionPopup.setVisible(false);
+                    showMatches = false;
+                    System.out.println("Escape pressed: " + showMatches);
                 }
             }
         }
@@ -444,10 +455,11 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             		matches.add(key + " (item)");
             	}
             }
-            
-            for(String key : playerMap.keySet()) {
-            	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
-            		matches.add(key + " (player)");
+            if(data.isCampaignLoaded()) {
+            	for(String key : playerMap.keySet()) {
+            		if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+            			matches.add(key + " (player)");
+            		}
             	}
             }
             for(String key : featMap.keySet()) {
@@ -552,6 +564,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 
                 Collections.sort(matches);
                 if (!matches.isEmpty()) {
+                	showMatches = true;
                     updateSuggestions(matches, caretPos);
                 }
             }
@@ -600,21 +613,24 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     }
 
     private void updateSuggestions(List<String> suggestions, int caretEnd) {
-        suggestionList.setListData(suggestions.toArray(new String[0]));
-        suggestionList.setSelectedIndex(0);
+    	System.out.println("In Update: " + showMatches);
+    	if(showMatches) {
+            suggestionList.setListData(suggestions.toArray(new String[0]));
+            suggestionList.setSelectedIndex(0);
 
-        suggestionPopup.removeAll();
-        scrollPane.setPreferredSize(new Dimension(200, 150));
-        suggestionPopup.add(scrollPane);
+            suggestionPopup.removeAll();
+            scrollPane.setPreferredSize(new Dimension(200, 150));
+            suggestionPopup.add(scrollPane);
 
-        try {
-            Rectangle caretCoords = editor.modelToView(caretEnd);
-            suggestionPopup.show(editor, caretCoords.x, caretCoords.y + 20);
-            suggestionList.requestFocusInWindow();
-        } catch (BadLocationException e) {
-        	ErrorLogger.log(e);
-            e.printStackTrace();
-        }
+            try {
+                Rectangle caretCoords = editor.modelToView(caretEnd);
+                suggestionPopup.show(editor, caretCoords.x, caretCoords.y + 20);
+                suggestionList.requestFocusInWindow();
+            } catch (BadLocationException e) {
+            	ErrorLogger.log(e);
+                e.printStackTrace();
+            }
+    	}
     }
 
     private void insertSuggestion(String selected) {
