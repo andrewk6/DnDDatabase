@@ -19,6 +19,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -45,7 +48,7 @@ public class MagicItemBuilder extends JPanel {
 
 
 
-	private final Map<String, MagicItem> itemMap = new LinkedHashMap<>();
+	private Map<String, MagicItem> itemMap;
 	private final JPanel listPanel = new JPanel();
 	private final DataContainer data;
 	private JPanel wrapper;
@@ -76,6 +79,8 @@ public class MagicItemBuilder extends JPanel {
 		setBorder(new EmptyBorder(10, 10, 10, 10));
 
 		this.data = data;
+		itemMap = new HashMap<String, MagicItem>();
+		
 		descriptionEditor = new RichEditor(this.data) {
 			public Dimension getPreferredSize() {
 				// Force preferred height to a reasonable value
@@ -117,7 +122,7 @@ public class MagicItemBuilder extends JPanel {
 
 		gbc.gridx = 0;
 		gbc.gridy = row;
-		panel.add(new JLabel("Name:"), gbc);
+		panel.add(CompFactory.createNewLabel("Name:", ComponentType.HEADER), gbc);
 		gbc.gridx = 1;
 		panel.add(nameField, gbc);
 
@@ -143,13 +148,13 @@ public class MagicItemBuilder extends JPanel {
 		
 		row++;
 		gbc.gridx = 0; gbc.gridy = row;
-		panel.add(new JLabel("Subtype:"), gbc);
+		panel.add(CompFactory.createNewLabel("Subtype:", ComponentType.HEADER), gbc);
 		gbc.gridx = 1;
 		panel.add(subtypeField, gbc);
 
 		row++;
 		gbc.gridx = 0; gbc.gridy = row;
-		panel.add(new JLabel("Rarity:"), gbc);
+		panel.add(CompFactory.createNewLabel("Rarity:", ComponentType.HEADER), gbc);
 		gbc.gridx = 1;
 		panel.add(rarityBox, gbc);
 
@@ -162,7 +167,7 @@ public class MagicItemBuilder extends JPanel {
 		
 		row++;
 		gbc.gridx = 0; gbc.gridy = row;
-		panel.add(new JLabel("Source:"), gbc);
+		panel.add(CompFactory.createNewLabel("Source:", ComponentType.HEADER), gbc);
 		gbc.gridx = 1;
 		sourceBox.setSelectedItem(Source.DungeonMastersGuide2024);
 		panel.add(sourceBox, gbc);
@@ -174,8 +179,8 @@ public class MagicItemBuilder extends JPanel {
 
 		row++;
 		gbc.gridy = row;
-		JButton addButton = new JButton("Add Magic Item");
-		addButton.addActionListener(this::handleAddItem);
+		JButton addButton = CompFactory.createNewButton("Add Magic Item", this::handleAddItem);
+//		addButton.addActionListener(this::handleAddItem);
 		panel.add(addButton, gbc);
 
 		return panel;
@@ -234,9 +239,12 @@ public class MagicItemBuilder extends JPanel {
 
 	private void updateItemList() {
 		listPanel.removeAll();
-		for (String name : itemMap.keySet()) {
+		ArrayList<String> keys = new ArrayList<String>(itemMap.keySet());
+		Collections.sort(keys);
+		
+		for (String name : keys) {
 			JPanel entry = new JPanel(new BorderLayout());
-			JLabel nameLabel = new JLabel(name);
+			JLabel nameLabel = CompFactory.createNewLabel(name, ComponentType.BODY);
 			nameLabel.setFont(nameLabel.getFont().deriveFont(Font.PLAIN));
 			nameLabel.addMouseListener(new MouseListener() {
 				public void mouseClicked(MouseEvent e) {
@@ -319,6 +327,6 @@ public class MagicItemBuilder extends JPanel {
 	}
 
 	public Map<String, MagicItem> getMagicItemMap() {
-		return itemMap;
+		return new HashMap<String, MagicItem>(itemMap);
 	}
 }
