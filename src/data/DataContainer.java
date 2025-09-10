@@ -761,6 +761,7 @@ public class DataContainer {
 	
 	private void notifyChange(MapType mapType) {
 		for(DataChangeListener tar : updateListeners) {
+			System.out.println("In Loop" + tar.getClass().getName());
 			tar.onMapUpdated(mapType);
 		}
 	}
