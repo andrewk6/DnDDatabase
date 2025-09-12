@@ -14,6 +14,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,6 +57,9 @@ import data.players.Background;
 import data.players.BastionRoom;
 import data.players.Species;
 import data.players.classes.DnDClass;
+import data.vehicles.LargeVehicle;
+import data.vehicles.Mount;
+import data.vehicles.Vehicle;
 import gui.gui_helpers.ExportDialog;
 import gui.gui_helpers.structures.LoadListener;
 
@@ -103,6 +107,7 @@ public class DataContainer {
 	public static final String MONSTERS_FILE_NAME = "Monster.mol";
 	public static final String INSERT_FILE_NAME = "Inserts.bol";
 	public static final String ITEMS_FILE_NAME = "Items.iol";
+	public static final String VEHICLES_FILE_NAME = "Vehicles.vol";
 	public static final String FEATS_FILE_NAME = "Feats.fol";
 	public static final String CLASS_FILE_NAME = "Classes.clol";
 	public static final String SPECIES_FILE_NAME = "Species.spol";
@@ -113,7 +118,7 @@ public class DataContainer {
 	public static final String BASTION_RULES = "BastionRules.baol";
 	
 	public enum MapType {
-		RULES, SPELLS, MONSTERS, INSERTS, ITEMS, CAMPAIGN, FEATS, CLASSES, 
+		RULES, SPELLS, MONSTERS, INSERTS, ITEMS, VEHICLES, CAMPAIGN, FEATS, CLASSES, 
 		SPECIES, BACKGROUND, BASTION_ROOMS
 	}
 
@@ -121,6 +126,7 @@ public class DataContainer {
 	private HashMap<String, Spell> spellMap;
 	private HashMap<String, Monster> monstMap;
 	private HashMap<String, Item> itemMap;
+	private HashMap<String, Vehicle> vehicleMap;
 	private HashMap<String, Feat> featMap;
 	private HashMap<String, DnDClass> classMap;
 	private HashMap<String, Species> speciesMap;
@@ -131,8 +137,9 @@ public class DataContainer {
 	private Campaign camp;
 	
 	private ArrayList<String> ruleKeysSorted, spellKeysSorted, monstKeysSorted, insertKeysSorted,
-		weaponKeysSorted, armorKeysSorted, gearKeysSorted, toolKeysSorted, magicItemKeysSorted, featKeysSorted,
-		classKeysSorted, bastionRoomKeysSorted, speciesKeysSorted, backgroundKeysSorted;
+		weaponKeysSorted, armorKeysSorted, gearKeysSorted, toolKeysSorted, magicItemKeysSorted,
+		mountKeysSorted, largeVehicleKeysSorted, featKeysSorted,classKeysSorted, 
+		bastionRoomKeysSorted, speciesKeysSorted, backgroundKeysSorted;
 	
 
 	private final AtomicInteger runningTasks = new AtomicInteger(0);
@@ -164,6 +171,7 @@ public class DataContainer {
         tasks.add(this::ImportMonsters);
         tasks.add(this::ImportInsertHelpers);
         tasks.add(this::ImportItems);
+        tasks.add(this::ImportVehicles);
         tasks.add(this::ImportFeats);
         tasks.add(this::ImportClassMap);
         tasks.add(this::ImportSpeciesMap);
@@ -249,6 +257,8 @@ public class DataContainer {
 							ImportObject((Monster) obj, ((Monster)obj).name, monstMap);
 						else if(obj instanceof Item) 
 							ImportObject((Item) obj, ((Item)obj).name, itemMap);
+						else if(obj instanceof Vehicle)
+							ImportObject((Vehicle)obj, ((Vehicle)obj).name, vehicleMap);
 						else if(obj instanceof Feat) 
 							ImportObject((Feat) obj, ((Feat)obj).name, featMap);
 						else if(obj instanceof DnDClass) 
@@ -317,6 +327,8 @@ public class DataContainer {
 				ExportMap(monstMap, oos);
 			if(exportDialog.getItems())
 				ExportMap(itemMap, oos);
+			if(exportDialog.getVehicles())
+				ExportMap(vehicleMap, oos);
 			if(exportDialog.getFeats())
 				ExportMap(featMap, oos);
 			if(exportDialog.getClasses())
@@ -597,7 +609,46 @@ public class DataContainer {
 						default -> throw new IllegalArgumentException("Unexpected value: " + i);
 						}
 					}catch(EOFException eof) {
-						System.out.println("Finished Load Items");
+						return true;
+					}
+				}
+			} catch (IOException | ClassNotFoundException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	private boolean ImportVehicles() {
+		vehicleMap = new HashMap<String, Vehicle>();
+		mountKeysSorted = new ArrayList<String>();
+		largeVehicleKeysSorted = new ArrayList<String>();
+		
+		File vehicleFile;
+		
+		if(dbFolder.exists()) {
+			if(dbFolder.isDirectory()) {
+				vehicleFile = new File(dbFolder.getPath() + File.separator + VEHICLES_FILE_NAME);
+			}else {
+				vehicleFile = new File(VEHICLES_FILE_NAME);
+			}
+		}else {
+			vehicleFile = new File(VEHICLES_FILE_NAME);
+		}
+		if(vehicleFile.exists()) {
+			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(vehicleFile))){
+				while(true) {
+					try {
+						Vehicle v = (Vehicle) ois.readObject();
+						vehicleMap.put(v.name, v);
+						switch(v) {
+						case Mount m: mountKeysSorted.add(m.name); break;
+						case LargeVehicle lv: largeVehicleKeysSorted.add(lv.name); break;
+						default: throw new IllegalArgumentException("Unexpected value: " + v);
+						}
+					}catch(EOFException eof) {
 						return true;
 					}
 				}
@@ -860,6 +911,21 @@ public class DataContainer {
 		notifyChange(MapType.ITEMS);
 	}
 	
+	public void SetVehiclesMap(HashMap<String, Vehicle> vMap) {
+		this.vehicleMap = vMap;
+		mountKeysSorted = new ArrayList<String>();
+		largeVehicleKeysSorted = new ArrayList<String>();
+		for(String s : vehicleMap.keySet()) {
+			switch(vehicleMap.get(s)) {
+			case Mount m: mountKeysSorted.add(m.name); break;
+			case LargeVehicle lv: largeVehicleKeysSorted.add(lv.name); break;
+			default: throw new IllegalArgumentException("Unexpected value: " + vehicleMap.get(s));
+			}
+		}
+		SortKeys(MapType.VEHICLES);
+		notifyChange(MapType.VEHICLES);
+	}
+	
 	public void SetClassMap(HashMap<String, DnDClass> cMap) {
 		this.classMap = cMap;
 		this.classKeysSorted = new ArrayList<String>(cMap.keySet());
@@ -902,8 +968,8 @@ public class DataContainer {
 	
 	private boolean SaveData() {
 		return SaveRules() && SaveSpells() && SaveMonsters() && 
-				SaveInserts() && SaveItems() && SaveCampaign() && SaveFeats()
-				&& SaveClasses() && SaveSpecies() && SaveBackground()
+				SaveInserts() && SaveItems() && SaveVehicles() && SaveCampaign() 
+				&& SaveFeats()&& SaveClasses() && SaveSpecies() && SaveBackground()
 				&& SaveBastionRooms();
 	}
 
@@ -914,6 +980,7 @@ public class DataContainer {
 		case MapType.MONSTERS: return SaveMonsters();
 		case MapType.INSERTS: return SaveInserts();
 		case MapType.ITEMS: return SaveItems();
+		case MapType.VEHICLES: return SaveVehicles();
 		case MapType.CAMPAIGN: return SaveCampaign();
 		case MapType.FEATS: return SaveFeats(); 
 		case MapType.CLASSES: return SaveClasses();
@@ -1102,6 +1169,32 @@ public class DataContainer {
 		}
 	}
 	
+	private boolean SaveVehicles() {
+		File vehicleFile = new File(dbFolder.getPath() + File.separator + DataContainer.VEHICLES_FILE_NAME);
+		if(!vehicleFile.exists()) {
+			try {
+				vehicleFile.createNewFile();
+			} catch (IOException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(vehicleFile));
+			for(String s : vehicleMap.keySet()) {
+				oos.writeObject(vehicleMap.get(s));
+			}
+			oos.flush();
+			oos.close();
+			return true;
+		}catch(IOException e) {
+			ErrorLogger.log(e);
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	private boolean SaveClasses() {
 		File classFile = new File(dbFolder.getPath() + File.separator + DataContainer.CLASS_FILE_NAME);
 		if(!classFile.exists()) {
@@ -1252,12 +1345,13 @@ public class DataContainer {
 		Collections.sort(ruleKeysSorted);
 		Collections.sort(monstKeysSorted);
 		Collections.sort(insertKeysSorted);
-		
 		Collections.sort(weaponKeysSorted);
 		Collections.sort(armorKeysSorted);
 		Collections.sort(gearKeysSorted);
 		Collections.sort(toolKeysSorted);
 		Collections.sort(magicItemKeysSorted);
+		Collections.sort(mountKeysSorted);
+		Collections.sort(largeVehicleKeysSorted);
 		Collections.sort(featKeysSorted);
 		Collections.sort(classKeysSorted);
 		Collections.sort(speciesKeysSorted);
@@ -1277,6 +1371,10 @@ public class DataContainer {
 			Collections.sort(gearKeysSorted);
 			Collections.sort(toolKeysSorted);
 			Collections.sort(magicItemKeysSorted);
+			break;
+		case MapType.VEHICLES:
+			Collections.sort(mountKeysSorted);
+			Collections.sort(largeVehicleKeysSorted);
 			break;
 		case MapType.FEATS: Collections.sort(featKeysSorted); break;
 		case MapType.CLASSES: Collections.sort(classKeysSorted); break;
@@ -1346,6 +1444,10 @@ public class DataContainer {
 	public Map<String, Item> getItems(){
 		return Collections.unmodifiableMap(itemMap);
 	}
+	
+	public Map<String, Vehicle> getVehicles(){
+		return Collections.unmodifiableMap(vehicleMap);
+	}
 
 	public List<String> getRuleKeysSorted() {
 		return Collections.unmodifiableList(ruleKeysSorted);
@@ -1383,6 +1485,14 @@ public class DataContainer {
 		return Collections.unmodifiableList(magicItemKeysSorted);
 	}
 	
+	public List<String> getMountKeysSorted(){
+		return Collections.unmodifiableList(mountKeysSorted);
+	}
+	
+	public List<String> getLargeVehicleKeysSorted(){
+		return Collections.unmodifiableList(largeVehicleKeysSorted);
+	}
+	
 	public List<String> getFeatKeysSorted(){
 		return Collections.unmodifiableList(featKeysSorted);
 	}
@@ -1401,10 +1511,6 @@ public class DataContainer {
 	
 	public List<String> getBastionRoomKeysSorted(){
 		return Collections.unmodifiableList(bastionRoomKeysSorted);
-	}
-	
-	public HashMap<String, Monster> getUnsafe(){
-		return monstMap;
 	}
 	/*
 	 * Campaign Methods

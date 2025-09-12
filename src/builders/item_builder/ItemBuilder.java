@@ -31,6 +31,8 @@ public class ItemBuilder extends JFrame
 	private GearBuilder gBuild;
 	private MagicItemBuilder miBuild;
 	
+	
+	
 	public static void main(String[] args) 
 	{
 		SwingUtilities.invokeLater(()->{

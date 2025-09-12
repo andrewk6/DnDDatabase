@@ -49,6 +49,7 @@ public class BastionPane extends JPanel implements DataChangeListener
 	private CardLayout cl;
 	private JTabbedPane roomTabs;
 	private JPanel roomSide;
+	private JButton swapBtn;
 	
 	private boolean rules = true;
 	private final String roomBtnTxt = "View Rooms Descriptions";
@@ -78,7 +79,7 @@ public class BastionPane extends JPanel implements DataChangeListener
 		btnPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		this.add(btnPane, BorderLayout.SOUTH);
 		
-		JButton swapBtn = CompFactory.createNewButton(roomBtnTxt, null);
+		swapBtn = CompFactory.createNewButton(roomBtnTxt);
 		swapBtn.addActionListener(_->{
 			if(rules) {
 				cl.show(mPane, roomCard);
