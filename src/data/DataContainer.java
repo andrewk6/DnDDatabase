@@ -89,6 +89,23 @@ public class DataContainer {
 		Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma
 	}
 	
+	public enum PartyTier {
+	    Tier1("Levels 1–4"),
+	    Tier2("Levels 5–10"),
+	    Tier3("Levels 11–16"),
+	    Tier4("Levels 17–20");
+
+	    private final String description;
+
+	    PartyTier(String description) {
+	        this.description = description;
+	    }
+
+	    public String getDescription() {
+	        return description;
+	    }
+	}
+	
 	public enum Source{
 		PlayersHandbook2024, DungeonMastersGuide2024, MonsterManual2024, VecnaEveOfRuin, Custom, 
 		TashasCauldronOfEverything, XanathersGuideToEverything,
