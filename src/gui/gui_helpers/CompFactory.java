@@ -3,6 +3,7 @@ package gui.gui_helpers;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -10,6 +11,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyVetoException;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.swing.DefaultComboBoxModel;
@@ -23,6 +26,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -74,11 +78,41 @@ public class CompFactory
 		}
 	}
 	
+	public static JButton createNewButton(String text) {
+		JButton btn = new JButton(text);
+		StyleContainer.SetFontBtn(btn);
+		
+		return btn;
+	}
+	
 	public static JButton createNewButton(String text, ActionListener act) {
 		JButton btn = new JButton(text);
 		StyleContainer.SetFontBtn(btn);
 		btn.addActionListener(act);
 		
+		return btn;
+	}
+	
+	public static JButton createNewButton(String text, Runnable act) {
+		JButton btn = new JButton(text);
+		StyleContainer.SetFontBtn(btn);
+		btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {act.run();}
+		});
+		
+		return btn;
+	}
+	
+	public static <T> JButton createDeleteButton(Map<String, T> map, String key, Runnable action) {
+		JButton btn = createNewButton("Delete", _->{
+			int delConf = JOptionPane.showConfirmDialog(null, "Delete " + key, 
+					"Delete Confirm", JOptionPane.YES_NO_OPTION);
+			if(delConf == JOptionPane.YES_OPTION) {
+				map.remove(key);
+				action.run();
+			}			
+		});
+		btn.setFocusable(false);
 		return btn;
 	}
 	

@@ -46,6 +46,7 @@ import gui.builder_internals.QuickInsertBuilderIFrame;
 import gui.builder_internals.RuleBuilderIFrame;
 import gui.builder_internals.SpeciesBuilderIFrame;
 import gui.builder_internals.SpellBuilderIFrame;
+import gui.builder_internals.VehicleBuilderIFrame;
 import gui.campaign.NotesIFrame;
 import gui.campaign.PartyIFrame;
 import gui.classes.ClassIFrame;
@@ -92,6 +93,7 @@ public class DnD_Database_Tool extends JFrame {
 	MonsterBuilderIFrame mBuildFrame;
 	QuickInsertBuilderIFrame qBuildFrame;
 	ItemBuilderIFrame iBuildFrame;
+	VehicleBuilderIFrame vBuildFrame;
 	FeatBuilderIFrame fBuildFrame;
 	ClassBuilderIFrame cBuildFrame;
 	SpeciesBuilderIFrame spBuildIFrame;
@@ -209,6 +211,10 @@ public class DnD_Database_Tool extends JFrame {
 		dPane.add(iBuildFrame);
 		iBuildFrame.setVisible(false);
 		
+		vBuildFrame = new VehicleBuilderIFrame(data);
+		dPane.add(vBuildFrame);
+		vBuildFrame.setVisible(false);
+		
 		dBuildFrame = new DungeonIBuilder(data, gd);
 		dPane.add(dBuildFrame);
 		dBuildFrame.setVisible(false);
@@ -253,7 +259,7 @@ public class DnD_Database_Tool extends JFrame {
 		dataMenu.add(CompFactory.createNewJMenuItem("Rules", rFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Spells", sFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Monsters", mFrame));
-		dataMenu.add(CompFactory.createNewJMenuItem("Items", iFrame));
+		dataMenu.add(CompFactory.createNewJMenuItem("Adventuring Gear", iFrame));
 		//Player SubMenu
 		JMenu playerMenu = new JMenu("Player Databases");
 		StyleContainer.SetFontMain(playerMenu);
@@ -360,6 +366,7 @@ public class DnD_Database_Tool extends JFrame {
 		buildMenu.add(CompFactory.createNewJMenuItem("Monster Builder", mBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Quick Insert Builder", qBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Item Buider", iBuildFrame));
+		buildMenu.add(CompFactory.createNewJMenuItem("Vehicle Builder", vBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Class Builder", cBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Species Builder", spBuildIFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Background Builder", bBuildFrame));

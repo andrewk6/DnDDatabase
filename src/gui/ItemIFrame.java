@@ -24,6 +24,7 @@ import gui.item_panels.ArmorPanel;
 import gui.item_panels.GearPanel;
 import gui.item_panels.MagicItemPanel;
 import gui.item_panels.ToolsPanel;
+import gui.item_panels.VehiclesPane;
 import gui.item_panels.WeaponPanel;
 
 public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChangeListener {
@@ -46,6 +47,7 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChan
 		BuildArmorPane();
 		BuildToolPane();
 		BuildGearPane();
+		BuildVehiclePane();
 		BuildMagicItemPane();
 
 //		setVisible(true);
@@ -55,6 +57,11 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChan
 	private void BuildMagicItemPane() {
 		miPane = new MagicItemPanel(data, gd, dPane);
 		tabs.addTab("Magic Items", miPane);
+	}
+	
+	private void BuildVehiclePane() {
+		VehiclesPane vPane = new VehiclesPane(data, gd);
+		tabs.addTab("Vehicles", vPane);
 	}
 	
 	private void BuildGearPane() {

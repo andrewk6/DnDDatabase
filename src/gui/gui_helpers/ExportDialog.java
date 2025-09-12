@@ -22,7 +22,8 @@ import gui.gui_helpers.CompFactory.ComponentType;
 
 public class ExportDialog extends JDialog
 {
-	private  JCheckBox rules, spells, monsters, items, feats, classes, species, background, bastionRooms;
+	private  JCheckBox rules, spells, monsters, items, vehicles, 
+	feats, classes, species, background, bastionRooms;
 	private JLabel fileLbl;
 	public boolean export;
 	public File expoTarget;
@@ -54,6 +55,9 @@ public class ExportDialog extends JDialog
 		
 		items = CompFactory.createNewCheckbox("Export Items");
 		config.add(items);
+		
+		vehicles = CompFactory.createNewCheckbox("Export Vehicles");
+		config.add(vehicles);
 		
 		classes = CompFactory.createNewCheckbox("Export Classes");
 		config.add(classes);
@@ -158,6 +162,9 @@ public class ExportDialog extends JDialog
 		return items.isSelected();
 	}
 
+	public boolean getVehicles() {
+		return vehicles.isSelected();
+	}
 
 	public boolean getFeats() {
 		return feats.isSelected();
