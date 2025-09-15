@@ -126,7 +126,7 @@ public class BackgroundBuilderIFrame extends JInternalFrame
 		
 		JButton saveBtn = CompFactory.createNewButton("Save", _->{
 			data.SetBackgroundMap(bMap);
-			data.SafeSaveData(MapType.BACKGROUND);
+			data.SafeSaveData(MapType.BACKGROUNDS);
 		});
 		sideWrapper.add(saveBtn, BorderLayout.SOUTH);
 	}

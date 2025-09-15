@@ -22,6 +22,7 @@ import javax.swing.SwingUtilities;
 
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.DataContainer.Source;
 import data.vehicles.LargeVehicle;
 import data.vehicles.Mount;
 import data.vehicles.Vehicle;
@@ -55,6 +56,7 @@ public class VehicleBuilderPane extends JPanel
             LargeVehicle.class.getSimpleName()
         };
 	private JComboBox<String> classCombo;
+	private JComboBox<Source> srcCombo;
 	private JPanel cardPane;
 	private JPanel sidePane;
 	
@@ -90,8 +92,22 @@ public class VehicleBuilderPane extends JPanel
 		hPane.setLayout(new BorderLayout());
 		this.add(hPane, BorderLayout.NORTH);
 		
+		JPanel titlePane = new JPanel();
+		titlePane.setLayout(new BorderLayout());
+		hPane.add(titlePane, BorderLayout.CENTER);
+		
 		nameField = CompFactory.createReminderField("Vehicle name...", ComponentType.HEADER);
-		hPane.add(nameField, BorderLayout.CENTER);
+		titlePane.add(nameField, BorderLayout.CENTER);
+		
+		JPanel srcPane = new JPanel();
+		srcPane.setLayout(new BorderLayout());
+		titlePane.add(srcPane, BorderLayout.EAST);
+		
+		JLabel srcLbl = CompFactory.createNewLabel("Source:", ComponentType.HEADER);
+		srcPane.add(srcLbl, BorderLayout.WEST);
+		
+		srcCombo = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
+		srcPane.add(srcCombo, BorderLayout.CENTER);
 		
 		JPanel headConfig = new JPanel();
 		headConfig.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -344,6 +360,7 @@ public class VehicleBuilderPane extends JPanel
 				Mount m = (Mount) vMap.get(key);
 				((CardLayout)cardPane.getLayout()).show(cardPane, Mount.class.getSimpleName());
 				nameField.setText(key);
+				srcCombo.setSelectedItem(m.src);
 				costField.setText("" + m.cost);
 				carryField.setText("" + m.carryCapacity);
 				monstCombo.setSelectedItem(m.stats.name);
@@ -352,6 +369,7 @@ public class VehicleBuilderPane extends JPanel
 				LargeVehicle lv = (LargeVehicle) vMap.get(key);
 				((CardLayout)cardPane.getLayout()).show(cardPane, Mount.class.getSimpleName());
 				nameField.setText(key);
+				srcCombo.setSelectedItem(lv.src);
 				costField.setText("" + lv.cost);
 				speedField.setText("" + lv.speed);
 				cargoField.setText("" + lv.cargo);
@@ -373,6 +391,7 @@ public class VehicleBuilderPane extends JPanel
 		if(classCombo.getSelectedItem().equals("Mount") && canAddMount()) {
 			Mount m = new Mount();
 			m.name = nameField.getText();
+			m.src = (Source) srcCombo.getSelectedItem();
 			m.cost = Integer.parseInt(costField.getText());
 			m.carryCapacity = Integer.parseInt(carryField.getText());
 			m.stats = data.getMonsters().get(monstCombo.getSelectedItem());
@@ -380,6 +399,7 @@ public class VehicleBuilderPane extends JPanel
 		}else if(canAddLargeVehicle()){
 			LargeVehicle lv = new LargeVehicle();
 			lv.name = nameField.getText();
+			lv.src = (Source) srcCombo.getSelectedItem();
 			lv.cost = Integer.parseInt(costField.getText());
 			lv.speed = Double.parseDouble(speedField.getText());
 			lv.cargo = Double.parseDouble(cargoField.getText());
