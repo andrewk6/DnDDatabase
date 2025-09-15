@@ -39,6 +39,7 @@ import javax.swing.text.StyledDocument;
 import data.DataContainer;
 import data.Feat;
 import data.DataContainer.Abilities;
+import data.DataContainer.MapType;
 import data.DataContainer.Proficiency;
 import data.DataContainer.Skills;
 import data.DataContainer.Source;
@@ -51,6 +52,7 @@ import data.items.Armor.ArmorType;
 import data.players.classes.ClassAbility;
 import data.players.classes.DnDClass;
 import data.players.classes.Subclass;
+import data.vehicles.Vehicle;
 import data.players.classes.DnDClass.HitDiceType;
 import data.players.classes.DnDClass.WeaponProficiency;
 import gui.gui_helpers.CompFactory;
@@ -68,9 +70,10 @@ public class Test extends JFrame {
 		DataContainer data = new DataContainer();
 		data.init();
 		boolean gui = false;
-		for(Feat f : data.getFeats().values())
-			System.out.println(f.name + ": " + f.src);
-//		data.SafeSaveData(DataContainer.FEATS);
+		
+		for(Vehicle v : data.getVehicles().values())
+			System.out.println(v.src);
+//		data.SafeSaveData(MapType.VEHICLES);
 		if(gui)
 			guiStuff(data);
 		else

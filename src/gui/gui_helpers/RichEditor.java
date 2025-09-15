@@ -1086,7 +1086,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 		case MapType.CAMPAIGN: this.playerMap = data.getParty(); break;
 		case MapType.CLASSES: this.classMap = data.getClasses(); break;
 		case MapType.SPECIES: this.speciesMap = data.getSpecies(); break;
-		case MapType.BACKGROUND: this.backgroundMap = data.getBackgrounds(); break;
+		case MapType.BACKGROUNDS: this.backgroundMap = data.getBackgrounds(); break;
 		case MapType.BASTION_ROOMS: break;
 		default: System.out.println("Invalid map type: " + mapType);
 		}

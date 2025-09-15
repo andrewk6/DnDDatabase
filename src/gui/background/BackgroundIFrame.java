@@ -118,7 +118,7 @@ public class BackgroundIFrame extends JInternalFrame implements DataChangeListen
 
 	@Override
 	public void onMapUpdated(MapType mapType) {
-		if(mapType == MapType.BACKGROUND)
+		if(mapType == MapType.BACKGROUNDS)
 			FillSidePane();
 	}
 
