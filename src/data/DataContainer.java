@@ -47,6 +47,8 @@ import utils.ErrorLogger;
 
 import data.campaign.Campaign;
 import data.campaign.Player;
+import data.hazards.Hazard;
+import data.hazards.Trap;
 import data.items.Armor;
 import data.items.Gear;
 import data.items.Item;
@@ -130,13 +132,14 @@ public class DataContainer {
 	public static final String SPECIES_FILE_NAME = "Species.spol";
 	public static final String BACKGROUND_FILE_NAME = "Backgrounds.bol";
 	public static final String BASTION_ROOM_FILE_NAME = "Bastions.baol";
+	public static final String HAZARD_FILE_NAME = "Hazards.hol";
 	public static final String CONFIG_FILE_NAME = "Config.confol";
 	public static final String EXTRAS_FILE_NAME = "Extras.exol";
 	public static final String BASTION_RULES = "BastionRules.baol";
 	
 	public enum MapType {
 		RULES, SPELLS, MONSTERS, INSERTS, ITEMS, VEHICLES, CAMPAIGN, FEATS, CLASSES, 
-		SPECIES, BACKGROUND, BASTION_ROOMS
+		SPECIES, BACKGROUNDS, BASTION_ROOMS, HAZARDS
 	}
 
 	private HashMap<String, Rule> ruleMap;
@@ -149,6 +152,7 @@ public class DataContainer {
 	private HashMap<String, Species> speciesMap;
 	private HashMap<String, Background> backgroundMap;
 	private HashMap<String, BastionRoom> bastionRoomMap;
+	private HashMap<String, Hazard> hazardMap;
 	private HashMap<String, StyledDocument> insertMap;
 	private HashMap<String, StyledDocument> bastionRules;
 	private Campaign camp;
@@ -156,7 +160,7 @@ public class DataContainer {
 	private ArrayList<String> ruleKeysSorted, spellKeysSorted, monstKeysSorted, insertKeysSorted,
 		weaponKeysSorted, armorKeysSorted, gearKeysSorted, toolKeysSorted, magicItemKeysSorted,
 		mountKeysSorted, largeVehicleKeysSorted, featKeysSorted,classKeysSorted, 
-		bastionRoomKeysSorted, speciesKeysSorted, backgroundKeysSorted;
+		bastionRoomKeysSorted, speciesKeysSorted, backgroundKeysSorted, hazardKeysSorted, trapKeysSorted;
 	
 
 	private final AtomicInteger runningTasks = new AtomicInteger(0);
@@ -194,6 +198,7 @@ public class DataContainer {
         tasks.add(this::ImportSpeciesMap);
         tasks.add(this::ImportBackgrounds);
         tasks.add(this::ImportBastionRooms);
+        tasks.add(this::ImportHazards);
         tasks.add(this::ImportBastionRules);
         
         ExecutorService executor = Executors.newFixedThreadPool(tasks.size());
@@ -286,6 +291,8 @@ public class DataContainer {
 							ImportObject((Background)obj, ((Background)obj).name, backgroundMap);
 						else if(obj instanceof BastionRoom)
 							ImportObject((BastionRoom)obj, ((BastionRoom)obj).name, bastionRoomMap);
+						else if(obj instanceof Hazard)
+							ImportObject((Hazard)obj, ((Hazard)obj).name, hazardMap);
 						else throw new IllegalArgumentException("Not proper object");
 						
 					} catch (ClassNotFoundException e) {
@@ -356,6 +363,8 @@ public class DataContainer {
 				ExportMap(speciesMap, oos);
 			if(exportDialog.getBastionRooms())
 				ExportMap(bastionRoomMap, oos);
+			if(exportDialog.getHazards())
+				ExportMap(hazardMap, oos);
 			oos.flush();
 			oos.close();
 		} catch (IOException e) {
@@ -822,6 +831,47 @@ public class DataContainer {
 		return false;
 	}
 	
+	private boolean ImportHazards() {
+		hazardMap = new HashMap<String, Hazard>();
+		hazardKeysSorted = new ArrayList<String>();
+		trapKeysSorted = new ArrayList<String>();
+		
+		File hazardFile;
+		
+		if(dbFolder.exists()) {
+			if(dbFolder.isDirectory()) {
+				hazardFile = new File(dbFolder.getPath() + File.separator + HAZARD_FILE_NAME);
+			}else {
+				hazardFile = new File(HAZARD_FILE_NAME);
+			}
+		}else {
+			hazardFile = new File(HAZARD_FILE_NAME);
+		}
+		if (hazardFile.exists()) {
+			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(hazardFile))) {
+				while (true) {
+					try {
+						Hazard h = (Hazard) ois.readObject();
+						hazardMap.put(h.name, h);
+						if(h instanceof Trap)
+							trapKeysSorted.add(h.name);
+						else
+							hazardKeysSorted.add(h.name);
+					} catch (EOFException eof) {
+						// End of file reached
+						return true;
+					}
+				}
+			} catch (IOException | ClassNotFoundException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+				return false;
+			}
+		}
+
+		return false;
+	}
+	
 	private void notifyChange() {
 		for(DataChangeListener tar : updateListeners)
 			tar.onMapUpdated();
@@ -852,24 +902,6 @@ public class DataContainer {
 		System.out.println("Exiting now, out of shutdown and wait");
 		System.exit(0);
 	}
-	
-//	public void AddMonster(Monster m) {
-//		if(!monstMap.keySet().contains(m.name)) {
-//			monstMap.put(m.name, m);
-//			monstKeysSorted.add(m.name);
-//			Collections.sort(monstKeysSorted);
-//			notifyChange(DataContainer.MONSTERS);
-//		}else {
-//			int opt = JOptionPane.showConfirmDialog(null, "Insert and override: " + m.name, 
-//					"Insert/Override Monster", JOptionPane.YES_NO_OPTION);
-//			if(opt == JOptionPane.YES_OPTION) {
-//				monstMap.put(m.name, m);
-//				monstKeysSorted.add(m.name);
-//				Collections.sort(monstKeysSorted);
-//				notifyChange(DataContainer.MONSTERS);
-//			}
-//		}
-//	}
 	
 	public void SetMonstersMap(Map<String, Monster> monstMap2) {
 		this.monstMap = (HashMap<String, Monster>) monstMap2;
@@ -960,8 +992,8 @@ public class DataContainer {
 	public void SetBackgroundMap(HashMap<String, Background> bMap) {
 		this.backgroundMap = bMap;
 		this.backgroundKeysSorted = new ArrayList<String>(bMap.keySet());
-		SortKeys(MapType.BACKGROUND);
-		notifyChange(MapType.BACKGROUND);
+		SortKeys(MapType.BACKGROUNDS);
+		notifyChange(MapType.BACKGROUNDS);
 	}
 	
 	public void SetBastionRoomMap(HashMap<String, BastionRoom> bMap) {
@@ -969,6 +1001,20 @@ public class DataContainer {
 		this.classKeysSorted = new ArrayList<String>(bMap.keySet());
 		SortKeys(MapType.BASTION_ROOMS);
 		notifyChange(MapType.BASTION_ROOMS);
+	}
+	
+	public void SetHazardMap(HashMap<String, Hazard> hMap) {
+		this.hazardMap = hMap;
+		this.hazardKeysSorted = new ArrayList<String>();
+		this.trapKeysSorted = new ArrayList<String>();
+		for(Hazard h : hazardMap.values()) {
+			if(h instanceof Trap)
+				trapKeysSorted.add(h.name);
+			else
+				hazardKeysSorted.add(h.name);
+		}
+		SortKeys(MapType.HAZARDS);
+		notifyChange(MapType.HAZARDS);
 	}
 	
 	public void SafeSaveData() {
@@ -987,7 +1033,7 @@ public class DataContainer {
 		return SaveRules() && SaveSpells() && SaveMonsters() && 
 				SaveInserts() && SaveItems() && SaveVehicles() && SaveCampaign() 
 				&& SaveFeats()&& SaveClasses() && SaveSpecies() && SaveBackground()
-				&& SaveBastionRooms();
+				&& SaveBastionRooms() && SaveHazards();
 	}
 
 	private boolean SaveData(MapType saveOpt) {
@@ -1002,8 +1048,9 @@ public class DataContainer {
 		case MapType.FEATS: return SaveFeats(); 
 		case MapType.CLASSES: return SaveClasses();
 		case MapType.SPECIES: return SaveSpecies();
-		case MapType.BACKGROUND: return SaveBackground();
+		case MapType.BACKGROUNDS: return SaveBackground();
 		case MapType.BASTION_ROOMS: return SaveBastionRooms();
+		case MapType.HAZARDS: return SaveHazards();
 		default: throw new IllegalArgumentException("Invalid save option");
 		}
 	}
@@ -1316,6 +1363,32 @@ public class DataContainer {
 		}
 	}
 	
+	private boolean SaveHazards() {
+		File hFile = new File(dbFolder.getPath() + File.separator + DataContainer.HAZARD_FILE_NAME);
+		if(!hFile.exists()) {
+			try {
+				hFile.createNewFile();
+			} catch (IOException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(hFile));
+			for (String s : hazardMap.keySet()) {
+				oos.writeObject(hazardMap.get(s));
+			}
+			oos.flush();
+			oos.close();
+			return true;
+		} catch (IOException e) {
+			ErrorLogger.log(e);
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	public void shutDownAndWait() {
 		System.out.println("Finishing saves before shutdown");
 		isRunning = false;  // tell worker to stop after finishing current + queued tasks
@@ -1374,6 +1447,8 @@ public class DataContainer {
 		Collections.sort(speciesKeysSorted);
 		Collections.sort(backgroundKeysSorted);
 		Collections.sort(bastionRoomKeysSorted);
+		Collections.sort(hazardKeysSorted);
+		Collections.sort(trapKeysSorted);
 	}
 	
 	private void SortKeys(MapType mapType) {
@@ -1396,8 +1471,12 @@ public class DataContainer {
 		case MapType.FEATS: Collections.sort(featKeysSorted); break;
 		case MapType.CLASSES: Collections.sort(classKeysSorted); break;
 		case MapType.SPECIES: Collections.sort(speciesKeysSorted); break;
-		case MapType.BACKGROUND: Collections.sort(backgroundKeysSorted); break;
-		case MapType.BASTION_ROOMS: Collections.sort(bastionRoomKeysSorted); break;		
+		case MapType.BACKGROUNDS: Collections.sort(backgroundKeysSorted); break;
+		case MapType.BASTION_ROOMS: Collections.sort(bastionRoomKeysSorted); break;	
+		case MapType.HAZARDS: 
+			Collections.sort(hazardKeysSorted);
+			Collections.sort(trapKeysSorted);
+			break;
 		default: throw new IllegalArgumentException("Invalid Map Type.");
 		}
 	}
@@ -1465,6 +1544,10 @@ public class DataContainer {
 	public Map<String, Vehicle> getVehicles(){
 		return Collections.unmodifiableMap(vehicleMap);
 	}
+	
+	public Map<String, Hazard> getHazards(){
+		return Collections.unmodifiableMap(hazardMap);
+	}
 
 	public List<String> getRuleKeysSorted() {
 		return Collections.unmodifiableList(ruleKeysSorted);
@@ -1528,6 +1611,14 @@ public class DataContainer {
 	
 	public List<String> getBastionRoomKeysSorted(){
 		return Collections.unmodifiableList(bastionRoomKeysSorted);
+	}
+	
+	public List<String> getHazardKeysSorted(){
+		return Collections.unmodifiableList(hazardKeysSorted);
+	}
+	
+	public List<String> getTrapKeysSorted(){
+		return Collections.unmodifiableList(trapKeysSorted);
 	}
 	/*
 	 * Campaign Methods
