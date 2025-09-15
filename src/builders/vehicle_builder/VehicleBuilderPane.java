@@ -23,6 +23,7 @@ import javax.swing.SwingUtilities;
 import data.DataContainer;
 import data.DataContainer.MapType;
 import data.DataContainer.Source;
+
 import data.vehicles.LargeVehicle;
 import data.vehicles.Mount;
 import data.vehicles.Vehicle;
@@ -57,6 +58,7 @@ public class VehicleBuilderPane extends JPanel
         };
 	private JComboBox<String> classCombo;
 	private JComboBox<Source> srcCombo;
+
 	private JPanel cardPane;
 	private JPanel sidePane;
 	

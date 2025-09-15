@@ -92,10 +92,10 @@ public class DataContainer {
 	}
 	
 	public enum PartyTier {
-	    Tier1("Levels 1–4"),
-	    Tier2("Levels 5–10"),
-	    Tier3("Levels 11–16"),
-	    Tier4("Levels 17–20");
+	    Tier1("Levels 1â€“4"),
+	    Tier2("Levels 5â€“10"),
+	    Tier3("Levels 11â€“16"),
+	    Tier4("Levels 17â€“20");
 
 	    private final String description;
 
@@ -138,7 +138,7 @@ public class DataContainer {
 	public static final String BASTION_RULES = "BastionRules.baol";
 	
 	public enum MapType {
-		RULES, SPELLS, MONSTERS, INSERTS, ITEMS, VEHICLES, CAMPAIGN, FEATS, CLASSES, 
+		RULES, SPELLS, MONSTERS, INSERTS, ITEMS, VEHICLES, CAMPAIGN, FEATS, CLASSES,
 		SPECIES, BACKGROUNDS, BASTION_ROOMS, HAZARDS
 	}
 
@@ -1544,8 +1544,8 @@ public class DataContainer {
 	public Map<String, Vehicle> getVehicles(){
 		return Collections.unmodifiableMap(vehicleMap);
 	}
-	
-	public Map<String, Hazard> getHazards(){
+  
+  public Map<String, Hazard> getHazards(){
 		return Collections.unmodifiableMap(hazardMap);
 	}
 

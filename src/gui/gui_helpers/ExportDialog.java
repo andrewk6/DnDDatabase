@@ -22,7 +22,7 @@ import gui.gui_helpers.CompFactory.ComponentType;
 
 public class ExportDialog extends JDialog
 {
-	private  JCheckBox rules, spells, monsters, items, vehicles, 
+	private  JCheckBox rules, spells, monsters, items, vehicles,
 	feats, classes, species, background, bastionRooms, hazards;
 	private JLabel fileLbl;
 	public boolean export;

@@ -20,4 +20,12 @@ public class Hazard implements Serializable
 	public StyledDocument desc;
 	public EnumMap<PartyTier, HazardDanger> dangerMap;
 	public Source src;
+=======
+
+public class Hazard
+{
+	public enum HazardDanger {Nuisance, Deadly};
+	public EnumMap dangerMap;
+	public String name;
+	public StyledDocument desc;
 }
