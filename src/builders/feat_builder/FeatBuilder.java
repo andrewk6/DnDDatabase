@@ -30,7 +30,6 @@ import data.Feat;
 import data.Feat.FeatType;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
-import gui.gui_helpers.InfoLabel;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.StyleContainer;

@@ -17,6 +17,7 @@ import java.util.function.Supplier;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.DesktopManager;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -40,6 +41,7 @@ import gui.campaign.PartyIFrame;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import gui.gui_helpers.structures.TaskbarDesktopManager;
 import utils.ErrorLogger;
 
 public class CompFactory
@@ -341,7 +343,13 @@ public class CompFactory
 			iFrame.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
 		return new InternalFrameListener() {
 			public void internalFrameOpened(InternalFrameEvent e) {}
-			public void internalFrameClosing(InternalFrameEvent e) {iFrame.setVisible(false);}
+			public void internalFrameClosing(InternalFrameEvent e) {
+				iFrame.setVisible(false);
+				((TaskbarDesktopManager)iFrame.getDesktopPane()
+						.getDesktopManager()).repositionIcons(iFrame.getDesktopPane());
+				iFrame.getDesktopPane().revalidate();
+				iFrame.getDesktopPane().repaint();
+			}
 			public void internalFrameClosed(InternalFrameEvent e) {}
 			public void internalFrameIconified(InternalFrameEvent e) {}
 			public void internalFrameDeiconified(InternalFrameEvent e) {}

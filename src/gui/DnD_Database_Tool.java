@@ -19,6 +19,7 @@ import java.util.Queue;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
+import javax.swing.DesktopManager;
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
@@ -58,6 +59,7 @@ import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.LoadListener;
 import gui.gui_helpers.structures.StyleContainer;
+import gui.gui_helpers.structures.TaskbarDesktopManager;
 import gui.hazard.HazardIFrame;
 import gui.initative.InitiativeIFrame;
 import gui.species.SpeciesIFrame;
@@ -154,7 +156,7 @@ public class DnD_Database_Tool extends JFrame {
 		loadFinsihed();
 	}
 	
-	private void PreloadFrames() {
+	private void PreloadFrames() {		
 		comboFrame = new ComboIFrame(data, gd, dPane);
 		dPane.add(comboFrame);
 		comboFrame.setVisible(false);
@@ -574,6 +576,7 @@ public class DnD_Database_Tool extends JFrame {
 					g.fillRect(0, 0, getWidth(), getHeight());
 				}
 			};
+			dPane.setDesktopManager(new TaskbarDesktopManager());
 		} catch (IOException e) {
 			ErrorLogger.log(e);
 			dPane = new JDesktopPane();
