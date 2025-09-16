@@ -37,6 +37,7 @@ import gui.classes.ClassIFrame;
 import gui.dungeon.DungeonIBuilder;
 import gui.dungeon.DungeonIViewer;
 import gui.gui_helpers.PlayerNameTargets;
+import gui.hazard.HazardIFrame;
 import gui.initative.InitiativeIFrame;
 import gui.species.SpeciesIFrame;
 import utils.ErrorLogger;
@@ -52,6 +53,7 @@ public class GuiDirector
 	private ClassIFrame clFrame;
 	private SpeciesIFrame spFrame;
 	private BackgroundIFrame bFrame;
+	private HazardIFrame hFrame;
 	
 	private PartyIFrame pFrame;
 	private InitiativeIFrame initFrame;
@@ -90,6 +92,8 @@ public class GuiDirector
 			spFrame = (SpeciesIFrame) frame;
 		else if(frame instanceof BackgroundIFrame)
 			bFrame = (BackgroundIFrame) frame;
+		else if(frame instanceof HazardIFrame)
+			hFrame = (HazardIFrame) frame;
 	}
 	
 	public void DeRegister(ContentTab frame) {
@@ -114,6 +118,9 @@ public class GuiDirector
 		}else if(frame instanceof BackgroundIFrame) {
 			if(bFrame == frame)
 				bFrame = null;
+		}else if(frame instanceof HazardIFrame) {
+			if(hFrame == frame)
+				hFrame = null;
 		}
 	}
 	
@@ -359,6 +366,23 @@ public class GuiDirector
 		});
 	}
 	
+	public void popHFrame() {
+		SwingUtilities.invokeLater(()->{
+			if(hFrame.isIcon())
+				try {
+					hFrame.setIcon(false);
+				} catch (PropertyVetoException e) {
+					ErrorLogger.log(e);
+					e.printStackTrace();
+				}
+			hFrame.toFront();
+			if(!hFrame.isVisible())
+				hFrame.setVisible(true);
+			dPane.revalidate();
+			dPane.repaint();
+		});
+	}
+	
 	public void deregisterPlayerPaneTabs(PlayerPane p) {
 		nameUpdates.remove(p);
 	}
@@ -583,6 +607,10 @@ public class GuiDirector
 	
 	public BackgroundIFrame getBFrame() {
 		return bFrame;
+	}
+	
+	public HazardIFrame getHFrame() {
+		return hFrame;
 	}
 	
 	public JDesktopPane getDesktop() {

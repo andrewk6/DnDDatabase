@@ -122,12 +122,11 @@ public class CompFactory
 		return lbl;
 	}
 	
-	public static InfoLabel createNewInfoLabel(String text, int textLength, ComponentType type) {
-		InfoLabel lbl = new InfoLabel(text, textLength);
-		setFont(lbl, type);
+	public static JLabel createNewLabel(String text, ComponentType type, float fontMod) {
+		JLabel lbl = createNewLabel(text, type);
+		lbl.setFont(lbl.getFont().deriveFont(lbl.getFont().getSize() + fontMod));
 		return lbl;
 	}
-	
 	
 	public static JMenuItem createNewJMenuItem(String text) {
 		JMenuItem out = new JMenuItem(text);
@@ -251,7 +250,11 @@ public class CompFactory
 	
 	public static HoverTextPane createHoverTextPane(DataContainer data, GuiDirector gd, 
 			StyledDocument doc, ComponentType font) {
-		HoverTextPane hPane = new HoverTextPane(data, gd, gd.getDesktop());
+		HoverTextPane hPane;
+		if(gd == null)
+			hPane = new HoverTextPane(data, gd, null);
+		else
+			hPane = new HoverTextPane(data, gd, gd.getDesktop());
 		setFont(hPane, font);
 		hPane.setDocument(doc);
 		return hPane;

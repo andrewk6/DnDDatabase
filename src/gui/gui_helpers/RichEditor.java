@@ -9,6 +9,7 @@ import data.Monster;
 import data.Rule;
 import data.Spell;
 import data.campaign.Player;
+import data.hazards.Hazard;
 import data.items.Armor;
 import data.items.Gear;
 import data.items.Item;
@@ -19,6 +20,7 @@ import data.players.Species;
 import data.players.classes.DnDClass;
 import gui.classes.ClassPane;
 import gui.gui_helpers.structures.StyleContainer;
+import gui.hazard.HazardPane;
 import utils.ErrorLogger;
 
 import javax.swing.*;
@@ -53,6 +55,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     private Map<String, DnDClass> classMap;
     private Map<String, Species> speciesMap;
     private Map<String, Background> backgroundMap;
+    private Map<String, Hazard> hazardMap;
 //    private Map<String, Species> 
 
     private final JWindow rulePreviewWindow = new JWindow();
@@ -72,6 +75,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     private final Map<Integer, String> classOffsets = new HashMap<>();
     private final Map<Integer, String> speciesOffsets = new HashMap<>();
     private final Map<Integer, String> backgroundOffsets = new HashMap<>();
+    private final Map<Integer, String> hazardOffsets = new HashMap<>();
 
     private int atPosition = -1;
     private String currentPartial = "";
@@ -86,6 +90,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     private Style classStyle;
     private Style speciesStyle;
     private Style backgroundStyle;
+    private Style hazardStyle;
     
     private int ampPosition = -1;
 //	private final List<String> ampSuggestions = Arrays.asList(
@@ -187,6 +192,12 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         StyleConstants.setForeground(backgroundStyle, Color.MAGENTA);
         StyleConstants.setItalic(backgroundStyle, true);
         StyleConstants.setUnderline(backgroundStyle, true);
+        
+        hazardStyle = doc.addStyle("HazardStyle", null);
+        StyleConstants.setForeground(hazardStyle, Color.WHITE);
+        StyleConstants.setBackground(hazardStyle, new Color(150, 0, 0, 100));
+        StyleConstants.setItalic(hazardStyle, true);
+        StyleConstants.setUnderline(hazardStyle, true);
 
         editor.setTransferHandler(new TransferHandler() {
             @Override
@@ -286,6 +297,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 String className = classOffsets.get(pos);
                 String speciesName = speciesOffsets.get(pos);
                 String backgroundName = backgroundOffsets.get(pos);
+                String hazardName = hazardOffsets.get(pos);
 //                System.out.println("Rule:" + ruleName +"\nSpell: " + spellName);
                 if (ruleName != null) {
                 	showRulePreview(ruleName, e.getLocationOnScreen());
@@ -299,9 +311,11 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 	showClassPreview(className, e.getLocationOnScreen());
                 }else if(speciesName != null){
                 	showSpeciesPreview(speciesName, e.getLocationOnScreen());
-                }else if(backgroundName != null) {
+               }else if(backgroundName != null) {
                 	showBackgroundPreview(backgroundName, e.getLocationOnScreen());
-                }else {
+                }else if(hazardName != null) {
+                	showHazardPreview(hazardName, e.getLocationOnScreen());
+                }else { 
                     rulePreviewWindow.setVisible(false);
                     specialPreviewWindow.setVisible(false);
                 }
@@ -397,6 +411,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             clearStaleClassOffsets();
             clearStaleSpeciesOffsets();
             clearStaleBackgroundOffsets();
+            clearStaleHazardOffsets();
             SwingUtilities.invokeLater(() -> resetStyleAfterDeletion());
         }
         public void changedUpdate(DocumentEvent e) {}
@@ -486,6 +501,12 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             		matches.add(key + " (background)");
             	}
             }
+            
+            for(String key : hazardMap.keySet()) {
+            	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+            		matches.add(key + " (hazard)");
+            	}
+            }
 
             Collections.sort(matches);
             if (!matches.isEmpty()) {
@@ -553,6 +574,12 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 for(String key : backgroundMap.keySet()) {
                 	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
                 		matches.add(key + " (background)");
+                	}
+                }
+                
+                for(String key : hazardMap.keySet()) {
+                	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+                		matches.add(key + " (hazard)");
                 	}
                 }
                 
@@ -630,6 +657,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 boolean isClass = selected.endsWith(" (class)");
                 boolean isSpecies = selected.endsWith(" (species)");
                 boolean isBackground = selected.endsWith(" (background)");
+                boolean isHazard = selected.endsWith(" (hazard)");
                 String plainName;
                 if(isSpell)
                 	plainName = selected.substring(0, selected.length() - 8);
@@ -647,6 +675,8 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 	plainName = selected.substring(0, selected.length() - " (species)".length());
                 else if(isBackground)
                 	plainName = selected.substring(0, selected.length() - " (background)".length());
+                else if(isHazard)
+                	plainName= selected.substring(0, selected.length() - " (hazard)".length());
                 else
                 	plainName =  selected;
                 int caretPos = editor.getCaretPosition();
@@ -678,6 +708,9 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 }else if (isBackground){
                 	styleWithAttr = new SimpleAttributeSet(backgroundStyle);
                 	styleWithAttr.addAttribute("backgroundLink", plainName);
+                }else if (isHazard){
+                	styleWithAttr = new SimpleAttributeSet(hazardStyle);
+                	styleWithAttr.addAttribute("hazardLink", plainName);
                 }else {
                 	styleWithAttr = new SimpleAttributeSet(ruleStyle);
                 	styleWithAttr.addAttribute("ruleLink", plainName);
@@ -705,6 +738,8 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 		speciesOffsets.put(i, plainName);
                 	}else if (isBackground){
                 		backgroundOffsets.put(i, plainName);
+                	}else if (isHazard){
+                		hazardOffsets.put(i, plainName);
                 	}else {
                 		ruleOffsets.put(i, plainName);
                 	}
@@ -863,6 +898,14 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         rulePreviewWindow.pack();
         rulePreviewWindow.setVisible(true);
     }
+    
+    private void showHazardPreview(String hazardName, Point screenLocation) {
+    	specialPreviewPane.removeAll();
+    	specialPreviewPane.add(new HazardPane(data.getHazards().get(hazardName), data, null), BorderLayout.CENTER);
+    	specialPreviewWindow.setLocation(screenLocation.x + 15, screenLocation.y + 15);
+    	specialPreviewWindow.pack();
+    	specialPreviewWindow.setVisible(true);
+    }
 
     private void resetStyleAfterDeletion() {
         int caretPos = editor.getCaretPosition();
@@ -969,7 +1012,17 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             AttributeSet attrs = elem.getAttributes();
             return attrs.getAttribute("backgroundLink") == null;
         });
-    }    
+    }   
+    private void clearStaleHazardOffsets() {
+    	StyledDocument doc = editor.getStyledDocument();
+        hazardOffsets.entrySet().removeIf(entry -> {
+            int pos = entry.getKey();
+            if (pos >= doc.getLength()) return true;
+            Element elem = doc.getCharacterElement(pos);
+            AttributeSet attrs = elem.getAttributes();
+            return attrs.getAttribute("hazardLink") == null;
+        });
+    } 
     
     private void checkForSlash() {
         int caretPos = editor.getCaretPosition();
@@ -1067,6 +1120,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         this.classMap = data.getClasses();
         this.speciesMap = data.getSpecies();
         this.backgroundMap = data.getBackgrounds();
+        this.hazardMap = data.getHazards();
     }
 
 	@Override
@@ -1088,6 +1142,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 		case MapType.SPECIES: this.speciesMap = data.getSpecies(); break;
 		case MapType.BACKGROUNDS: this.backgroundMap = data.getBackgrounds(); break;
 		case MapType.BASTION_ROOMS: break;
+		case MapType.HAZARDS: this.hazardMap = data.getHazards(); break;
 		default: System.out.println("Invalid map type: " + mapType);
 		}
 		

@@ -38,6 +38,7 @@ public class StyleContainer {
 	public final static String RULE_ICON_FILE = "rule_ico.png";
 	public final static String SPELL_ICON_FILE = "spell_ico.png";
 	public final static String MONSTER_ICON_FILE = "monster_ico.png";
+	public final static String HAZARD_ICON_FILE = "hazard_icon.png";
 	public final static String DUNGEON_ICON_FILE = "dungeon_icon.png";
 	public final static String ITEM_ICON_FILE = "items_ico.png";
 	public final static String CLASS_ICON_FILE = "class_icon.png";
@@ -62,6 +63,7 @@ public class StyleContainer {
 	public static final String BACKGROUND_BUILDER_ICON_FILE = "builder_background_icon.png";
 	public static final String SPECIES_BUILDER_ICON_FILE = "builder_species_icon.png";
 	public static final String BASTION_ROOM_BUILD_ICON_FILE = "builder_bastion_room_icon.png";
+	public static final String HAZARD_BUILD_ICON_FILE = "builder_hazard_ico.png";
 	
 	public final static int ICON_SIZE = 64;
 
