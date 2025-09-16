@@ -24,6 +24,7 @@ import gui.item_panels.ArmorPanel;
 import gui.item_panels.GearPanel;
 import gui.item_panels.MagicItemPanel;
 import gui.item_panels.ToolsPanel;
+import gui.item_panels.VehiclesPane;
 import gui.item_panels.WeaponPanel;
 
 public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChangeListener {
@@ -46,6 +47,7 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChan
 		BuildArmorPane();
 		BuildToolPane();
 		BuildGearPane();
+		BuildVehiclePane();
 		BuildMagicItemPane();
 
 //		setVisible(true);
@@ -55,6 +57,11 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChan
 	private void BuildMagicItemPane() {
 		miPane = new MagicItemPanel(data, gd, dPane);
 		tabs.addTab("Magic Items", miPane);
+	}
+	
+	private void BuildVehiclePane() {
+		VehiclesPane vPane = new VehiclesPane(data, gd);
+		tabs.addTab("Vehicles", vPane);
 	}
 	
 	private void BuildGearPane() {
@@ -73,7 +80,9 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChan
 	}
 
 	private void BuildWeaponPane() {
+		System.out.println("Building weapons");
 		WeaponPanel wPane = new WeaponPanel(data);
+		System.out.println("Weapons pane made");
 		tabs.addTab("Weapons", wPane);
 
 	}
@@ -120,29 +129,49 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChan
 
 	@Override
 	public void onMapUpdated() {
+		MagicItemPanel miPane = null;
+		System.out.println("Itme I Frame in Map");
 		for (int i = tabs.getTabCount() - 1; i >= 0; i--) {
+		    if(tabs.getComponentAt(i) instanceof MagicItemPanel) {
+		    	System.out.println("Found mi pane");
+		    	miPane = (MagicItemPanel) tabs.getComponentAt(i);
+		    }
 		    tabs.removeTabAt(i);
 		}
+		if(miPane == null) {
+			miPane = new MagicItemPanel(data, gd, dPane);
+		}
 		
-		BuildFrame();
+//		BuildFrame();
 		BuildWeaponPane();
 		BuildArmorPane();
 		BuildToolPane();
 		BuildGearPane();
-		BuildMagicItemPane();
+		tabs.addTab("Magic Items", miPane);
 	}
 
 	@Override
 	public void onMapUpdated(MapType mapType) {
-		for (int i = tabs.getTabCount() - 1; i >= 0; i--) {
-		    tabs.removeTabAt(i);
+		if(mapType == MapType.ITEMS) {
+			MagicItemPanel miPane = null;
+			System.out.println("Itme I Frame in Map");
+			for (int i = tabs.getTabCount() - 1; i >= 0; i--) {
+			    if(tabs.getComponentAt(i) instanceof MagicItemPanel) {
+			    	System.out.println("Found mi pane");
+			    	miPane = (MagicItemPanel) tabs.getComponentAt(i);
+			    }
+			    tabs.removeTabAt(i);
+			}
+			if(miPane == null) {
+				miPane = new MagicItemPanel(data, gd, dPane);
+			}
+			
+//			BuildFrame();
+			BuildWeaponPane();
+			BuildArmorPane();
+			BuildToolPane();
+			BuildGearPane();
+			tabs.addTab("Magic Items", miPane);
 		}
-		
-		BuildFrame();
-		BuildWeaponPane();
-		BuildArmorPane();
-		BuildToolPane();
-		BuildGearPane();
-		BuildMagicItemPane();
 	}
 }

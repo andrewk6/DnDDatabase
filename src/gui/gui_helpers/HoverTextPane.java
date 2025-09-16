@@ -169,12 +169,93 @@ public class HoverTextPane extends JTextPane {
             String className = (String) attr.getAttribute("classLink");
             String speciesName = (String)attr.getAttribute("speciesLink");
             String backgroundName = (String)attr.getAttribute("backgroundLink");
+            String hazardName = (String)attr.getAttribute("hazardLink");
             
+			if (itemName != null || playerName != null) {
+				if (itemName != null) {
+					if (gd.getIFrame() == null) {
+						ItemIFrame iFrame = new ItemIFrame(data, gd, desktop);
+						desktop.add(iFrame);
+						gd.RegisterFrame(iFrame);
+					}
+					if (data.getMagicItemKeysSorted().contains(itemName)) {
+						gd.handleFrame(itemName, true);
+					}
+				} else {
+					if (gd.getPFrame() == null) {
+						PartyIFrame pFrame = new PartyIFrame(data, gd);
+						desktop.add(pFrame);
+						gd.RegisterFrame(pFrame);
+					}
+					gd.handleFrame(playerName, false);
+				}
+			} else if (gd.getComboFrame() != null) {
+				if (ruleName != null)
+					gd.getComboFrame().AddTab(data.getRules().get(ruleName));
+				if (spellName != null)
+					gd.getComboFrame().AddTab(data.getSpells().get(spellName));
+				if (monsterName != null)
+					gd.getComboFrame().AddTab(data.getMonsters().get(monsterName));
+				if (featName != null)
+					gd.getComboFrame().AddTab(data.getFeats().get(featName));
+				if (className != null)
+					gd.getComboFrame().AddTab(data.getClasses().get(className));
+				if (speciesName != null)
+					gd.getComboFrame().AddTab(data.getSpecies().get(speciesName));
+				if (backgroundName != null)
+					gd.getComboFrame().AddTab(data.getBackgrounds().get(backgroundName));
+				if (hazardName != null)
+					gd.getComboFrame().AddTab(data.getHazards().get(hazardName));
+			}else {
+				if (ruleName != null) {
+					if(gd.getrFrame() != null) {
+                		gd.getrFrame().AddTab(ruleName);
+                		gd.popRFrame();
+					}
+				}
+				if (spellName != null)
+					if(gd.getsFrame() != null) {
+                		gd.getsFrame().AddSpellTab(spellName);
+                		gd.popSFrame();
+					}
+				if (monsterName != null)
+					if(gd.getmFrame() != null) {
+                		gd.getmFrame().AddMonsterPane(monsterName);
+                		gd.popMFrame();
+					}
+				if (featName != null)
+					if(gd.getFFrame() != null) {
+                		gd.getFFrame().AddFeatTab(featName);
+                		gd.popFFrame();
+					}
+				if (className != null)
+					if(gd.getClFrame() != null) {
+                		gd.getClFrame().AddTab(data.getClasses().get(className));
+                		gd.popClFrame();
+					}
+				if (speciesName != null)
+					if(gd.getSpFrame() != null) {
+                		gd.getSpFrame().AddTab(data.getSpecies().get(speciesName));
+                		gd.popSpFrame();
+					}
+				if (backgroundName != null)
+					if(gd.getBFrame() != null) {
+                		gd.getBFrame().AddTab(data.getBackgrounds().get(backgroundName));
+                		gd.popBFrame();
+					}
+				if (hazardName != null)
+					if(gd.getHFrame() != null) {
+                		gd.getHFrame().AddTab(data.getHazards().get(hazardName));
+                		gd.popHFrame();
+					}
+			}
+
+            /*
             String combo = ruleName + spellName + monsterName + 
             		playerName + featName + className + speciesName +
             		backgroundName;
             combo = combo.replace("null", "");
-            if(itemName != null|| playerName != null) {
+            if(itemName != null || playerName != null) {
             	if(itemName != null) {
             		if(gd.getIFrame() == null) {
             			ItemIFrame iFrame = new ItemIFrame(data, gd, desktop);
@@ -277,7 +358,7 @@ public class HoverTextPane extends JTextPane {
                 		gd.popBFrame();
                 	}
                 }
-            }
+            }*/
         }
     }
 

@@ -42,6 +42,7 @@ import data.Feat;
 import data.Monster;
 import data.Rule;
 import data.Spell;
+import data.hazards.Hazard;
 import data.players.Background;
 import data.players.Species;
 import data.players.classes.DnDClass;
@@ -57,6 +58,7 @@ import gui.gui_helpers.structures.AllTab;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import gui.hazard.HazardPane;
 import gui.species.SpeciesPane;
 import utils.ErrorLogger;
 
@@ -186,6 +188,9 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 			combinedKeysSet.addAll(data.getClassKeysSorted());
 			combinedKeysSet.addAll(data.getSpeciesKeysSorted());
 			combinedKeysSet.addAll(data.getBackgroundKeysSorted());
+			combinedKeysSet.addAll(data.getHazardKeysSorted());
+			combinedKeysSet.addAll(data.getTrapKeysSorted());
+			
 			List<String> keys = new ArrayList<>(combinedKeysSet);
 			Collections.sort(keys);
 
@@ -245,38 +250,43 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 		if (data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
 				&& !data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
 				&& !data.getClassKeysSorted().contains(s) && !data.getSpeciesKeysSorted().contains(s)
-				&& !data.getBackgroundKeysSorted().contains(s)) {
+				&& !data.getBackgroundKeysSorted().contains(s) && !data.getHazardKeysSorted().contains(s)) {
 			AddTab(data.getRules().get(s));
 		} else if (!data.getRuleKeysSorted().contains(s) && data.getSpellKeysSorted().contains(s)
 				&& !data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
 				&& !data.getClassKeysSorted().contains(s)&& !data.getSpeciesKeysSorted().contains(s)
-				&& !data.getBackgroundKeysSorted().contains(s)) {
+				&& !data.getBackgroundKeysSorted().contains(s) && !data.getHazardKeysSorted().contains(s)) {
 			AddTab(data.getSpells().get(s));
 		} else if (!data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
 				&& data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
 				&& !data.getClassKeysSorted().contains(s)&& !data.getSpeciesKeysSorted().contains(s)
-				&& !data.getBackgroundKeysSorted().contains(s)) {
+				&& !data.getBackgroundKeysSorted().contains(s) && !data.getHazardKeysSorted().contains(s)) {
 			AddTab(data.getMonsters().get(s));
 		} else if (!data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
 				&& !data.getMonsterKeysSorted().contains(s) && data.getFeatKeysSorted().contains(s)
 				&& !data.getClassKeysSorted().contains(s)&& !data.getSpeciesKeysSorted().contains(s)
-				&& !data.getBackgroundKeysSorted().contains(s)) {
+				&& !data.getBackgroundKeysSorted().contains(s) && !data.getHazardKeysSorted().contains(s)) {
 			AddTab(data.getFeats().get(s));
 		}else if (!data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
 				&& !data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
 				&& data.getClassKeysSorted().contains(s)&& !data.getSpeciesKeysSorted().contains(s)
-				&& !data.getBackgroundKeysSorted().contains(s)) {
+				&& !data.getBackgroundKeysSorted().contains(s) && !data.getHazardKeysSorted().contains(s)) {
 			AddTab(data.getClasses().get(s));
 		}else if (!data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
 				&& !data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
 				&& !data.getClassKeysSorted().contains(s)&& data.getSpeciesKeysSorted().contains(s)
-				&& !data.getBackgroundKeysSorted().contains(s)) {
+				&& !data.getBackgroundKeysSorted().contains(s) && !data.getHazardKeysSorted().contains(s)) {
 			AddTab(data.getSpecies().get(s));
 		}else if (!data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
 				&& !data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
-				&& !data.getClassKeysSorted().contains(s)&& data.getSpeciesKeysSorted().contains(s)
-				&& !data.getBackgroundKeysSorted().contains(s)) {
+				&& !data.getClassKeysSorted().contains(s)&& !data.getSpeciesKeysSorted().contains(s)
+				&& data.getBackgroundKeysSorted().contains(s) && !data.getHazardKeysSorted().contains(s)) {
 			AddTab(data.getBackgrounds().get(s));
+		}else if (!data.getRuleKeysSorted().contains(s) && !data.getSpellKeysSorted().contains(s)
+				&& !data.getMonsterKeysSorted().contains(s) && !data.getFeatKeysSorted().contains(s)
+				&& !data.getClassKeysSorted().contains(s)&& !data.getSpeciesKeysSorted().contains(s)
+				&& !data.getBackgroundKeysSorted().contains(s) && data.getHazardKeysSorted().contains(s)) {
+			AddTab(data.getHazards().get(s));
 		}else {
 			ArrayList<String> opts = new ArrayList<String>();
 			if (data.getRuleKeysSorted().contains(s))
@@ -293,6 +303,8 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 				opts.add("Species");
 			if(data.getBackgroundKeysSorted().contains(s))
 				opts.add("Background");
+			if(data.getHazardKeysSorted().contains(s))
+				opts.add("Hazard");
 
 			if (opts.size() > 0) {
 				String type = gd.showTypeSelectionDialog(SwingUtilities.getWindowAncestor(this), s, opts);
@@ -311,6 +323,8 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 						AddTab(data.getSpecies().get(s));
 					else if(type.equals("Background"))
 						AddTab(data.getBackgrounds().get(s));
+					else if(type.equals("Hazard"))
+						AddTab(data.getHazards().get(s));
 				}
 			}
 		}
@@ -544,6 +558,24 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 	    		tab.add(new BackgroundPane(b, data, gd), BorderLayout.CENTER);
 	    		tab.add(CompFactory.createButtonFlowPane(FlowLayout.RIGHT, new JButton[] {
 	    				CompFactory.createNewButton("Remove " + b.name + " Tab", _->{
+	    					tabs.removeTabAt(tabs.indexOfComponent(tab));
+	    				})
+	    		}), BorderLayout.SOUTH);
+	    		tabs.setSelectedComponent(tab);
+				CheckTabs();
+	    	}
+	    }
+	 
+	 public void AddTab(Hazard h) {
+	    	if(!hasTab(h.name)) {
+	    		JPanel tab = new JPanel();
+	    		tab.setLayout(new BorderLayout());
+	    		tabs.addTab(h.name, tab);
+	    		tabsUI.setTabColor(tabs.indexOfComponent(tab), Color.LIGHT_GRAY);
+	    		
+	    		tab.add(new HazardPane(h, data, gd), BorderLayout.CENTER);
+	    		tab.add(CompFactory.createButtonFlowPane(FlowLayout.RIGHT, new JButton[] {
+	    				CompFactory.createNewButton("Remove " + h.name + " Tab", _->{
 	    					tabs.removeTabAt(tabs.indexOfComponent(tab));
 	    				})
 	    		}), BorderLayout.SOUTH);

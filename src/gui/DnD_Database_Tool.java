@@ -40,12 +40,14 @@ import gui.builder_internals.BackgroundBuilderIFrame;
 import gui.builder_internals.BastionBuilderIFrame;
 import gui.builder_internals.ClassBuilderIFrame;
 import gui.builder_internals.FeatBuilderIFrame;
+import gui.builder_internals.HazardBuilderIFrame;
 import gui.builder_internals.ItemBuilderIFrame;
 import gui.builder_internals.MonsterBuilderIFrame;
 import gui.builder_internals.QuickInsertBuilderIFrame;
 import gui.builder_internals.RuleBuilderIFrame;
 import gui.builder_internals.SpeciesBuilderIFrame;
 import gui.builder_internals.SpellBuilderIFrame;
+import gui.builder_internals.VehicleBuilderIFrame;
 import gui.campaign.NotesIFrame;
 import gui.campaign.PartyIFrame;
 import gui.classes.ClassIFrame;
@@ -56,6 +58,7 @@ import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.LoadListener;
 import gui.gui_helpers.structures.StyleContainer;
+import gui.hazard.HazardIFrame;
 import gui.initative.InitiativeIFrame;
 import gui.species.SpeciesIFrame;
 import utils.ErrorLogger;
@@ -72,6 +75,7 @@ public class DnD_Database_Tool extends JFrame {
 	private RuleIFrame rFrame;
 	private SpellIFrame sFrame;
 	private MonsterIFrame mFrame;
+	private HazardIFrame hFrame;
 	private ItemIFrame iFrame;
 	private FeatIFrame fFrame;
 	private ClassIFrame cFrame;
@@ -92,11 +96,13 @@ public class DnD_Database_Tool extends JFrame {
 	MonsterBuilderIFrame mBuildFrame;
 	QuickInsertBuilderIFrame qBuildFrame;
 	ItemBuilderIFrame iBuildFrame;
+	VehicleBuilderIFrame vBuildFrame;
 	FeatBuilderIFrame fBuildFrame;
 	ClassBuilderIFrame cBuildFrame;
 	SpeciesBuilderIFrame spBuildIFrame;
 	BackgroundBuilderIFrame bBuildFrame;
 	BastionBuilderIFrame brBuildFrame;
+	HazardBuilderIFrame hBuildFrame;
 
 	private final List<LoadListener> loadListeners = new ArrayList<LoadListener>();
 
@@ -165,6 +171,10 @@ public class DnD_Database_Tool extends JFrame {
 		dPane.add(mFrame);
 		mFrame.setVisible(false);
 		
+		hFrame = new HazardIFrame(data, gd);
+		dPane.add(hFrame);
+		hFrame.setVisible(false);
+		
 		iFrame = new ItemIFrame(data, gd, dPane);
 		dPane.add(iFrame);
 		iFrame.setVisible(false);
@@ -209,6 +219,10 @@ public class DnD_Database_Tool extends JFrame {
 		dPane.add(iBuildFrame);
 		iBuildFrame.setVisible(false);
 		
+		vBuildFrame = new VehicleBuilderIFrame(data);
+		dPane.add(vBuildFrame);
+		vBuildFrame.setVisible(false);
+		
 		dBuildFrame = new DungeonIBuilder(data, gd);
 		dPane.add(dBuildFrame);
 		dBuildFrame.setVisible(false);
@@ -233,6 +247,10 @@ public class DnD_Database_Tool extends JFrame {
 		dPane.add(brBuildFrame);
 		brBuildFrame.setVisible(false);
 		
+		hBuildFrame = new HazardBuilderIFrame(data);
+		dPane.add(hBuildFrame);
+		hBuildFrame.setVisible(false);
+		
 		dViewFrame = new DungeonIViewer(data, gd);
 		dPane.add(dViewFrame);
 		dViewFrame.setVisible(false);
@@ -253,7 +271,8 @@ public class DnD_Database_Tool extends JFrame {
 		dataMenu.add(CompFactory.createNewJMenuItem("Rules", rFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Spells", sFrame));
 		dataMenu.add(CompFactory.createNewJMenuItem("Monsters", mFrame));
-		dataMenu.add(CompFactory.createNewJMenuItem("Items", iFrame));
+		dataMenu.add(CompFactory.createNewJMenuItem("Hazards", hFrame));
+		dataMenu.add(CompFactory.createNewJMenuItem("Adventuring Gear", iFrame));
 		//Player SubMenu
 		JMenu playerMenu = new JMenu("Player Databases");
 		StyleContainer.SetFontMain(playerMenu);
@@ -360,11 +379,13 @@ public class DnD_Database_Tool extends JFrame {
 		buildMenu.add(CompFactory.createNewJMenuItem("Monster Builder", mBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Quick Insert Builder", qBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Item Buider", iBuildFrame));
+		buildMenu.add(CompFactory.createNewJMenuItem("Vehicle Builder", vBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Class Builder", cBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Species Builder", spBuildIFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Background Builder", bBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Feat Builder", fBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Bastion Room Builder", brBuildFrame));
+		buildMenu.add(CompFactory.createNewJMenuItem("Hazard Builder", hBuildFrame));
 		
 		/*
 		 * LOADED CAMPAIGN

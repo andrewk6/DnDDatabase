@@ -33,7 +33,6 @@ public class WeaponPanel extends JPanel {
         List<Weapon> simpleRanged = new ArrayList<>();
         List<Weapon> martialMelee = new ArrayList<>();
         List<Weapon> martialRanged = new ArrayList<>();
-
         for (String key : data.getWeaponKeysSorted()) {
             Item item = data.getItems().get(key);
             if (item instanceof Weapon w) {

@@ -35,6 +35,8 @@ import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
 import data.items.MagicItem;
+import gui.gui_helpers.CompFactory;
+import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.ContentTab;
@@ -95,30 +97,21 @@ public class MagicItemPanel extends JPanel implements DataChangeListener{
 	public void FillSidePane() {
 		SwingUtilities.invokeLater(()->{
 			miGridPane.removeAll();
-			List<String> keys = data.getMagicItemKeysSorted();
+			ArrayList<String> keys = new ArrayList<String>(data.getMagicItemKeysSorted());
+			Collections.sort(keys);
+			
 			for(String s : keys) {
 				if(s.toLowerCase().startsWith(miFilter.getText().toLowerCase()) || miFilter.getText().length() == 0) {
-					JTextField sField = new JTextField(s);
-					StyleContainer.SetFontHeader(sField);
-					sField.setEditable(false);
-					sField.setFocusable(false);
-					sField.setColumns(25);
-					sField.addMouseListener(new MouseListener() {
-						public void mouseClicked(MouseEvent e) {
-//							spellTitle.setText(s);
+					JLabel lbl = CompFactory.createNewLabel(s, ComponentType.BODY);
+					lbl.addMouseListener(CompFactory.createSideMouseListener(lbl, ()->{
+						//							spellTitle.setText(s);
 //							hPane.setDocument(data.getSpells().get(s).spellDoc);
 //							AddSpellTab(s);
 							CardLayout cl = (CardLayout) cardPane.getLayout();
 							cl.show(cardPane, "mipane");
 							SetMIPane((MagicItem) data.getItems().get(s));
-						}
-						public void mousePressed(MouseEvent e) {}
-						public void mouseReleased(MouseEvent e) {}
-						public void mouseEntered(MouseEvent e) {}
-						public void mouseExited(MouseEvent e) {}
-						
-					});
-					miGridPane.add(sField);
+					}));
+					miGridPane.add(lbl);
 				}
 			}
 			miGridPane.revalidate();

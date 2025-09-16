@@ -5,8 +5,10 @@ import data.DataContainer.Source;
 import data.items.Item;
 import data.items.MagicItem;
 import data.items.MagicItem.Rarity;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
+import gui.gui_helpers.CompFactory.ComponentType;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -17,27 +19,36 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class MagicItemBuilder extends JPanel {
 
-	private final JTextField nameField = new JTextField(15);
-	private final ReminderField weightField = new ReminderField();
-	private final ReminderField[] costFields = { new ReminderField(3), new ReminderField(3), new ReminderField(3),
-			new ReminderField(3), new ReminderField(3) };
-	private final JCheckBox attuneBox = new JCheckBox("Requires Attunement");
+	private final ReminderField nameField = 
+			CompFactory.createReminderField("Item name..", 15, ComponentType.HEADER);
+	private final ReminderField weightField = CompFactory.createReminderField("Weight...", ComponentType.BODY);
+	private final ReminderField[] costFields = { 
+			CompFactory.createReminderField("", 3, ComponentType.BODY), 
+			CompFactory.createReminderField("", 3, ComponentType.BODY),
+			CompFactory.createReminderField("", 3, ComponentType.BODY),
+			CompFactory.createReminderField("", 3, ComponentType.BODY), 
+			CompFactory.createReminderField("", 3, ComponentType.BODY)
+			};
+	private final JCheckBox attuneBox = CompFactory.createNewCheckbox("Requires Attunement");
 	private RichEditor descriptionEditor;
 	
-	private final JCheckBox customBox = new JCheckBox("Custom");
-	private final JComboBox<Source> sourceBox = new JComboBox<>(Source.values());
-	private final JTextField subtypeField = new JTextField(15);
-	private final JComboBox<Rarity> rarityBox = new JComboBox<>(Rarity.values());
+	private final JCheckBox customBox = CompFactory.createNewCheckbox("Custom");
+	private final JComboBox<Source> sourceBox = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
+	private final ReminderField subtypeField = CompFactory.createReminderField("Subtype...", 15, ComponentType.BODY);
+	private final JComboBox<Rarity> rarityBox = CompFactory.createEnumCombo(Rarity.class, ComponentType.BODY);
 	private JScrollPane descScroll;
 
 
 
-	private final Map<String, MagicItem> itemMap = new LinkedHashMap<>();
+	private Map<String, MagicItem> itemMap;
 	private final JPanel listPanel = new JPanel();
 	private final DataContainer data;
 	private JPanel wrapper;
@@ -68,6 +79,8 @@ public class MagicItemBuilder extends JPanel {
 		setBorder(new EmptyBorder(10, 10, 10, 10));
 
 		this.data = data;
+		itemMap = new HashMap<String, MagicItem>();
+		
 		descriptionEditor = new RichEditor(this.data) {
 			public Dimension getPreferredSize() {
 				// Force preferred height to a reasonable value
@@ -76,8 +89,10 @@ public class MagicItemBuilder extends JPanel {
 				return size;
 			}
 		};
-		for (ReminderField field : costFields)
+		for (ReminderField field : costFields) {
 			field.setNumbersOnly();
+			field.setColumns(3);
+		}
 		weightField.setNumbersOnly();
 
 		// Left: List of items
@@ -107,7 +122,7 @@ public class MagicItemBuilder extends JPanel {
 
 		gbc.gridx = 0;
 		gbc.gridy = row;
-		panel.add(new JLabel("Name:"), gbc);
+		panel.add(CompFactory.createNewLabel("Name:", ComponentType.HEADER), gbc);
 		gbc.gridx = 1;
 		panel.add(nameField, gbc);
 
@@ -133,13 +148,13 @@ public class MagicItemBuilder extends JPanel {
 		
 		row++;
 		gbc.gridx = 0; gbc.gridy = row;
-		panel.add(new JLabel("Subtype:"), gbc);
+		panel.add(CompFactory.createNewLabel("Subtype:", ComponentType.HEADER), gbc);
 		gbc.gridx = 1;
 		panel.add(subtypeField, gbc);
 
 		row++;
 		gbc.gridx = 0; gbc.gridy = row;
-		panel.add(new JLabel("Rarity:"), gbc);
+		panel.add(CompFactory.createNewLabel("Rarity:", ComponentType.HEADER), gbc);
 		gbc.gridx = 1;
 		panel.add(rarityBox, gbc);
 
@@ -152,7 +167,7 @@ public class MagicItemBuilder extends JPanel {
 		
 		row++;
 		gbc.gridx = 0; gbc.gridy = row;
-		panel.add(new JLabel("Source:"), gbc);
+		panel.add(CompFactory.createNewLabel("Source:", ComponentType.HEADER), gbc);
 		gbc.gridx = 1;
 		sourceBox.setSelectedItem(Source.DungeonMastersGuide2024);
 		panel.add(sourceBox, gbc);
@@ -164,8 +179,8 @@ public class MagicItemBuilder extends JPanel {
 
 		row++;
 		gbc.gridy = row;
-		JButton addButton = new JButton("Add Magic Item");
-		addButton.addActionListener(this::handleAddItem);
+		JButton addButton = CompFactory.createNewButton("Add Magic Item", this::handleAddItem);
+//		addButton.addActionListener(this::handleAddItem);
 		panel.add(addButton, gbc);
 
 		return panel;
@@ -224,9 +239,12 @@ public class MagicItemBuilder extends JPanel {
 
 	private void updateItemList() {
 		listPanel.removeAll();
-		for (String name : itemMap.keySet()) {
+		ArrayList<String> keys = new ArrayList<String>(itemMap.keySet());
+		Collections.sort(keys);
+		
+		for (String name : keys) {
 			JPanel entry = new JPanel(new BorderLayout());
-			JLabel nameLabel = new JLabel(name);
+			JLabel nameLabel = CompFactory.createNewLabel(name, ComponentType.BODY);
 			nameLabel.setFont(nameLabel.getFont().deriveFont(Font.PLAIN));
 			nameLabel.addMouseListener(new MouseListener() {
 				public void mouseClicked(MouseEvent e) {
@@ -309,6 +327,6 @@ public class MagicItemBuilder extends JPanel {
 	}
 
 	public Map<String, MagicItem> getMagicItemMap() {
-		return itemMap;
+		return new HashMap<String, MagicItem>(itemMap);
 	}
 }

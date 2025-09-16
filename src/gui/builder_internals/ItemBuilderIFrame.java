@@ -109,7 +109,7 @@ public class ItemBuilderIFrame extends JInternalFrame
 		miBuild.LoadItems();
 	}
 	
-	public boolean Save() {
+	public void Save() {
 		HashMap<String, Item> itemMap = new HashMap<String, Item>();
 		itemMap.putAll(wBuild.getWeaponMap());
 		itemMap.putAll(aBuild.getArmorMap());
@@ -117,8 +117,7 @@ public class ItemBuilderIFrame extends JInternalFrame
 		itemMap.putAll(gBuild.getGearMap());
 		itemMap.putAll(miBuild.getMagicItemMap());
 		
-		data.SetItemMap(itemMap);
+		data.SetItemMap(new HashMap<String, Item>(itemMap));
 		data.SafeSaveData(MapType.ITEMS);
-		return true;
 	}
 }
