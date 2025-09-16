@@ -57,7 +57,7 @@ public class SpeciesBuilderIFrame extends JInternalFrame
 
 	private void ConfigFrame() {
 		this.addInternalFrameListener(CompFactory.createNonCloseListener(this));
-		StyleContainer.ConfigIFrame(this, "Species Room Builder");
+		StyleContainer.ConfigIFrame(this, "Species Builder");
 		StyleContainer.SetIcon(this, StyleContainer.SPECIES_BUILDER_ICON_FILE);
 	}	
 	

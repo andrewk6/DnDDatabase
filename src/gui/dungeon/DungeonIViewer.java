@@ -35,6 +35,7 @@ import data.Rule;
 import data.Spell;
 import data.dungeon.Dungeon;
 import data.dungeon.DungeonFloor;
+import data.hazards.Hazard;
 import data.players.Background;
 import data.players.Species;
 import data.players.classes.DnDClass;
@@ -49,6 +50,7 @@ import gui.gui_helpers.structures.AllTab;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import gui.hazard.HazardPane;
 import gui.species.SpeciesPane;
 import utils.ErrorLogger;
 
@@ -397,6 +399,23 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
     		mainPane.setSelectedComponent(tab);
     	}
 	}
+	
+	public void AddTab(Hazard h) {
+    	if(!hasTab(h.name)) {
+    		JPanel tab = new JPanel();
+    		tab.setLayout(new BorderLayout());
+    		mainPane.addTab(h.name, tab);
+    		tabsUI.setTabColor(mainPane.indexOfComponent(tab), Color.LIGHT_GRAY);
+    		
+    		tab.add(new HazardPane(h, data, gd), BorderLayout.CENTER);
+    		tab.add(CompFactory.createButtonFlowPane(FlowLayout.RIGHT, new JButton[] {
+    				CompFactory.createNewButton("Remove " + h.name + " Tab", _->{
+    					mainPane.removeTabAt(mainPane.indexOfComponent(tab));
+    				})
+    		}), BorderLayout.SOUTH);
+    		mainPane.setSelectedComponent(tab);
+    	}
+    }
 	
 	private void test(JPanel p) {
 		

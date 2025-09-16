@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -59,8 +60,10 @@ import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.DocumentHelper;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.RichEditorBase;
+import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 //import javafx.css.Rule;
+import gui.hazard.HazardPane;
 import utils.ErrorLogger;
 
 public class Test extends JFrame {	
@@ -69,7 +72,7 @@ public class Test extends JFrame {
 	public static void main(String[] args) throws BadLocationException {
 		DataContainer data = new DataContainer();
 		data.init();
-		boolean gui = false;
+		boolean gui = true;
 		
 		for(Vehicle v : data.getVehicles().values())
 			System.out.println(v.src);
@@ -83,7 +86,11 @@ public class Test extends JFrame {
 	private static void guiStuff(DataContainer data) {
 		SwingUtilities.invokeLater(()->{
 			JFrame frm = new JFrame();
-			initFrame(frm.getContentPane(), data);
+//			initFrame(frm.getContentPane(), data);
+			frm.setContentPane(new HazardPane(
+					data.getHazards().get("Spike Pit"), 
+					data, 
+					new GuiDirector(new JDesktopPane())));
 			frm.setSize(800, 800);
 			frm.addWindowListener(CompFactory.createSafeExitWindowListener(frm, data));
 			frm.setVisible(true);
@@ -91,44 +98,7 @@ public class Test extends JFrame {
 	}
 	
 	private static void initFrame(Container cPane, DataContainer data) {
-		cPane.setLayout(new BorderLayout());
-		
-		JTabbedPane tabs = new JTabbedPane();
-		cPane.add(tabs, BorderLayout.CENTER);
-		
-		JPanel btnPane = new JPanel();
-		btnPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		cPane.add(btnPane, BorderLayout.SOUTH);
-		
-		JButton addBlock = CompFactory.createNewButton("Add Info Block", _->{
-			String name = JOptionPane.showInputDialog(cPane, "What is the name of the info");
-			RichEditor edit = new RichEditor(data);
-			tabs.addTab(name, edit);
-			bastionDocs.put(name, edit.getStyledDocument());
-		});
-		btnPane.add(addBlock);
-		
-		JButton saveBtn = CompFactory.createNewButton("Save", _->{
-			File outFile = new File(DataContainer.dbFolder.getPath() + 
-					File.separator + DataContainer.BASTION_RULES);
-			if(!outFile.exists()) {
-				try {
-					outFile.createNewFile();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			try {
-				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(outFile));
-				oos.writeObject(bastionDocs);
-				oos.flush();
-				oos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-		btnPane.add(saveBtn);
+
 	}
 	
 	private static void SaveStuff(HashMap<String, DnDClass> out) {
