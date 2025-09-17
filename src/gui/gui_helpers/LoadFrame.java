@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 
 import gui.gui_helpers.structures.LoadListener;
 
+@SuppressWarnings("serial")
 public class LoadFrame extends JFrame implements LoadListener
 {
 	public static void main(String[]args) {

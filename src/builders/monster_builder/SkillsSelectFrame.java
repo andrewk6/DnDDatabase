@@ -6,26 +6,23 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-
 import data.DataContainer;
 import data.DataContainer.Proficiency;
 import data.DataContainer.Skills;
 import gui.gui_helpers.structures.StyleContainer;
 
+@SuppressWarnings("serial")
 public class SkillsSelectFrame extends JDialog
 {
 //	public static void main(String[]args) {
@@ -60,7 +57,7 @@ public class SkillsSelectFrame extends JDialog
 		this.getContentPane().add(skillLabel, BorderLayout.NORTH);
 		
 		JButton finishBtn = new JButton("Finished");
-		finishBtn.addActionListener(e ->{
+		finishBtn.addActionListener(_ ->{
 			finished = true;
 		});
 		StyleContainer.SetFontBtn(finishBtn);
@@ -91,12 +88,12 @@ public class SkillsSelectFrame extends JDialog
 			SkillsBox profBox = new SkillsBox(s, DataContainer.Proficiency.Profieient);
 			SkillsBox exptBox = new SkillsBox(s, DataContainer.Proficiency.Expertise);
 			
-			profBox.addActionListener(e->{
+			profBox.addActionListener(_->{
 				if(profBox.isSelected())
 					exptBox.setSelected(false);
 			});
 			
-			exptBox.addActionListener(e->{
+			exptBox.addActionListener(_->{
 				if(exptBox.isSelected())
 					profBox.setSelected(false);
 			});
@@ -149,6 +146,7 @@ public class SkillsSelectFrame extends JDialog
 	}
 }
 
+@SuppressWarnings("serial")
 class SkillsBox extends JCheckBox
 {
 	public DataContainer.Skills skill;

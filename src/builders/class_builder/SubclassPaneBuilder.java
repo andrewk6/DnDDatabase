@@ -19,11 +19,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.players.classes.ClassAbility;
 import data.players.classes.Subclass;
@@ -31,6 +29,7 @@ import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.structures.StyleContainer;
 
+@SuppressWarnings("serial")
 public class SubclassPaneBuilder extends JPanel
 {
 	private DataContainer data;
@@ -135,7 +134,7 @@ public class SubclassPaneBuilder extends JPanel
 			int conf = JOptionPane.showConfirmDialog(this, "Delete: " + subclass, 
 					"Delete Confirm", JOptionPane.YES_NO_OPTION);
 			if(conf == JOptionPane.YES_OPTION) {
-				subMap.remove(subclass);
+				subMap.remove(subclass.name);
 				subTabs.removeTabAt(subTabs.indexOfComponent(subPane));
 				
 				if(subTabs.getTabCount() > 0)
@@ -162,6 +161,7 @@ public class SubclassPaneBuilder extends JPanel
 //		FillSidePane();
 	}
 	
+	@SuppressWarnings("unused")
 	private void FillSidePane() {
 		if(sidePane.getComponents().length > 0)
 			sidePane.removeAll(); 

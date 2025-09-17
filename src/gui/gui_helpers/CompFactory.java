@@ -12,12 +12,10 @@ import java.awt.event.WindowListener;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.DesktopManager;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -37,7 +35,6 @@ import javax.swing.event.InternalFrameListener;
 import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
-import gui.campaign.PartyIFrame;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
@@ -55,7 +52,11 @@ public class CompFactory
 	}
 	
 	private final static DefaultListCellRenderer seperateItems = new DefaultListCellRenderer() {
-	    @Override
+	    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 2197727826324863692L;
+		
 	    public Component getListCellRendererComponent(JList<?> list,
 	                                                  Object value,
 	                                                  int index,
@@ -146,7 +147,7 @@ public class CompFactory
 	public static JMenuItem createNewJMenuItem(String text, Supplier<JInternalFrame> fSup, JDesktopPane dPane) {
 		JMenuItem out = new JMenuItem(text);
 		StyleContainer.SetFontMain(out);
-		out.addActionListener(e ->{
+		out.addActionListener(_ ->{
 			JInternalFrame frm = fSup.get();
 			dPane.add(frm);
 			frm.setVisible(true);
@@ -225,7 +226,8 @@ public class CompFactory
 	}
 	
 	public static <T> JComboBox<T> createCombo(Class<T> type, List<T> items, ComponentType font) {
-	    JComboBox<T> combo = new JComboBox<>(new 
+	    @SuppressWarnings("unchecked")
+		JComboBox<T> combo = new JComboBox<>(new 
 	    		DefaultComboBoxModel<>(items.toArray((T[]) java.lang.reflect.Array.newInstance(type, 0))));
 	    setFont(combo, font);
 	    return combo;

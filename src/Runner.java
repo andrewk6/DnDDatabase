@@ -1,14 +1,10 @@
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.lang.reflect.InvocationTargetException;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import data.DataContainer;
 import gui.DnD_Database_Tool;
-import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.LoadFrame;
 import utils.ErrorLogger;
 

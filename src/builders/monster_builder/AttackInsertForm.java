@@ -4,15 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -31,26 +27,24 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
 
-import data.DataContainer;
 import data.DataContainer.DamageTypes;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.structures.StyleContainer;
 
+@SuppressWarnings("serial")
 public class AttackInsertForm extends JDialog
 {
 	public boolean finished;
 	
-	private int aMod, p;
-	
 	private ReminderField title, attackMod, baseDmg, reach, rangeLow, rangeHigh;
 	private JCheckBox mAttack, rAttack, hAttack;
+	@SuppressWarnings("rawtypes")
 	private HashMap<ReminderField, JComboBox> dmgVals;	
 	private JComboBox<String> baseDmgType;
 	
@@ -97,6 +91,7 @@ public class AttackInsertForm extends JDialog
 		});
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public AttackInsertForm() {
 		dmgVals = new HashMap<ReminderField, JComboBox>();
 		finished = false;
@@ -122,7 +117,7 @@ public class AttackInsertForm extends JDialog
 		
 		JButton buildAttack = new JButton("Finish/Build Attack");
 		StyleContainer.SetFontBtn(buildAttack);
-		buildAttack.addActionListener(e ->{
+		buildAttack.addActionListener(_ ->{
 			finished = checkFinished();
 			if(finished) {
 				this.dispose();
@@ -146,7 +141,7 @@ public class AttackInsertForm extends JDialog
 		
 		mAttack = new JCheckBox("Melee Attack");
 		mAttack.setSelected(true);
-		mAttack.addActionListener(e ->{
+		mAttack.addActionListener(_ ->{
 			if(mAttack.isSelected()) {
 				rAttack.setSelected(false);
 				hAttack.setSelected(false);
@@ -160,7 +155,7 @@ public class AttackInsertForm extends JDialog
 		rAttack = new JCheckBox("Ranged Attack");
 		rAttack.setSelected(false);
 		rAttack.setFocusable(false);
-		rAttack.addActionListener(e ->{
+		rAttack.addActionListener(_ ->{
 			if(rAttack.isSelected()) {
 				mAttack.setSelected(false);
 				hAttack.setSelected(false);
@@ -174,7 +169,7 @@ public class AttackInsertForm extends JDialog
 		hAttack = new JCheckBox("Hybrid Attack");
 		hAttack.setSelected(false);
 		hAttack.setFocusable(false);
-		hAttack.addActionListener(e ->{
+		hAttack.addActionListener(_ ->{
 			if(hAttack.isSelected()){
 				mAttack.setSelected(false);
 				rAttack.setSelected(false);
@@ -256,7 +251,7 @@ public class AttackInsertForm extends JDialog
 		
 		JButton addDBtn = new JButton("Add Damage");
 		StyleContainer.SetFontBtn(addDBtn);
-		addDBtn.addActionListener(e ->{
+		addDBtn.addActionListener(_ ->{
 			SwingUtilities.invokeLater(()->{
 				JPanel dmgPane = new JPanel();
 //				dmgPane.setLayout(new GridLayout(0, 3));
@@ -277,7 +272,7 @@ public class AttackInsertForm extends JDialog
 				
 				JButton delBtn = new JButton("Delete");
 				StyleContainer.SetFontBtn(delBtn);
-				delBtn.addActionListener(e2 ->{
+				delBtn.addActionListener(_ ->{
 					SwingUtilities.invokeLater(()->{
 //						gbc.gridy --;
 						System.out.println(gbc.gridy);

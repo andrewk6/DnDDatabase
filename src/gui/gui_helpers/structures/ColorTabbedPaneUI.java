@@ -1,6 +1,5 @@
 package gui.gui_helpers.structures;
 
-import javax.swing.*;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.*;
 import java.util.HashMap;

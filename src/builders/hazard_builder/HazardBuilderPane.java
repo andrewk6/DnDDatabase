@@ -25,8 +25,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
-import javax.swing.text.StyledDocument;
-
 import data.DataContainer;
 import data.DataContainer.MapType;
 import data.DataContainer.PartyTier;
@@ -40,6 +38,7 @@ import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.DocumentHelper;
 
+@SuppressWarnings("serial")
 public class HazardBuilderPane extends JPanel
 {
 	public static void main(String[]args) {

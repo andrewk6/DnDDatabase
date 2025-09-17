@@ -2,9 +2,7 @@ package gui.gui_helpers;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Dialog.ModalityType;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.io.File;
 
@@ -15,11 +13,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import gui.gui_helpers.CompFactory.ComponentType;
 
+@SuppressWarnings("serial")
 public class ExportDialog extends JDialog
 {
 	private  JCheckBox rules, spells, monsters, items, vehicles, 

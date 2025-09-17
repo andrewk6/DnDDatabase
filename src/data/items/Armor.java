@@ -2,6 +2,11 @@ package data.items;
 
 public final class Armor extends Item
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1711249134494290094L;
+
 	public enum ArmorType{
 		LIGHT,
 		MEDIUM,

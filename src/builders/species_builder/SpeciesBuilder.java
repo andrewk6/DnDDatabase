@@ -29,6 +29,7 @@ import gui.gui_helpers.DocumentHelper;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 
+@SuppressWarnings("serial")
 public class SpeciesBuilder extends JFrame
 {
 	public static void main(String[]args) {

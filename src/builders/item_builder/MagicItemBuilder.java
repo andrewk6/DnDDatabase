@@ -22,9 +22,9 @@ import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 public class MagicItemBuilder extends JPanel {
 
 	private final ReminderField nameField = 
@@ -261,7 +261,7 @@ public class MagicItemBuilder extends JPanel {
 				public void mouseExited(MouseEvent e) {nameLabel.setFont(nameLabel.getFont().deriveFont(Font.PLAIN));}
 			});
 			JButton deleteBtn = new JButton("Delete");
-			deleteBtn.addActionListener(e -> {
+			deleteBtn.addActionListener(_ -> {
 				itemMap.remove(name);
 				updateItemList();
 			});

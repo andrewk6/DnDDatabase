@@ -32,6 +32,7 @@ import gui.gui_helpers.structures.StyleContainer;
 import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.FilterCombo;
 
+@SuppressWarnings("serial")
 public class VehicleBuilderPane extends JPanel
 {
 	public static void main(String[]args) {
@@ -49,8 +50,6 @@ public class VehicleBuilderPane extends JPanel
 	}
 	private DataContainer data;
 	private HashMap<String, Vehicle> vMap;
-	
-	@SuppressWarnings("unchecked")
 	private String[] vehicleTypes = new String[]{
             Mount.class.getSimpleName(), 
             LargeVehicle.class.getSimpleName()
@@ -86,7 +85,6 @@ public class VehicleBuilderPane extends JPanel
 		this.setLayout(new BorderLayout());
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void BuildContent() {
 		JPanel hPane = new JPanel();
 		hPane.setLayout(new BorderLayout());

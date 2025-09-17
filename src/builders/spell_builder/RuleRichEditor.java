@@ -334,6 +334,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("serial")
 public class RuleRichEditor extends RichEditorBase {
     private final JPopupMenu suggestionPopup = new JPopupMenu();
     private final JList<String> suggestionList = new JList<>();
@@ -412,7 +413,7 @@ public class RuleRichEditor extends RichEditorBase {
             }
         });
 
-        editor.registerKeyboardAction(e -> triggerSuggestion(),
+        editor.registerKeyboardAction(_ -> triggerSuggestion(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.CTRL_DOWN_MASK),
                 JComponent.WHEN_FOCUSED);
 
@@ -423,7 +424,8 @@ public class RuleRichEditor extends RichEditorBase {
         rulePreviewWindow.pack();
 
         editor.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
+            @SuppressWarnings("deprecation")
+			@Override
             public void mouseMoved(MouseEvent e) {
                 Point pt = new Point(e.getX(), e.getY());
                 int pos = editor.viewToModel(pt);
@@ -540,7 +542,8 @@ public class RuleRichEditor extends RichEditorBase {
         suggestionPopup.add(scrollPane);
 
         try {
-            Rectangle caretCoords = editor.modelToView(caretEnd);
+            @SuppressWarnings("deprecation")
+			Rectangle caretCoords = editor.modelToView(caretEnd);
             suggestionPopup.show(editor, caretCoords.x, caretCoords.y + 20);
             suggestionList.requestFocusInWindow();
         } catch (BadLocationException e) {

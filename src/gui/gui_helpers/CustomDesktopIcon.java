@@ -8,9 +8,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
+@SuppressWarnings("serial")
 public class CustomDesktopIcon extends JInternalFrame.JDesktopIcon {
 
-    public CustomDesktopIcon(JInternalFrame frame, BufferedImage image) {
+    @SuppressWarnings("preview")
+	public CustomDesktopIcon(JInternalFrame frame, BufferedImage image) {
     	Image scaledImage = image.getScaledInstance(StyleContainer.ICON_SIZE, 
     			StyleContainer.ICON_SIZE, BufferedImage.SCALE_SMOOTH);
         this(frame, new ImageIcon(scaledImage));

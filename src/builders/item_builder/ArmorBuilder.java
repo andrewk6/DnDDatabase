@@ -3,8 +3,6 @@ package builders.item_builder;
 import data.DataContainer;
 import data.DataContainer.Source;
 import data.items.Armor;
-import data.items.Item;
-import data.items.MagicItem;
 import data.items.Weapon;
 import data.items.Armor.ArmorType;
 import gui.gui_helpers.CompFactory;
@@ -20,6 +18,7 @@ import java.awt.event.MouseListener;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 public class ArmorBuilder extends JPanel {
 
     private final JTextField nameField = new JTextField(15);
@@ -248,7 +247,7 @@ public class ArmorBuilder extends JPanel {
 				public void mouseExited(MouseEvent e) {nameLabel.setFont(nameLabel.getFont().deriveFont(Font.PLAIN));}
             });
             JButton deleteBtn = new JButton("Delete");
-            deleteBtn.addActionListener(e -> {
+            deleteBtn.addActionListener(_ -> {
                 armorMap.remove(name);
                 updateArmorList();
             });

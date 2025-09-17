@@ -18,6 +18,7 @@ import javax.swing.text.PlainDocument;
 
 import gui.gui_helpers.structures.StyleContainer;
 
+@SuppressWarnings("serial")
 public class ReminderField extends JTextField {
 	public ReminderField() {
 		super();

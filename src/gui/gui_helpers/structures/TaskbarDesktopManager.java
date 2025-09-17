@@ -8,8 +8,11 @@ import javax.swing.JInternalFrame;
 
 public class TaskbarDesktopManager extends DefaultDesktopManager {
 
-    private static final int ICON_SPACING = 5;
-    private static final int ICON_Y = 0; // bottom of desktop
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final int ICON_SPACING = 5;
 
     public void repositionIcons(JDesktopPane desktop) {
         if (desktop == null) return;

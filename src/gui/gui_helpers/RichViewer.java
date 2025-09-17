@@ -9,6 +9,7 @@ import javax.swing.text.StyledDocument;
 import data.DataContainer;
 import gui.gui_helpers.structures.GuiDirector;
 
+@SuppressWarnings("serial")
 public class RichViewer extends JPanel
 {
 	private HoverTextPane hPane;

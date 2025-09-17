@@ -3,8 +3,6 @@ package builders.item_builder;
 import data.DataContainer;
 import data.DataContainer.Source;
 import data.items.Gear;
-import data.items.Item;
-import data.items.MagicItem;
 import data.items.Weapon;
 import gui.gui_helpers.ReminderField;
 
@@ -17,6 +15,7 @@ import java.awt.event.MouseListener;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 public class GearBuilder extends JPanel {
 
     private final JTextField nameField = new JTextField(15);
@@ -202,7 +201,7 @@ public class GearBuilder extends JPanel {
 				public void mouseExited(MouseEvent e) {nameLabel.setFont(nameLabel.getFont().deriveFont(Font.PLAIN));}
             });
             JButton deleteBtn = new JButton("Delete");
-            deleteBtn.addActionListener(e -> {
+            deleteBtn.addActionListener(_ -> {
                 gearMap.remove(name);
                 updateGearList();
             });

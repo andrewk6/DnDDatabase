@@ -4,9 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,8 +18,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
-import javax.swing.text.StyledDocument;
-
 import data.DataContainer;
 import data.DataContainer.MapType;
 import data.players.BastionRoom;
@@ -33,6 +29,7 @@ import gui.gui_helpers.DocumentHelper;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 
+@SuppressWarnings("serial")
 public class BastionRoomBuilder extends JFrame
 {
 	public static void main(String[] args) {

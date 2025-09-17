@@ -1,29 +1,20 @@
 package gui.gui_helpers;
 import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.table.TableCellEditor;
 import javax.swing.text.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.PrintWriter;
-import java.io.Serializable;
-
 import builders.utlities.*;
 import utils.ErrorLogger;
 
+@SuppressWarnings("serial")
 public class RichEditorBase extends JPanel {
 	private final JTextPane editorTextPane;
 	private JButton boldButton, itBtn, tableButton;
 	
+	@SuppressWarnings("unused")
 	private final StyledDocument doc;
 	private boolean boldMode = false;
 	private boolean italicMode = false;
@@ -73,7 +64,7 @@ public class RichEditorBase extends JPanel {
 
 		boldButton = new JButton("Bold");
 		boldButton.setFont(DEFAULT_FONT_LARGE);
-		boldButton.addActionListener(e -> {
+		boldButton.addActionListener(_ -> {
 			boldMode = !boldMode;
 			setTextStyle();
 		});
@@ -84,7 +75,7 @@ public class RichEditorBase extends JPanel {
 
 		itBtn = new JButton("Iitalics");
 		itBtn.setFont(DEFAULT_FONT_LARGE);
-		itBtn.addActionListener(e -> {
+		itBtn.addActionListener(_ -> {
 			italicMode = !italicMode;
 			setTextStyle();
 			
@@ -136,8 +127,8 @@ public class RichEditorBase extends JPanel {
 		inputPanel.add(colField);
 
 		JButton nextButton = new JButton("Next");
-		nextButton.addActionListener(e -> {
-			int rows, cols, prefSize;
+		nextButton.addActionListener(_ -> {
+			int rows, cols;
 			try {
 
 				rows = Integer.parseInt(rowField.getText());
@@ -174,7 +165,7 @@ public class RichEditorBase extends JPanel {
 		}
 
 		JButton insertButton = new JButton("Insert Table");
-		insertButton.addActionListener(e -> {
+		insertButton.addActionListener(_ -> {
 			String[] colNames = new String[cols];
 			for (int i = 0; i < cols; i++) {
 				colNames[i] = headers[i].getText().trim();

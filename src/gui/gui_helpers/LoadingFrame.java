@@ -6,16 +6,20 @@ import java.awt.Graphics;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+@SuppressWarnings("serial")
 public class LoadingFrame extends JFrame
 {
-	private int stepVal, target;
+	private int stepVal;
 	JPanel loadPane;
 	
 	public LoadingFrame(int s, int t) {
 		this.stepVal = s;
-		this.target = t;
-		
 		loadPane = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
 				

@@ -22,8 +22,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.swing.JButton;
@@ -37,12 +35,11 @@ import javax.swing.SwingUtilities;
 
 import data.DataContainer;
 import data.DataContainer.MapType;
-import data.Rule;
 import data.Spell;
 import gui.gui_helpers.RichEditor;
-import gui.gui_helpers.RichEditorBase;
 import gui.gui_helpers.structures.StyleContainer;
 
+@SuppressWarnings("serial")
 public class SpellBuilder extends JFrame {
 
 	private HashMap<String, Spell> spellMap;
@@ -118,7 +115,7 @@ public class SpellBuilder extends JFrame {
 		saveBtn.setPreferredSize(new Dimension(150, 50));
 		saveBtn.setFocusable(false);
 		StyleContainer.SetFontHeader(saveBtn);
-		saveBtn.addActionListener(e -> {
+		saveBtn.addActionListener(_ -> {
 			Save();
 		});
 		sidePane.add(saveBtn, BorderLayout.SOUTH);
@@ -137,7 +134,7 @@ public class SpellBuilder extends JFrame {
 		JButton addBtn = new JButton("Add Spell");
 		StyleContainer.SetFontHeader(addBtn);
 		addBtn.setFocusable(false);
-		addBtn.addActionListener(e -> {
+		addBtn.addActionListener(_ -> {
 			if (spellNameField.getText().length() > 0 && editor.getText().length() > 0) {
 				Spell s = new Spell();
 				s.name = spellNameField.getText();
@@ -269,6 +266,7 @@ public class SpellBuilder extends JFrame {
 		});		
 	}
 	
+	@SuppressWarnings("unused")
 	private void PopUpSpellWindow(String s) {
 		JFrame spellDispFrame = new JFrame();
 		spellDispFrame.setTitle(spellMap.get(s).name);

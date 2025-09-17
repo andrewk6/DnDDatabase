@@ -11,6 +11,7 @@ import data.DataContainer;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.GuiDirector;
 
+@SuppressWarnings("serial")
 public class InitHoverArea extends HoverTextPane {
 
 	public InitHoverArea(DataContainer d, GuiDirector gD, JDesktopPane desktop) {

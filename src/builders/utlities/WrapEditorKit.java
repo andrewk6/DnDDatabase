@@ -2,6 +2,7 @@ package builders.utlities;
 
 import javax.swing.text.*;
 
+@SuppressWarnings("serial")
 public class WrapEditorKit extends StyledEditorKit {
     private ViewFactory defaultFactory = new WrapColumnFactory();
 
