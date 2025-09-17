@@ -27,6 +27,7 @@ import java.util.Map;
 
 @SuppressWarnings("serial")
 public class MagicItemBuilder extends JPanel {
+	private final int ITEM_NAME_LIMIT = 23;
 
 	private final ReminderField nameField = 
 			CompFactory.createReminderField("Item name..", 15, ComponentType.HEADER);
@@ -58,7 +59,9 @@ public class MagicItemBuilder extends JPanel {
 		SwingUtilities.invokeLater(() -> {
 			JFrame frm = new JFrame();
 			DataContainer data = new DataContainer();
+			data.init();
 			MagicItemBuilder mBuild = new MagicItemBuilder(data);
+			mBuild.LoadItems();
 			frm.setContentPane(mBuild);
 			frm.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			frm.addWindowListener(new WindowListener() {
@@ -99,7 +102,7 @@ public class MagicItemBuilder extends JPanel {
 		// Left: List of items
 		listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
 		JScrollPane scrollPane = CompFactory.wrapPanelInScroll(listPanel, ScrollPolicy.VERTICAL);
-		scrollPane.setPreferredSize(new Dimension(250, 0));
+//		scrollPane.setPreferredSize(new Dimension(250, 0));
 		add(scrollPane, BorderLayout.WEST);
 
 		// Center: Form
@@ -245,15 +248,19 @@ public class MagicItemBuilder extends JPanel {
 		
 		for (String name : keys) {
 			JPanel entry = new JPanel(new BorderLayout());
-			JLabel nameLabel = CompFactory.createNewLabel(name, ComponentType.BODY);
-			nameLabel.setFont(nameLabel.getFont().deriveFont(Font.PLAIN));
+			JLabel nameLabel;
+			if(name.length() > ITEM_NAME_LIMIT)
+				nameLabel = CompFactory.createNewLabel(name.substring(0,ITEM_NAME_LIMIT), ComponentType.BODY);
+			else
+				nameLabel = CompFactory.createNewLabel(name, ComponentType.BODY);
+			nameLabel.setToolTipText(name);
 			nameLabel.addMouseListener(new MouseListener() {
 				public void mouseClicked(MouseEvent e) {
 					int opt = JOptionPane.showConfirmDialog(MagicItemBuilder.this, "Would you like to load " + 
-							nameLabel.getText() + " you will lose any unadded progress.", "Load Confirm", 
+							name + " you will lose any unadded progress.", "Load Confirm", 
 							JOptionPane.YES_NO_OPTION);
 					if(opt == JOptionPane.YES_OPTION) {
-						LoadEdit(itemMap.get(nameLabel.getText()));
+						LoadEdit(itemMap.get(name));
 					}
 				}
 				public void mousePressed(MouseEvent e) {}
@@ -268,7 +275,7 @@ public class MagicItemBuilder extends JPanel {
 			});
 			entry.add(nameLabel, BorderLayout.CENTER);
 			entry.add(deleteBtn, BorderLayout.EAST);
-			entry.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+//			entry.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
 			listPanel.add(entry);
 		}
 		listPanel.revalidate();
