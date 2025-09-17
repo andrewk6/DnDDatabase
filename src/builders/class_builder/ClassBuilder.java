@@ -1,7 +1,6 @@
 package builders.class_builder;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -26,8 +25,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
-import javax.swing.text.StyledDocument;
-
 import data.DataContainer;
 import data.DataContainer.Abilities;
 import data.DataContainer.MapType;
@@ -49,6 +46,7 @@ import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.StyleContainer;
 import utils.ErrorLogger;
 
+@SuppressWarnings("serial")
 public class ClassBuilder extends JFrame
 {
 	private DataContainer data;

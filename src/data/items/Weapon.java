@@ -7,6 +7,11 @@ import data.DataContainer.DamageTypes;
 
 public final class Weapon extends Item
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6378256851594347752L;
+
 	public enum WeaponMastery{
 		CLEAVE,
 	    GRAZE,

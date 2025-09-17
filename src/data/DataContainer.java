@@ -14,11 +14,9 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,16 +29,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.naming.ldap.SortKey;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
 import utils.ErrorLogger;
@@ -379,6 +370,7 @@ public class DataContainer {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean ImportInsertHelpers() {
 		File insertHFile;
 		
@@ -418,6 +410,7 @@ public class DataContainer {
 		return false;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private boolean ImportBastionRules() {
 		File bastRuleFile;
 		

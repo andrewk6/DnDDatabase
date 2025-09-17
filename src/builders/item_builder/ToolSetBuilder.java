@@ -13,6 +13,7 @@ import java.awt.event.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 public class ToolSetBuilder extends JPanel {
 
 	private final JTextField nameField = new JTextField(15);
@@ -194,7 +195,7 @@ public class ToolSetBuilder extends JPanel {
 				}
 			});
 			JButton deleteBtn = new JButton("Delete");
-			deleteBtn.addActionListener(e -> {
+			deleteBtn.addActionListener(_ -> {
 				toolMap.remove(name);
 				updateToolList();
 			});

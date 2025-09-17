@@ -15,7 +15,6 @@ import gui.campaign.PlayerPane;
 import gui.classes.ClassPane;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
-import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.FilterCombo;
 import gui.gui_helpers.HoverTextPane;
@@ -53,6 +52,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("serial")
 public class InitiativeIFrame extends JInternalFrame implements AllTab {
     private final DataContainer data;
     private final GuiDirector gd;

@@ -6,8 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.HashMap;
-import java.util.Map;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -20,6 +18,7 @@ import data.DataContainer.MapType;
 import data.items.Item;
 import gui.gui_helpers.structures.StyleContainer;
 
+@SuppressWarnings("serial")
 public class ItemBuilder extends JFrame
 {
 	private final DataContainer data;
@@ -93,7 +92,7 @@ public class ItemBuilder extends JFrame
 		
 		JButton saveBtn = new JButton("Save");
 		StyleContainer.SetFontBtn(saveBtn);
-		saveBtn.addActionListener(e ->{
+		saveBtn.addActionListener(_ ->{
 			Save();
 		});
 		savePane.add(saveBtn);

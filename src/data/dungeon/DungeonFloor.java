@@ -2,8 +2,6 @@ package data.dungeon;
 
 import java.io.Serializable;
 
-import javax.swing.text.StyledDocument;
-
 import gui.dungeon.tile.Tile;
 
 public class DungeonFloor implements Serializable

@@ -4,35 +4,24 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.text.ListFormat.Style;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.BiFunction;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -41,21 +30,18 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.text.StyledDocument;
-
 import data.*;
 import gui.MonsterIFrame;
-import gui.gui_helpers.ReminderField;
-import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
+@SuppressWarnings("serial")
 public class MonsterDispPane extends JTabbedPane {
 	private DataContainer data;
 	private GuiDirector gd;
 	private Monster m;
 
-	private JTextField monsterNameField, monsterTypeField, acField, initBnsField, hpField, speedField, strField,
+	private JTextField monsterNameField, monsterTypeField, acField, hpField, speedField, strField,
 			dexField, conField, intField, wisField, chaField, crField, numLActs, numLActsBns;
 	
 	private JTextArea immuneField, dmgResistField, dmgVulnField, sensesField, langField, skillsField;
@@ -66,15 +52,7 @@ public class MonsterDispPane extends JTabbedPane {
 
 //	private HashMap<DataContainer.Skills, DataContainer.Proficiency> skills;
 
-	private ArrayList<ReminderField> tagFields;
-
-	private Map<String, Monster> monsters;
-
-	private JPanel sidePane;
-	
 	private JDesktopPane deskPane;
-	private MonsterIFrame monstFrm;
-
 	public static void main(String[] args) {
 		DataContainer data = new DataContainer();
 		SwingUtilities.invokeLater(() -> {
@@ -101,7 +79,7 @@ public class MonsterDispPane extends JTabbedPane {
 		this.m = m;
 		this.deskPane = new JDesktopPane();
 		
-		tagFields = new ArrayList<ReminderField>();
+		new ArrayList<ReminderField>();
 		ConfigureFrame();
 	}
 
@@ -111,7 +89,7 @@ public class MonsterDispPane extends JTabbedPane {
 		this.m = data.getMonsters().get(key);
 		this.deskPane = new JDesktopPane();
 		
-		tagFields = new ArrayList<ReminderField>();
+		new ArrayList<ReminderField>();
 		ConfigureFrame();
 	}
 	
@@ -121,7 +99,7 @@ public class MonsterDispPane extends JTabbedPane {
 		this.m = m;
 		this.deskPane = deskPane;
 		
-		tagFields = new ArrayList<ReminderField>();
+		new ArrayList<ReminderField>();
 		ConfigureFrame();
 	}
 	
@@ -131,12 +109,11 @@ public class MonsterDispPane extends JTabbedPane {
 		this.m = data.getMonsters().get(key);
 		this.deskPane = deskPane;
 		
-		tagFields = new ArrayList<ReminderField>();
+		new ArrayList<ReminderField>();
 		ConfigureFrame();
 	}
 	
 	public void SetMonstIFrame(MonsterIFrame iFrame) {
-		monstFrm = iFrame;
 		SetHoverIFrames(this);
 	}
 	

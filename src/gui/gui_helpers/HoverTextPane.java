@@ -6,12 +6,7 @@ import javax.swing.text.*;
 import data.DataContainer;
 import data.Rule;
 import data.Spell;
-import gui.ComboIFrame;
-import gui.FeatIFrame;
 import gui.ItemIFrame;
-import gui.MonsterIFrame;
-import gui.RuleIFrame;
-import gui.SpellIFrame;
 import gui.campaign.PartyIFrame;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
@@ -22,6 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 public class HoverTextPane extends JTextPane {
     private final Map<String, Rule> ruleMap;
     private final Map<String, Spell> spellMap;
@@ -146,7 +142,8 @@ public class HoverTextPane extends JTextPane {
         popup.setVisible(false);
     }
 
-    private void showPopup(MouseEvent e) {
+    @SuppressWarnings("unused")
+	private void showPopup(MouseEvent e) {
         Point screenLoc = e.getLocationOnScreen();
         popup.setLocation(screenLoc.x, screenLoc.y );
         popup.setVisible(true);

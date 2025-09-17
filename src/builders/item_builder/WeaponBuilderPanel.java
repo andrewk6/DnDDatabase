@@ -5,7 +5,6 @@ import javax.swing.border.EmptyBorder;
 import data.DataContainer;
 import data.DataContainer.DamageTypes;
 import data.DataContainer.Source;
-import data.items.MagicItem;
 import data.items.Weapon;
 import data.items.Weapon.WeaponMastery;
 import data.items.Weapon.WeaponProperty;
@@ -19,6 +18,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("serial")
 public class WeaponBuilderPanel extends JPanel {
     private final JTextField nameField = new JTextField(15);
     private final JTextField damageField = new JTextField(10);
@@ -318,7 +318,7 @@ public class WeaponBuilderPanel extends JPanel {
 				public void mouseExited(MouseEvent e) {nameLabel.setFont(nameLabel.getFont().deriveFont(Font.PLAIN));}
             });
             JButton deleteBtn = new JButton("Delete");
-            deleteBtn.addActionListener(e -> {
+            deleteBtn.addActionListener(_ -> {
                 weaponMap.remove(name);
                 updateWeaponList();
             });

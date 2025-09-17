@@ -7,31 +7,18 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -46,7 +33,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -64,6 +50,7 @@ import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
+@SuppressWarnings("serial")
 public class MonsterBuilder extends JFrame {
 	private DataContainer data;
 
@@ -186,7 +173,7 @@ public class MonsterBuilder extends JFrame {
 		
 		JButton addMonster = new JButton("Add Monster");
 		StyleContainer.SetFontBtn(addMonster);
-		addMonster.addActionListener(e -> {
+		addMonster.addActionListener(_ -> {
 			if(AddMonster())
 				ResetEditor();
 		});
@@ -195,7 +182,7 @@ public class MonsterBuilder extends JFrame {
 		
 		JButton addMonsterRetain = new JButton("Add: Retain");
 		StyleContainer.SetFontBtn(addMonsterRetain);
-		addMonsterRetain.addActionListener(e -> {
+		addMonsterRetain.addActionListener(_ -> {
 			if(AddMonster()) {
 				System.out.println("Adding Monster");
 				BuildMonstListPane();
@@ -220,7 +207,7 @@ public class MonsterBuilder extends JFrame {
 		sidePane.add(monstScroll, BorderLayout.CENTER);
 		JButton saveBtn = new JButton("Save");
 		StyleContainer.SetFontBtn(saveBtn);
-		saveBtn.addActionListener(e ->{
+		saveBtn.addActionListener(_ ->{
 			WriteMonsters();
 			
 		});
@@ -372,7 +359,7 @@ public class MonsterBuilder extends JFrame {
 		JButton addTagBtn = new JButton("Add Tag");
 		addTagBtn.setFocusable(false);
 		StyleContainer.SetFontBtn(addTagBtn);
-		addTagBtn.addActionListener(e -> {
+		addTagBtn.addActionListener(_ -> {
 			SwingUtilities.invokeLater(() -> {
 				ReminderField tagField = new ReminderField("", "Enter Tag");
 				StyleContainer.SetFontHeader(tagField);
@@ -380,7 +367,7 @@ public class MonsterBuilder extends JFrame {
 				JButton dTagBtn = new JButton("Delete");
 				StyleContainer.SetFontBtn(dTagBtn);
 				dTagBtn.setFocusable(false);
-				dTagBtn.addActionListener(e2 -> {
+				dTagBtn.addActionListener(_ -> {
 					SwingUtilities.invokeLater(() -> {
 						tagFields.remove(tagField);
 						tagGrid.remove(tagField);
@@ -457,7 +444,7 @@ public class MonsterBuilder extends JFrame {
 		JButton addSkills = new JButton("Add Skills");
 		StyleContainer.SetFontBtn(addSkills);
 		addSkills.setFocusable(false);
-		addSkills.addActionListener(e -> {
+		addSkills.addActionListener(_ -> {
 			SwingUtilities.invokeLater(() -> {
 				SkillsSelectFrame skillFrame = new SkillsSelectFrame(skills);
 
@@ -492,7 +479,7 @@ public class MonsterBuilder extends JFrame {
 		JButton setVuln = new JButton("Set Vuln");
 		setVuln.setFocusable(false);
 		StyleContainer.SetFontBtn(setVuln);
-		setVuln.addActionListener(e ->{
+		setVuln.addActionListener(_ ->{
 			DmgStatSelect vulnSet = new DmgStatSelect(dmgVulnField);
 			vulnSet.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 			vulnSet.setVisible(true);
@@ -511,7 +498,7 @@ public class MonsterBuilder extends JFrame {
 		StyleContainer.SetFontBtn(setResist);
 		setResist.setFocusable(false);
 		setResist.setFont(setResist.getFont().deriveFont((float) setResist.getFont().getSize() - 3));
-		setResist.addActionListener(e ->{
+		setResist.addActionListener(_ ->{
 			DmgStatSelect setR = new DmgStatSelect(dmgResistField);
 			setR.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 			setR.setVisible(true);
@@ -530,7 +517,7 @@ public class MonsterBuilder extends JFrame {
 		setImmune.setFocusable(false);
 		StyleContainer.SetFontBtn(setImmune);
 		setImmune.setFont(setImmune.getFont().deriveFont((float) setImmune.getFont().getSize() - 3));
-		setImmune.addActionListener(e ->{
+		setImmune.addActionListener(_ ->{
 			DmgStatSelect setI = new DmgStatSelect(immuneField);
 			setI.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 			setI.setVisible(true);
@@ -592,7 +579,7 @@ public class MonsterBuilder extends JFrame {
 		initExpertChck = new JCheckBox("Expertise?");
 		initExpertChck.setFocusable(false);
 
-		initProfChck.addActionListener(e -> {
+		initProfChck.addActionListener(_ -> {
 //			if (!initProfChck.isSelected())
 //				initExpertChck.setSelected(false);
 			if(initProfChck.isSelected())
@@ -602,7 +589,7 @@ public class MonsterBuilder extends JFrame {
 		StyleContainer.SetFontMain(initProfChck);
 		initPane.add(initProfChck);
 
-		initExpertChck.addActionListener(e -> {
+		initExpertChck.addActionListener(_ -> {
 //			if (initExpertChck.isSelected()) {
 //				initProfChck.setSelected(true);
 //			}
@@ -865,7 +852,7 @@ public class MonsterBuilder extends JFrame {
 
 				JButton mDel = new JButton("Delete");
 				StyleContainer.SetFontBtn(mDel);
-				mDel.addActionListener(e -> {
+				mDel.addActionListener(_ -> {
 					int delOpt = JOptionPane.showConfirmDialog(null, ("Delete: " + key), "Delete Confirmation", 
 							JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 					if(delOpt == JOptionPane.YES_OPTION) {

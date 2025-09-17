@@ -2,8 +2,6 @@ package data.players.classes;
 
 import java.io.Serializable;
 
-import javax.swing.text.StyledDocument;
-
 import data.players.Ability;
 
 public class ClassAbility extends Ability implements Serializable, Comparable<ClassAbility>

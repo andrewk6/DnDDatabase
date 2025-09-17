@@ -2,6 +2,7 @@ package builders.rule_builder;
 
 import javax.swing.text.*;
 
+@SuppressWarnings("serial")
 public class WrapEditorKit extends StyledEditorKit {
     private ViewFactory defaultFactory = new WrapColumnFactory();
 
