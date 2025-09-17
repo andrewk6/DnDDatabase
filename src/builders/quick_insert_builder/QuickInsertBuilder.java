@@ -28,6 +28,8 @@ import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
 import data.DataContainer.MapType;
+import gui.gui_helpers.CompFactory;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.StyleContainer;
@@ -118,9 +120,7 @@ public class QuickInsertBuilder extends JFrame
 		sideGPane = new JPanel();
 		sideGPane.setLayout(new GridLayout(0,2));
 		
-		JScrollPane sideScroll = new JScrollPane(sideGPane);
-		sideScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		sideScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sideGPane, ScrollPolicy.VERTICAL);
 		sidePane.add(sideScroll, BorderLayout.CENTER);
 		
 		JButton saveBtn = new JButton("Save");

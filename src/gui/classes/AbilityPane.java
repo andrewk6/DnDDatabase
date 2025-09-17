@@ -16,13 +16,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-
 import data.DataContainer;
 import data.players.classes.ClassAbility;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.GuiDirector;
 
@@ -63,7 +62,7 @@ public class AbilityPane extends JPanel
 		
 		listPane = new JPanel();
 		listPane.setLayout(new GridLayout(0, 1));
-		JScrollPane listScroll = new JScrollPane(listPane);
+		JScrollPane listScroll = CompFactory.wrapPanelInScroll(listPane, ScrollPolicy.VERTICAL);
 		sidePane.add(listScroll, BorderLayout.CENTER);
 		
 		mainPane = new JPanel();
@@ -74,7 +73,7 @@ public class AbilityPane extends JPanel
 		mainPane.add(nameLbl, BorderLayout.NORTH);
 		
 		hPane = new HoverTextPane(data, gd, gd.getDesktop());
-		JScrollPane hScroll = new JScrollPane(hPane);
+		JScrollPane hScroll = CompFactory.wrapPanelInScroll(hPane, ScrollPolicy.VERTICAL);
 		mainPane.add(hScroll, BorderLayout.CENTER);
 		
 		FillSidePane();

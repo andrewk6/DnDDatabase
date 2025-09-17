@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,41 +18,21 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
-import javax.swing.text.StyledDocument;
-
 import data.DataContainer;
-import data.DataContainer.Abilities;
 import data.DataContainer.Skills;
-import data.DataContainer.Source;
 import data.items.Item;
 import data.items.Armor.ArmorType;
-import data.players.classes.ClassAbility;
 import data.players.classes.DnDClass;
 import data.players.classes.Subclass;
-import data.players.classes.DnDClass.HitDiceType;
-import data.players.classes.DnDClass.WeaponProficiency;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
 public class ClassPane extends JPanel
 {
-	public static void main(String[] args) {
-		DataContainer d = new DataContainer();
-		d.init();
-		
-		SwingUtilities.invokeLater(()->{
-			JFrame frm = new JFrame();
-			frm.setContentPane(new ClassPane(d, d.getClasses().get("Warlock"), new GuiDirector(new JDesktopPane())));
-			frm.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-			frm.addWindowListener(CompFactory.createSafeExitWindowListener(frm, d));
-			frm.pack();
-			frm.setSize(new Dimension(800, 800));
-			frm.setVisible(true);
-		});
-	}
 	private final GuiDirector gd;
 	private final DataContainer data;
 	private final DnDClass classData;
@@ -111,7 +90,7 @@ public class ClassPane extends JPanel
 		
 		HoverTextPane classDesc = new HoverTextPane(data, gd, gd.getDesktop());
 		classDesc.setDocument(classData.desc);
-		JScrollPane descScroll = new JScrollPane(classDesc);
+		JScrollPane descScroll = CompFactory.wrapPanelInScroll(classDesc, ScrollPolicy.VERTICAL);
 		descPane.add(descScroll, BorderLayout.CENTER);
 	}
 	

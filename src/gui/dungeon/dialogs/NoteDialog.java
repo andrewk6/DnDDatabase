@@ -9,8 +9,6 @@ import java.awt.event.WindowListener;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.text.StyledDocument;
-
 import data.DataContainer;
 import data.dungeon.DungeonNote;
 import gui.gui_helpers.CompFactory;

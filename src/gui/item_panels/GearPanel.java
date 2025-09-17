@@ -101,6 +101,7 @@ package gui.item_panels;
 import data.DataContainer;
 import data.items.Item;
 import data.items.Gear;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.structures.StyleContainer;
 
 import javax.swing.*;
@@ -159,7 +160,7 @@ public class GearPanel extends JPanel {
 
         populateContentPanel(allGearList);
 
-        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        JScrollPane scrollPane = CompFactory.wrapPanelInScroll(contentPanel);
         scrollPane.setBorder(null);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setOpaque(false);

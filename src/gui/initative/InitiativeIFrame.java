@@ -192,7 +192,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
             	}
             }
         });
-        leftPanel.add(new JScrollPane(initiativeList), BorderLayout.CENTER);
+        leftPanel.add(CompFactory.wrapPanelInScroll(initiativeList), BorderLayout.CENTER);
 
         JButton nextTurn = new JButton("Next");
         nextTurn.addActionListener(e -> advanceTurn());
@@ -294,7 +294,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
             inputPanel.add(field);
         }
 
-        int result = JOptionPane.showConfirmDialog(this, new JScrollPane(inputPanel),
+        int result = JOptionPane.showConfirmDialog(this, CompFactory.wrapPanelInScroll(inputPanel),
                 "Set Player Initiatives", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
@@ -628,8 +628,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
 			HoverTextPane sDesc = new HoverTextPane(data, gd, dPane);
 			sDesc.setDocument(data.getSpells().get(s.name).spellDoc);
-			JScrollPane sScroll = new JScrollPane(sDesc);
-			sScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			JScrollPane sScroll = CompFactory.wrapPanelInScroll(sDesc);
 			sPane.add(sScroll, BorderLayout.CENTER);
 
 			JPanel btnFlow = new JPanel();
@@ -666,8 +665,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
 			HoverTextPane fDesc = new HoverTextPane(data, gd, gd.getDesktop());
 			fDesc.setDocument(data.getFeats().get(f.name).desc);
-			JScrollPane fScroll = new JScrollPane(fDesc);
-			fScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			JScrollPane fScroll = CompFactory.wrapPanelInScroll(fDesc);
 			fPane.add(fScroll, BorderLayout.CENTER);
 
 			JPanel btnFlow = new JPanel();
@@ -730,8 +728,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
 			HoverTextPane ruleDesc = new HoverTextPane(data, gd, dPane);
 			ruleDesc.setDocument(data.getRules().get(r.name).ruleDoc);
-			JScrollPane rScroll = new JScrollPane(ruleDesc);
-			rScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			JScrollPane rScroll = CompFactory.wrapPanelInScroll(ruleDesc);
 			rPane.add(rScroll, BorderLayout.CENTER);
 
 			JPanel btnFlow = new JPanel();

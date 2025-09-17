@@ -34,8 +34,10 @@ public class ItemBuilder extends JFrame
 	
 	public static void main(String[] args) 
 	{
+		DataContainer data = new DataContainer();
+		data.init();
 		SwingUtilities.invokeLater(()->{
-			ItemBuilder builder = new ItemBuilder(new DataContainer());
+			ItemBuilder builder = new ItemBuilder(data);
 			builder.setVisible(true);
 		});
 	}

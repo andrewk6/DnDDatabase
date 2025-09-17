@@ -8,7 +8,9 @@ import data.DataContainer.Source;
 import data.items.Weapon;
 import data.items.Weapon.WeaponMastery;
 import data.items.Weapon.WeaponProperty;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -68,7 +70,7 @@ public class WeaponBuilderPanel extends JPanel {
         this.data = data;
 
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-        JScrollPane scrollPane = new JScrollPane(listPanel);
+        JScrollPane scrollPane = CompFactory.wrapPanelInScroll(listPanel, ScrollPolicy.VERTICAL);
         scrollPane.setPreferredSize(new Dimension(250, 0));
         add(scrollPane, BorderLayout.WEST);
 

@@ -3,6 +3,7 @@ package gui.item_panels;
 import data.DataContainer;
 import data.items.Item;
 import data.items.ToolSet;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.structures.StyleContainer;
 
 import javax.swing.*;
@@ -34,7 +35,7 @@ public class ToolsPanel extends JPanel {
             contentPanel.add(Box.createVerticalStrut(15));
         }
 
-        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        JScrollPane scrollPane = CompFactory.wrapPanelInScroll(contentPanel);
         scrollPane.setBorder(null);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setOpaque(false);

@@ -36,7 +36,9 @@ import javax.swing.SwingUtilities;
 import data.DataContainer;
 import data.DataContainer.MapType;
 import data.Spell;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.RichEditor;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.StyleContainer;
 
 @SuppressWarnings("serial")
@@ -105,9 +107,7 @@ public class SpellBuilder extends JFrame {
 
 		spellListPane = new JPanel();
 		spellListPane.setLayout(new GridLayout(0, 1));
-		JScrollPane spellListScroll = new JScrollPane(spellListPane);
-		spellListScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		spellListScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane spellListScroll = CompFactory.wrapPanelInScroll(spellListPane, ScrollPolicy.VERTICAL);
 		FillSpellList();
 		sidePane.add(spellListScroll, BorderLayout.CENTER);
 

@@ -3,13 +3,9 @@ package gui.campaign;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -21,7 +17,6 @@ import data.campaign.Player;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.PlayerNameTargets;
 import gui.gui_helpers.structures.ContentFrame;
-import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 

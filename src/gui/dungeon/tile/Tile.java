@@ -4,14 +4,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
-import javax.swing.text.StyledDocument;
-
-import data.Monster;
 import data.dungeon.DungeonNote;
 import data.dungeon.EncounterNote;
 import utils.ErrorLogger;

@@ -69,7 +69,7 @@ public class HazardIFrame extends JInternalFrame implements ContentTab, DataChan
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
 		FillSidePane();
-		JScrollPane sideScroll = new JScrollPane(sidePane);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sidePane);
 		
 		cPane.add(sideScroll, BorderLayout.WEST);
 	}

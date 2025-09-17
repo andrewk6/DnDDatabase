@@ -4,7 +4,9 @@ import data.DataContainer;
 import data.DataContainer.Abilities;
 import data.DataContainer.Source;
 import data.items.ToolSet;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -44,7 +46,7 @@ public class ToolSetBuilder extends JPanel {
 
 		// Left panel: item list
 		listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-		JScrollPane scrollPane = new JScrollPane(listPanel);
+		JScrollPane scrollPane = CompFactory.wrapPanelInScroll(listPanel, ScrollPolicy.VERTICAL);
 		scrollPane.setPreferredSize(new Dimension(250, 0));
 		add(scrollPane, BorderLayout.WEST);
 

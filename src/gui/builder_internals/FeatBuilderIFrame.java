@@ -31,6 +31,7 @@ import data.Feat;
 import data.Feat.FeatType;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.GuiDirector;
@@ -131,7 +132,7 @@ public class FeatBuilderIFrame extends JInternalFrame implements DataChangeListe
 		
 		featList = new JPanel();
 		featList.setLayout(new GridLayout(0,1));
-		JScrollPane listScroll = new JScrollPane(featList);
+		JScrollPane listScroll = CompFactory.wrapPanelInScroll(featList, ScrollPolicy.VERTICAL);
 		sPane.add(listScroll, BorderLayout.CENTER);
 		
 		FillSidePane();

@@ -36,6 +36,7 @@ import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.DocumentHelper;
 
 @SuppressWarnings("serial")
@@ -122,7 +123,7 @@ public class HazardBuilderPane extends JPanel
 		
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
-		JScrollPane sideScroll = new JScrollPane(sidePane);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sidePane, ScrollPolicy.VERTICAL);
 		sideScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		sideWrapper.add(sideScroll, BorderLayout.CENTER);
 		

@@ -1,10 +1,7 @@
 package gui.campaign;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.FontMetrics;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -30,12 +26,12 @@ import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
 import data.DataContainer.PlayerClass;
-import data.DataContainer.Source;
 import data.campaign.Player;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
@@ -348,7 +344,7 @@ public class PlayerPane extends JPanel {
 				notePane.removeAll();
 				HoverTextPane read = new HoverTextPane(data, gd, gd.getDesktop());
 				read.setDocument(p.note);
-				JScrollPane readScroll = new JScrollPane(read);
+				JScrollPane readScroll = CompFactory.wrapPanelInScroll(read, ScrollPolicy.VERTICAL);
 				notePane.add(readScroll, BorderLayout.CENTER);
 //				cl.show(notePane, NOTES_VIEW);
 			}

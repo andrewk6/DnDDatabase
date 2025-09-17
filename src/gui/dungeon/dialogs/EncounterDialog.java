@@ -9,9 +9,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -25,6 +22,7 @@ import data.Monster;
 import data.dungeon.EncounterNote;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.FilterCombo;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
@@ -86,7 +84,7 @@ public class EncounterDialog extends JDialog
 		
 		listPane = new JPanel();
 		listPane.setLayout(new GridLayout(0,1));
-		JScrollPane listScroll = new JScrollPane(listPane);
+		JScrollPane listScroll = CompFactory.wrapPanelInScroll(listPane, ScrollPolicy.VERTICAL);
 		sidePane.add(listScroll, BorderLayout.CENTER);
 		
 		JButton addEnemy = CompFactory.createNewButton("Add Enemy", _->{

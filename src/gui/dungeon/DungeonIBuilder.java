@@ -5,6 +5,7 @@ import gui.dungeon.tile.*;
 import gui.dungeon.tile.Tile.TILE_TYPE;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 import utils.ErrorLogger;
@@ -61,7 +62,7 @@ public class DungeonIBuilder extends JInternalFrame {
 		fChoose.setFileFilter(filter);
 		
 		editPane = new JPanel();
-		editScroll = new JScrollPane(editPane);
+		editScroll = CompFactory.wrapPanelInScroll(editPane, ScrollPolicy.BOTH);
 		add(editScroll, BorderLayout.CENTER);
 		
 		configMenu();
@@ -371,8 +372,7 @@ public class DungeonIBuilder extends JInternalFrame {
 				remove(sideScroll);
 			JPanel sidePane = new JPanel();
 			sidePane.setLayout(new GridLayout(0,1));
-			sideScroll = new JScrollPane(sidePane);
-			sideScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			sideScroll = CompFactory.wrapPanelInScroll(sidePane);
 			add(sideScroll, BorderLayout.WEST);
 			if(d != null) {
 				if(d.floors.size() > 0)

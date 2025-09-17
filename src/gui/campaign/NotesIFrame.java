@@ -13,22 +13,20 @@ import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
 import data.DataContainer;
-import gui.gui_helpers.HoverTextPane;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.RichViewer;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
@@ -92,7 +90,7 @@ public class NotesIFrame extends JInternalFrame
 	private void BuildSidePane(Container cPane) {
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
-		JScrollPane sideScroll = new JScrollPane(sidePane);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sidePane, ScrollPolicy.VERTICAL);
 		cPane.add(sideScroll, BorderLayout.WEST);
 		FillSidePane();
 	}
@@ -130,7 +128,7 @@ public class NotesIFrame extends JInternalFrame
 		addBtn = new JButton("Add Note");
 		addBtn.setFocusable(false);
 		StyleContainer.SetFontBtn(addBtn);
-		addBtn.addActionListener(e ->{
+		addBtn.addActionListener(_ ->{
 			if(noteTitle.getText().length() > 0) {
 				data.AddNote(noteTitle.getText(), edit.getStyledDocument());
 				ResetEditor();
