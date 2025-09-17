@@ -21,8 +21,6 @@ import utils.ErrorLogger;
 
 public class Runner
 {
-	//TODO: Re-add Rule Breaking Objects/Carrying Capacity/Condition/Damage Types/Dehydration
-	//TODO: Continue Fixing Rules
 	private static DataContainer data;
 	private static LoadFrame load;
 	

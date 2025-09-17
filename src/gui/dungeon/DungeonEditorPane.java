@@ -18,8 +18,6 @@ import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
 
-/*TODO: Fix some dungeon issues, stay on the Icon tool after place, 
-implement a Stairs Icon, Make it so that colors select doesn't reset you to brush tool*/
 public class DungeonEditorPane extends JPanel {
 	private static final int TILE_SIZE = 32;
 	private static final int IMG_SCALER = 5;
@@ -168,7 +166,6 @@ public class DungeonEditorPane extends JPanel {
 			break;
 		case ICON:
 			tiles[y][x].icon = iconMap.get(currentIcon);
-			currentTool = Tool.SELECT;
 			setTileType(currentIcon, tiles[y][x]);
 			break;
 		case SELECT:
