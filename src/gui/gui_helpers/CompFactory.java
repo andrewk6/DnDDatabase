@@ -19,6 +19,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -73,6 +74,8 @@ public class CompFactory
 	        return label;
 	    }
 	};
+	
+	public static final int DEFAULT_SCROLL_SPEED = 16;
 	
 	private static <T> void setFont(Component c, ComponentType font) {
 		switch(font) {
@@ -284,18 +287,49 @@ public class CompFactory
 		return out;
 	}
 	
-	public static JScrollPane wrapPanelInScroll(JPanel pane, ScrollPolicy pol) {
+	public static JScrollPane wrapPanelInScroll(JComponent pane) {
+		JScrollPane out = wrapPanelInScroll(pane, ScrollPolicy.VERTICAL);
+		out.getVerticalScrollBar().setUnitIncrement(DEFAULT_SCROLL_SPEED);
+		return out;
+	}
+	
+	public static JScrollPane wrapPanelInScroll(JComponent pane, int scrollSpeed) {
+		JScrollPane out = wrapPanelInScroll(pane, ScrollPolicy.VERTICAL);
+		out.getVerticalScrollBar().setUnitIncrement(scrollSpeed);
+		return out;
+	}
+	
+	public static JScrollPane wrapPanelInScroll(JComponent pane, ScrollPolicy pol) {
 		JScrollPane out = new JScrollPane(pane);
 		if(pol == ScrollPolicy.VERTICAL) {
-//			out.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			out.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 			out.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		}else if(pol == ScrollPolicy.HORIZONTAL) {
 			out.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-//			out.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+			out.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		}else {
 			out.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			out.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		}
+		out.getVerticalScrollBar().setUnitIncrement(DEFAULT_SCROLL_SPEED);
+		out.getHorizontalScrollBar().setUnitIncrement(DEFAULT_SCROLL_SPEED);
+		return out;
+	}
+	
+	public static JScrollPane wrapPanelInScroll(JComponent pane, int scrollSpeed, ScrollPolicy pol) {
+		JScrollPane out = new JScrollPane(pane);
+		if(pol == ScrollPolicy.VERTICAL) {
+			out.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			out.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		}else if(pol == ScrollPolicy.HORIZONTAL) {
+			out.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			out.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+		}else {
+			out.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			out.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		}
+		out.getVerticalScrollBar().setUnitIncrement(scrollSpeed);
+		out.getHorizontalScrollBar().setUnitIncrement(scrollSpeed);
 		return out;
 	}
 	

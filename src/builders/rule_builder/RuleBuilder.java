@@ -38,7 +38,9 @@ import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
 import data.Rule;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.RichEditor;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -199,8 +201,7 @@ public class RuleBuilder {
 
 		rulesListPane = new JPanel();
 		rulesListPane.setLayout(new GridLayout(0, 1));
-		JScrollPane rulesScroller = new JScrollPane(rulesListPane);
-		rulesScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane rulesScroller = CompFactory.wrapPanelInScroll(rulesListPane, ScrollPolicy.VERTICAL);
 		rulesPane.add(rulesScroller, BorderLayout.CENTER);
 		BuildRulesList();
 		

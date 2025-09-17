@@ -11,7 +11,6 @@ import javax.script.ScriptException;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -19,10 +18,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.structures.StyleContainer;
 import utils.DiceCalculator;
 import utils.ErrorLogger;
@@ -62,7 +59,7 @@ public class DiceCalcIFrame extends JInternalFrame
 		
 		resultPanel = new JPanel();
 		resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS));
-		JScrollPane resultScroll = new JScrollPane(resultPanel);
+		JScrollPane resultScroll = CompFactory.wrapPanelInScroll(resultPanel);
 		tabs.addTab("Results", resultScroll);
 		
 		BuildEquationField(calcPanel);

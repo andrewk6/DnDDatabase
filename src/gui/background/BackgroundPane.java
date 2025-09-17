@@ -3,28 +3,19 @@ package gui.background;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
-import javax.swing.text.StyledDocument;
-
 import data.DataContainer;
-import data.Feat;
-import data.DataContainer.Abilities;
 import data.DataContainer.Skills;
-import data.DataContainer.Source;
-import data.items.Item;
 import data.players.Background;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.GuiDirector;
 
@@ -79,7 +70,7 @@ public class BackgroundPane extends JPanel
 		this.add(mainPane, BorderLayout.CENTER);
 
 		HoverTextPane descPane = CompFactory.createHoverTextPane(data, gd, b.desc, ComponentType.BODY);
-		JScrollPane descScroll = new JScrollPane(descPane);
+		JScrollPane descScroll = CompFactory.wrapPanelInScroll(descPane, ScrollPolicy.VERTICAL);
 		mainPane.add(descScroll);
 		
 		JPanel detailPane = new JPanel();

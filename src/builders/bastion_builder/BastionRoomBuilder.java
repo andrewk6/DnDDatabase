@@ -25,6 +25,7 @@ import data.players.BastionRoom.Order;
 import data.players.BastionRoom.SpaceRequired;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.DocumentHelper;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
@@ -114,7 +115,7 @@ public class BastionRoomBuilder extends JFrame
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
 		FillSidePane();
-		JScrollPane sideScroll = new JScrollPane(sidePane);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sidePane, ScrollPolicy.VERTICAL);
 		sideScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		sideWrapper.add(sideScroll, BorderLayout.CENTER);
 		

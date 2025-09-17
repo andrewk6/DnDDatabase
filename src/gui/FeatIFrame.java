@@ -7,18 +7,11 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.beans.PropertyVetoException;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -37,7 +30,7 @@ import data.DataContainer;
 import data.DataContainer.MapType;
 import data.Feat;
 import data.Feat.FeatType;
-import gui.gui_helpers.CustomDesktopIcon;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
@@ -132,10 +125,7 @@ public class FeatIFrame extends JInternalFrame implements ContentTab, DataChange
 		featGridPane.setLayout(new GridLayout(0,1));
 		FillSidePane();
 		
-		JScrollPane spellGridScroll = new JScrollPane(featGridPane);
-		spellGridScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		spellGridScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		
+		JScrollPane spellGridScroll = CompFactory.wrapPanelInScroll(featGridPane);		
 		sPane.add(spellGridScroll, BorderLayout.CENTER);
 		cPane.add(sPane, BorderLayout.WEST);
 	}

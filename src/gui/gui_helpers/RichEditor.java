@@ -14,6 +14,7 @@ import data.items.Item;
 import data.players.Background;
 import data.players.Species;
 import data.players.classes.DnDClass;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.hazard.HazardPane;
 import utils.ErrorLogger;
 
@@ -33,7 +34,7 @@ import java.util.*;
 public class RichEditor extends RichEditorBase implements DataChangeListener{
     private final JPopupMenu suggestionPopup = new JPopupMenu();
     private final JList<String> suggestionList = new JList<>();
-    private final JScrollPane scrollPane = new JScrollPane(suggestionList);
+    private final JScrollPane scrollPane = CompFactory.wrapPanelInScroll(suggestionList);
     private final JTextPane editor;
     
     private DataContainer data;
@@ -52,11 +53,12 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 
     private final JWindow rulePreviewWindow = new JWindow();
     private final JTextPane rulePreviewPane = new JTextPane();
-    private final JScrollPane ruleScrollPane = new JScrollPane(rulePreviewPane);
+    private final JScrollPane ruleScrollPane = CompFactory.wrapPanelInScroll(rulePreviewPane);
     
     private final JWindow specialPreviewWindow = new JWindow();
     private final JPanel specialPreviewPane = new JPanel();
-    private final JScrollPane specialScrollPane = new JScrollPane(specialPreviewPane);
+    private final JScrollPane specialScrollPane = 
+    		CompFactory.wrapPanelInScroll(specialPreviewPane, ScrollPolicy.BOTH);
     
     private final Map<Integer, String> ruleOffsets = new HashMap<>();
     private final Map<Integer, String> spellOffsets = new HashMap<>();
@@ -273,8 +275,6 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         specialPreviewWindow.getContentPane().setLayout(new BorderLayout());
         specialPreviewWindow.add(specialScrollPane, BorderLayout.CENTER);
         specialScrollPane.setPreferredSize(new Dimension(600, 600));
-        specialScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        specialScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         specialPreviewWindow.pack();
         
         editor.addMouseMotionListener(new MouseMotionAdapter() {

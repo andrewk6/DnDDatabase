@@ -25,6 +25,7 @@ import data.DataContainer.Source;
 import data.players.Species;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.DocumentHelper;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
@@ -108,8 +109,7 @@ public class SpeciesBuilder extends JFrame
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
 		FillSidePane();
-		JScrollPane sideScroll = new JScrollPane(sidePane);
-		sideScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sidePane, ScrollPolicy.VERTICAL);
 		sideWrapper.add(sideScroll, BorderLayout.CENTER);
 		
 		sideWrapper.add(CompFactory.createNewButton("Save", _->{

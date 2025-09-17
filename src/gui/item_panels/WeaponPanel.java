@@ -5,6 +5,7 @@ import data.items.Item;
 import data.items.Weapon;
 import data.items.Weapon.WeaponMastery;
 import data.items.Weapon.WeaponProperty;
+import gui.gui_helpers.CompFactory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -57,7 +58,7 @@ public class WeaponPanel extends JPanel {
         fullPanel.add(createTableSection("Martial Melee Weapons", martialMelee, false));
         fullPanel.add(createTableSection("Martial Ranged Weapons", martialRanged, true));
 
-        JScrollPane scroll = new JScrollPane(fullPanel);
+        JScrollPane scroll = CompFactory.wrapPanelInScroll(fullPanel);
         scroll.setBorder(BorderFactory.createEmptyBorder());
         return scroll;
     }
@@ -86,7 +87,7 @@ public class WeaponPanel extends JPanel {
             tableWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         }
 
-        JScrollPane scrollPane = new JScrollPane(tableWrapper);
+        JScrollPane scrollPane = CompFactory.wrapPanelInScroll(tableWrapper);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.setPreferredSize(table.getPreferredSize());
 
@@ -120,7 +121,7 @@ public class WeaponPanel extends JPanel {
             panel.add(box);
         }
 
-        JScrollPane scroll = new JScrollPane(panel);
+        JScrollPane scroll = CompFactory.wrapPanelInScroll(panel);
         scroll.setBorder(null);
         return scroll;
     }

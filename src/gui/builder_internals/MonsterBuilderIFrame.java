@@ -7,39 +7,19 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -47,7 +27,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -62,11 +41,11 @@ import data.*;
 import data.DataContainer.MapType;
 import data.DataContainer.Proficiency;
 import data.DataContainer.Skills;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.DocumentHelper;
-import gui.gui_helpers.MonsterDispPane;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
-import gui.gui_helpers.structures.GuiDirector;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.StyleContainer;
 import utils.ErrorLogger;
 
@@ -205,10 +184,8 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 		LoadMonsters(data.getMonsters());
 		cPane.add(sidePane, BorderLayout.WEST);
 		
-		JScrollPane monstScroll = new JScrollPane(monstGridPane);
+		JScrollPane monstScroll = CompFactory.wrapPanelInScroll(monstGridPane, ScrollPolicy.VERTICAL);
 		sidePane.add(monstScroll, BorderLayout.CENTER);
-		monstScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		monstScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		
 		JButton saveBtn = new JButton("Save");
 		StyleContainer.SetFontBtn(saveBtn);
@@ -364,7 +341,7 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 		tagGrid = new JPanel();
 		tagGrid.setLayout(new GridLayout(0, 2));
 
-		JScrollPane tagScroll = new JScrollPane(tagGrid);
+		JScrollPane tagScroll = CompFactory.wrapPanelInScroll(tagGrid, ScrollPolicy.VERTICAL);
 		pane.add(tagScroll, BorderLayout.CENTER);
 
 		JPanel btnPane = new JPanel();

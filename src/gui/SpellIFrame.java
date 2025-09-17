@@ -8,10 +8,7 @@ import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyVetoException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -133,10 +130,7 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 		spellGridPane.setLayout(new GridLayout(0,1));
 		FillSidePane();
 		
-		JScrollPane spellGridScroll = new JScrollPane(spellGridPane);
-		spellGridScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		spellGridScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		
+		JScrollPane spellGridScroll = CompFactory.wrapPanelInScroll(spellGridPane);		
 		sPane.add(spellGridScroll, BorderLayout.CENTER);
 		cPane.add(sPane, BorderLayout.WEST);
 	}
@@ -201,8 +195,7 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 		HoverTextPane spellDesc = new HoverTextPane(data, gd, dPane);
 //		spellDesc.SetSpellTabbedPane(this);
 		spellDesc.setDocument(data.getSpells().get(key).spellDoc);
-		JScrollPane spellScroll = new JScrollPane(spellDesc);
-		spellScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane spellScroll = CompFactory.wrapPanelInScroll(spellDesc);
 		sPane.add(spellScroll, BorderLayout.CENTER);
 		
 		JPanel btnFlow = new JPanel();

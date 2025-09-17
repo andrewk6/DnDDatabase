@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import builders.utlities.*;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import utils.ErrorLogger;
 
 @SuppressWarnings("serial")
@@ -56,9 +57,7 @@ public class RichEditorBase extends JPanel {
 		});
 		doc = editorTextPane.getStyledDocument();
 
-		JScrollPane scrollPane = new JScrollPane(editorTextPane);
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane scrollPane = CompFactory.wrapPanelInScroll(editorTextPane);
 		// Toolbar
 		JToolBar toolBar = new JToolBar();
 
@@ -196,9 +195,7 @@ public class RichEditorBase extends JPanel {
 
 			table.setPreferredScrollableViewportSize(new Dimension(visibleWidth, visibleHeight));
 			
-			JScrollPane tableScroll = new JScrollPane(table);
-			tableScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-			tableScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			JScrollPane tableScroll = CompFactory.wrapPanelInScroll(table, ScrollPolicy.BOTH);
 			editorTextPane.insertComponent(tableScroll);
 			dialog.dispose();
 		});

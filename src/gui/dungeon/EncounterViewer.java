@@ -35,7 +35,7 @@ public class EncounterViewer extends JPanel
 		
 		JPanel enemyListPane = new JPanel();
 		enemyListPane.setLayout(new GridLayout(0,1));
-		JScrollPane listScroll = new JScrollPane(enemyListPane);
+		JScrollPane listScroll = CompFactory.wrapPanelInScroll(enemyListPane);
 		sidePane.add(listScroll);
 		
 		for(Monster m : n.enemies) {

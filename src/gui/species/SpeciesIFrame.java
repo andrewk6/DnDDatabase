@@ -6,7 +6,6 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -15,9 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
-
 import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
@@ -72,7 +68,7 @@ public class SpeciesIFrame extends JInternalFrame implements ContentTab, DataCha
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
 		FillSidePane();
-		JScrollPane sideScroll = new JScrollPane(sidePane);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sidePane);
 		
 		cPane.add(sideScroll, BorderLayout.WEST);
 	}

@@ -43,10 +43,12 @@ import data.*;
 import data.DataContainer.MapType;
 import data.DataContainer.Proficiency;
 import data.DataContainer.Skills;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.DocumentHelper;
 import gui.gui_helpers.MonsterDispPane;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
@@ -203,7 +205,7 @@ public class MonsterBuilder extends JFrame {
 		LoadMonsters(data.getMonsters());
 		cPane.add(sidePane, BorderLayout.WEST);
 		
-		JScrollPane monstScroll = new JScrollPane(monstGridPane);
+		JScrollPane monstScroll = CompFactory.wrapPanelInScroll(monstGridPane, ScrollPolicy.VERTICAL);
 		sidePane.add(monstScroll, BorderLayout.CENTER);
 		JButton saveBtn = new JButton("Save");
 		StyleContainer.SetFontBtn(saveBtn);
@@ -350,7 +352,7 @@ public class MonsterBuilder extends JFrame {
 		tagGrid = new JPanel();
 		tagGrid.setLayout(new GridLayout(0, 2));
 
-		JScrollPane tagScroll = new JScrollPane(tagGrid);
+		JScrollPane tagScroll = CompFactory.wrapPanelInScroll(tagGrid, ScrollPolicy.VERTICAL);
 		pane.add(tagScroll, BorderLayout.CENTER);
 
 		JPanel btnPane = new JPanel();

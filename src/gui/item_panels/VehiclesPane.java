@@ -5,14 +5,12 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -116,7 +114,7 @@ public class VehiclesPane extends JPanel implements DataChangeListener
 	        tableWrapper.add(mountTable.getTableHeader(), BorderLayout.NORTH);
 	        tableWrapper.add(mountTable, BorderLayout.CENTER);
 		
-		JScrollPane scrollPane = new JScrollPane(mountTable);
+		JScrollPane scrollPane = CompFactory.wrapPanelInScroll(mountTable);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.setPreferredSize(mountTable.getPreferredSize());
 		mountPane.add(scrollPane, BorderLayout.CENTER);
@@ -162,7 +160,7 @@ public class VehiclesPane extends JPanel implements DataChangeListener
 	        tableWrapper.add(vehicleTable.getTableHeader(), BorderLayout.NORTH);
 	        tableWrapper.add(vehicleTable, BorderLayout.CENTER);
 		
-		JScrollPane scrollPane = new JScrollPane(vehicleTable);
+		JScrollPane scrollPane = CompFactory.wrapPanelInScroll(vehicleTable);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.setPreferredSize(vehicleTable.getPreferredSize());
 		vehiclePane.add(scrollPane, BorderLayout.CENTER);

@@ -20,6 +20,7 @@ import data.players.Background;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
@@ -74,7 +75,7 @@ public class BackgroundIFrame extends JInternalFrame implements DataChangeListen
 		
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
-		JScrollPane sideScroll = new JScrollPane(sidePane);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sidePane, ScrollPolicy.VERTICAL);
 		sideWrapper.add(sideScroll, BorderLayout.CENTER);
 		
 		FillSidePane();

@@ -48,6 +48,7 @@ import data.players.classes.DnDClass.WeaponProficiency;
 import data.players.classes.Subclass;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.DocumentHelper;
 import gui.gui_helpers.FilterCombo;
 import gui.gui_helpers.ReminderField;
@@ -144,7 +145,7 @@ public class ClassBuilderIFrame extends JInternalFrame implements DataChangeList
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
 		FillSidePane();
-		JScrollPane sideScroll = new JScrollPane(sidePane);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sidePane, ScrollPolicy.VERTICAL);
 		sideOPane.add(sideScroll, BorderLayout.CENTER);
 		
 		JPanel headerPane = new JPanel();
@@ -328,9 +329,7 @@ public class ClassBuilderIFrame extends JInternalFrame implements DataChangeList
 		
 		itemListPane = new JPanel();
 		itemListPane.setLayout(new FlowLayout(FlowLayout.LEFT));
-		JScrollPane itemListScroll = new JScrollPane(itemListPane);
-		itemListScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		itemListScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane itemListScroll = CompFactory.wrapPanelInScroll(itemListPane, ScrollPolicy.VERTICAL);
 		itemsPane.add(itemListScroll, BorderLayout.CENTER);
 		
 		JPanel itemSel = new JPanel();
