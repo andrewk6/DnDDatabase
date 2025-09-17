@@ -217,43 +217,36 @@ public class DungeonIBuilder extends JInternalFrame {
 		
 		JMenuItem whiteSelect = CompFactory.createNewJMenuItem("White", _->{
 			editor.get(curEditKey).setCurrentColor(Color.WHITE);
-			editor.get(curEditKey).setTool(Tool.BRUSH);
 		});
 		colorMenu.add(whiteSelect);
 		
 		JMenuItem greenSelect = CompFactory.createNewJMenuItem("Green", _->{
 			editor.get(curEditKey).setCurrentColor(Color.GREEN);
-			editor.get(curEditKey).setTool(Tool.BRUSH);
 		});
 		colorMenu.add(greenSelect);
 		
 		JMenuItem redSelect = CompFactory.createNewJMenuItem("Red", _->{
 			editor.get(curEditKey).setCurrentColor(Color.RED);
-			editor.get(curEditKey).setTool(Tool.BRUSH);
 		});
 		colorMenu.add(redSelect);
 		
 		JMenuItem blueSelect = CompFactory.createNewJMenuItem("Blue", _->{
 			editor.get(curEditKey).setCurrentColor(Color.BLUE);
-			editor.get(curEditKey).setTool(Tool.BRUSH);
 		});
 		colorMenu.add(blueSelect);
 		
 		JMenuItem orangeSelect = CompFactory.createNewJMenuItem("Orange", _->{
 			editor.get(curEditKey).setCurrentColor(Color.ORANGE);
-			editor.get(curEditKey).setTool(Tool.BRUSH);
 		});
 		colorMenu.add(orangeSelect);
 		
 		JMenuItem cyanSelect = CompFactory.createNewJMenuItem("Cyan", _->{
 			editor.get(curEditKey).setCurrentColor(Color.CYAN);
-			editor.get(curEditKey).setTool(Tool.BRUSH);
 		});
 		colorMenu.add(cyanSelect);
 		
 		JMenuItem pinkSelect = CompFactory.createNewJMenuItem("Pink", _->{
 			editor.get(curEditKey).setCurrentColor(Color.GREEN);
-			editor.get(curEditKey).setTool(Tool.BRUSH);
 		});
 		colorMenu.add(pinkSelect);
 		
