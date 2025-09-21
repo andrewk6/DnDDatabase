@@ -7,8 +7,9 @@ import javax.swing.text.StyledDocument;
 
 import data.DataContainer.PartyTier;
 import data.DataContainer.Source;
+import data.interfaces.SourceProvider;
 
-public class Hazard implements Serializable
+public class Hazard implements Serializable, SourceProvider
 {
 	/**
 	 * 
@@ -20,4 +21,8 @@ public class Hazard implements Serializable
 	public StyledDocument desc;
 	public EnumMap<PartyTier, HazardDanger> dangerMap;
 	public Source src;
+	
+	public Source getSource() {
+		return src;
+	}
 }

@@ -3,8 +3,9 @@ package data.vehicles;
 import java.io.Serializable;
 
 import data.DataContainer.Source;
+import data.interfaces.SourceProvider;
 
-public sealed class Vehicle implements Serializable permits Mount, LargeVehicle
+public sealed class Vehicle implements Serializable, SourceProvider permits Mount, LargeVehicle
 {
 	/**
 	 * 
@@ -14,4 +15,8 @@ public sealed class Vehicle implements Serializable permits Mount, LargeVehicle
 	public int cost;
 	
 	public Source src;
+
+	public Source getSource() {
+		return src;
+	}
 }

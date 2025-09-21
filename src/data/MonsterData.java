@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import javax.swing.text.StyledDocument;
 
+import data.DataContainer.Source;
+
 public class MonsterData {
 	public String name, type, ac, hp, spd, dmgResist, dmgVuln, invuln, senses, lang;
 
@@ -19,4 +21,6 @@ public class MonsterData {
 	public HashMap<DataContainer.Skills, DataContainer.Proficiency> skills;
 
 	public ArrayList<String> tags;
+	
+	public Source source;
 }

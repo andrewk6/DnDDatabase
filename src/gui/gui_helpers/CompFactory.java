@@ -134,6 +134,27 @@ public class CompFactory
 		return lbl;
 	}
 	
+	public static JLabel createSideLabel(String text, ComponentType type) {
+		JLabel sideLbl;
+		if(text.length() > StyleContainer.SIDE_STRING_LIMIT) 
+			sideLbl = createNewLabel(text.substring(0, StyleContainer.SIDE_STRING_LIMIT), type);
+		else
+			sideLbl = createNewLabel(text, type);
+		sideLbl.setToolTipText(text);
+		return sideLbl;
+	}
+	
+	public static JLabel createSideLabel(String text, ComponentType type, float fontMod) {
+		JLabel sideLbl;
+		if(text.length() > StyleContainer.SIDE_STRING_LIMIT) 
+			sideLbl = createNewLabel(text.substring(0, StyleContainer.SIDE_STRING_LIMIT), 
+					type, fontMod);
+		else
+			sideLbl = createNewLabel(text, type, fontMod);
+		sideLbl.setToolTipText(text);
+		return sideLbl;
+	}
+	
 	public static JMenuItem createNewJMenuItem(String text) {
 		JMenuItem out = new JMenuItem(text);
 		StyleContainer.SetFontMain(out);

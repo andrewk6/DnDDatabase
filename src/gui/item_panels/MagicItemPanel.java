@@ -2,10 +2,13 @@ package gui.item_panels;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import javax.swing.BorderFactory;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -79,8 +82,9 @@ public class MagicItemPanel extends JPanel implements DataChangeListener{
 			Collections.sort(keys);
 			
 			for(String s : keys) {
-				if(s.toLowerCase().startsWith(miFilter.getText().toLowerCase()) || miFilter.getText().length() == 0) {
-					JLabel lbl = CompFactory.createNewLabel(s, ComponentType.BODY);
+				if(s.toLowerCase().startsWith(miFilter.getText().toLowerCase()) || miFilter.getText().length() == 0){
+					JLabel lbl = CompFactory.createSideLabel(s, ComponentType.BODY, 2f);
+					lbl.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 					lbl.addMouseListener(CompFactory.createSideMouseListener(lbl, ()->{
 						//							spellTitle.setText(s);
 //							hPane.setDocument(data.getSpells().get(s).spellDoc);

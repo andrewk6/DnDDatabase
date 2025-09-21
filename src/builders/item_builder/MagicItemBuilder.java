@@ -8,6 +8,7 @@ import data.items.MagicItem.Rarity;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
+import gui.gui_helpers.structures.StyleContainer;
 import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CompFactory.ScrollPolicy;
 
@@ -27,7 +28,6 @@ import java.util.Map;
 
 @SuppressWarnings("serial")
 public class MagicItemBuilder extends JPanel {
-	private final int ITEM_NAME_LIMIT = 23;
 
 	private final ReminderField nameField = 
 			CompFactory.createReminderField("Item name..", 15, ComponentType.HEADER);
@@ -249,8 +249,9 @@ public class MagicItemBuilder extends JPanel {
 		for (String name : keys) {
 			JPanel entry = new JPanel(new BorderLayout());
 			JLabel nameLabel;
-			if(name.length() > ITEM_NAME_LIMIT)
-				nameLabel = CompFactory.createNewLabel(name.substring(0,ITEM_NAME_LIMIT), ComponentType.BODY);
+			if(name.length() > StyleContainer.SIDE_STRING_LIMIT)
+				nameLabel = CompFactory.createNewLabel(name.substring(0,
+						StyleContainer.SIDE_STRING_LIMIT), ComponentType.BODY);
 			else
 				nameLabel = CompFactory.createNewLabel(name, ComponentType.BODY);
 			nameLabel.setToolTipText(name);

@@ -24,6 +24,9 @@ public class Runner
 	private static DataContainer data;
 	private static LoadFrame load;
 	
+	//TODO: Add correct spells in TCE/XGE
+	//TODO: Fix monster stat blocks from Tashas/Xanathers
+	//TODO: Updated spells through Chain Lightning
 	public static void main(String[] args) throws InvocationTargetException, InterruptedException {
 		SwingUtilities.invokeAndWait(()->{
 			load = new LoadFrame("Loading");

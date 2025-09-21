@@ -14,6 +14,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,6 +41,7 @@ import data.campaign.Campaign;
 import data.campaign.Player;
 import data.hazards.Hazard;
 import data.hazards.Trap;
+import data.interfaces.SourceProvider;
 import data.items.Armor;
 import data.items.Gear;
 import data.items.Item;
@@ -53,7 +55,8 @@ import data.players.classes.DnDClass;
 import data.vehicles.LargeVehicle;
 import data.vehicles.Mount;
 import data.vehicles.Vehicle;
-import gui.gui_helpers.ExportDialog;
+import gui.dialogs.ExportDialog;
+import gui.dialogs.SourceToggleDialog;
 import gui.gui_helpers.structures.LoadListener;
 
 public class DataContainer {
@@ -100,13 +103,27 @@ public class DataContainer {
 	}
 	
 	public enum Source{
-		PlayersHandbook2024, DungeonMastersGuide2024, MonsterManual2024, VecnaEveOfRuin, Custom, 
-		TashasCauldronOfEverything, XanathersGuideToEverything,
+		PlayersHandbook2024("Player's Handbook"),
+		DungeonMastersGuide2024("Dungeon Master's Guide"),
+		MonsterManual2024("Monster Manual"), 
+		XanathersGuideToEverything("Xanather's Guide to Everything"),
+		TashasCauldronOfEverything("Tasha's Cauldron of Everything"), 
+		VecnaEveOfRuin("Vecna Eve of Ruin"), 
+		UnearthedArcana("Unearthed Arcana"), 
+		Custom("Custom");
+		
+		private final String srcLbl;
+		
+		Source(String lbl) { this.srcLbl = lbl;}
+		
+		public String toString() {
+			return srcLbl;
+		}
 	}
 	
 	public enum PlayerClass{
-		Artificer, Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard,
-		Custom, None
+		Artificer, Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, 
+		Rogue, Sorcerer, Warlock, Wizard, Custom, None
 	}
 	
 	public static final File appLocal = new File(System.getenv("LOCALAPPDATA") + "\\DnD Database");
@@ -162,12 +179,28 @@ public class DataContainer {
 	private final List<DataChangeListener> updateListeners = new ArrayList<DataChangeListener>();
 	private final List<LoadListener> loadListeners = new ArrayList<LoadListener>();
 	private Queue<File> recentFiles;
+	private ArrayList<Source> sourceFilter = new ArrayList<Source>(Arrays.asList(Source.values()));
 	
 	private String lastCampPath;
 	private boolean initiatlized;
 	
 	private ExportDialog exportDialog;
 	private boolean exportReady;
+	
+	public static String sourceToString(Source s) {
+		switch(s) {
+		case Source.PlayersHandbook2024: return "Player's Handbook 2024";
+		case Source.DungeonMastersGuide2024: return "Dungeon Master's Guide 2024";
+		case Source.MonsterManual2024: return "Monster Manual 2024;";
+		case Source.XanathersGuideToEverything: return "Xanather's Guide to Everything";
+		case Source.TashasCauldronOfEverything: return "Tasha's Cauldron of Everything";
+		case Source.VecnaEveOfRuin: return "Vecna Eve of Ruin";
+		case Source.UnearthedArcana: return "Unearthed Arcana";
+		case Source.Custom: return "Custom";
+		default:
+			throw new IllegalArgumentException("This shouldn't be possible");
+		}
+	}
 
 	public DataContainer() {
 		StartIOThread();
@@ -872,7 +905,6 @@ public class DataContainer {
 	
 	private void notifyChange(MapType mapType) {
 		for(DataChangeListener tar : updateListeners) {
-			System.out.println("In Loop" + tar.getClass().getName());
 			tar.onMapUpdated(mapType);
 		}
 	}
@@ -1542,15 +1574,54 @@ public class DataContainer {
 		return Collections.unmodifiableMap(hazardMap);
 	}
 
+//	public<T> List<String> getFilteredList(Map<String, T> map, List<String> keys){
+//		if(sourceFilter.size() < Source.values().length) {
+//			ArrayList<String> filteredList = new ArrayList<String>();
+//			for(String key : keys) {
+//				if(map.get(key) instanceof SourceProvider) {
+//					
+//				}else
+//					filteredList.add(key);
+//			}
+//			
+//			return Collections.unmodifiableList(filteredList);
+//		}else
+//			return Collections.unmodifiableList(keys);
+//	}
+	
+	public <T extends SourceProvider> List<String> filterKeys(
+	        List<String> keys,
+	        Map<String, T> map
+	) {
+	    return keys.stream()
+	               .filter(k -> {
+	                   T obj = map.get(k);
+	                   return obj != null && sourceFilter.contains(obj.getSource());
+	               })
+	               .toList();  // Java 16+ returns an immutable list
+	}
+
+	
 	public List<String> getRuleKeysSorted() {
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(ruleKeysSorted, ruleMap);
 		return Collections.unmodifiableList(ruleKeysSorted);
 	}
 
 	public List<String> getSpellKeysSorted() {
+		System.out.println(
+				(sourceFilter.size() < Source.values().length) + 
+				" check in spellKeysSorted:\n"
+				+ "SourceFilter Size: " + sourceFilter.size() + "\n"
+				+"Sources Size: " + Source.values().length);
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(spellKeysSorted, spellMap);
 		return Collections.unmodifiableList(spellKeysSorted);
 	}
 
 	public List<String> getMonsterKeysSorted() {
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(monstKeysSorted, monstMap);
 		return Collections.unmodifiableList(monstKeysSorted);
 	}
 	
@@ -1559,59 +1630,96 @@ public class DataContainer {
 	}
 	
 	public List<String> getWeaponKeysSorted(){
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(weaponKeysSorted, itemMap);
 		return Collections.unmodifiableList(weaponKeysSorted);
 	}
 	
 	public List<String> getArmorKeysSorted(){
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(armorKeysSorted, itemMap);
 		return Collections.unmodifiableList(armorKeysSorted);
 	}
 	
 	public List<String> getGearKeysSorted(){
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(gearKeysSorted, itemMap);
 		return Collections.unmodifiableList(gearKeysSorted);
 	}
 	
 	public List<String> getToolKeysSorted(){
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(toolKeysSorted, itemMap);
 		return Collections.unmodifiableList(toolKeysSorted);
 	}
 	
 	public List<String> getMagicItemKeysSorted(){
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(magicItemKeysSorted, itemMap);
 		return Collections.unmodifiableList(magicItemKeysSorted);
 	}
 	
 	public List<String> getMountKeysSorted(){
+		if(!(sourceFilter.size() < Source.values().length))
+			return filterKeys(mountKeysSorted, vehicleMap);
 		return Collections.unmodifiableList(mountKeysSorted);
 	}
 	
 	public List<String> getLargeVehicleKeysSorted(){
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(largeVehicleKeysSorted, vehicleMap);
 		return Collections.unmodifiableList(largeVehicleKeysSorted);
 	}
 	
 	public List<String> getFeatKeysSorted(){
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(featKeysSorted, featMap);
 		return Collections.unmodifiableList(featKeysSorted);
 	}
 	
 	public List<String> getClassKeysSorted(){
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(classKeysSorted, classMap);
 		return Collections.unmodifiableList(classKeysSorted);
 	}
 	
 	public List<String> getSpeciesKeysSorted(){
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(speciesKeysSorted, speciesMap);
 		return Collections.unmodifiableList(speciesKeysSorted);
 	}
 	
 	public List<String> getBackgroundKeysSorted(){
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(backgroundKeysSorted, backgroundMap);
 		return Collections.unmodifiableList(backgroundKeysSorted);
 	}
 	
 	public List<String> getBastionRoomKeysSorted(){
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(bastionRoomKeysSorted, bastionRoomMap);
 		return Collections.unmodifiableList(bastionRoomKeysSorted);
 	}
 	
 	public List<String> getHazardKeysSorted(){
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(hazardKeysSorted, hazardMap);
 		return Collections.unmodifiableList(hazardKeysSorted);
 	}
 	
 	public List<String> getTrapKeysSorted(){
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(trapKeysSorted, hazardMap);
 		return Collections.unmodifiableList(trapKeysSorted);
+	}
+	
+	public void showSourceDialog(JFrame frm) {
+		SourceToggleDialog srcToggle = new SourceToggleDialog(frm, sourceFilter);
+		if(srcToggle.setSources) {
+			sourceFilter = new ArrayList<Source>(srcToggle.getSources());
+			notifyChange();
+		}
+		srcToggle.dispose();
 	}
 	/*
 	 * Campaign Methods
@@ -1723,7 +1831,6 @@ public class DataContainer {
 	
 	private void SaveConfig() {
 		File conf = new File(appLocal.getPath() + File.separator + CONFIG_FILE_NAME);
-		System.out.println(conf.getPath());
 		if(!conf.exists())
 			try {
 				conf.createNewFile();

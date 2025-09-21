@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import javax.swing.text.StyledDocument;
 import builders.rule_builder.CustomStyledDocument;
+import data.DataContainer.Source;
+import data.interfaces.SourceProvider;
 
-public class Rule implements Comparable<Rule>, Serializable {
+public class Rule implements Comparable<Rule>, Serializable, SourceProvider{
 	/**
 	 * 
 	 */
@@ -13,6 +15,7 @@ public class Rule implements Comparable<Rule>, Serializable {
 	public String name;
 	public String desc_basic, desc_HTML;
 	public StyledDocument ruleDoc;
+	public Source src;
 
 	public Rule() {
 		name = "NONE";
@@ -42,5 +45,10 @@ public class Rule implements Comparable<Rule>, Serializable {
 	    	System.out.println("Running");
 	    }
 	    out.defaultWriteObject();  // Proceed with default serialization
+	}
+
+	@Override
+	public Source getSource() {
+		return src;
 	}
 }

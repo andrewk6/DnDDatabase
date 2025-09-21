@@ -5,8 +5,9 @@ import java.io.Serializable;
 import javax.swing.text.StyledDocument;
 
 import data.DataContainer.Source;
+import data.interfaces.SourceProvider;
 
-public class Feat implements Serializable{
+public class Feat implements Serializable, SourceProvider{
 	private static final long serialVersionUID = 810856765469994989L;
 	
 	public enum FeatType{
@@ -20,5 +21,9 @@ public class Feat implements Serializable{
 	
 	public String toString() {
 		return name;
+	}
+	
+	public Source getSource() {
+		return src;
 	}
 }

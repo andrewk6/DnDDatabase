@@ -12,6 +12,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 import data.DataContainer;
+import data.Rule;
+import data.Spell;
+import data.items.Item;
+import data.DataContainer.MapType;
+import data.DataContainer.Source;
+import data.Monster;
+import data.players.BastionRoom;
 import data.players.classes.DnDClass;
 import data.vehicles.Vehicle;
 import gui.gui_helpers.CompFactory;
@@ -28,11 +35,12 @@ public class Test extends JFrame {
 	public static void main(String[] args) throws BadLocationException {
 		DataContainer data = new DataContainer();
 		data.init();
-		boolean gui = true;
-		
-		for(Vehicle v : data.getVehicles().values())
-			System.out.println(v.src);
-//		data.SafeSaveData(MapType.VEHICLES);
+		boolean gui = false;
+
+		for(Spell r : data.getSpells().values())
+			if(r.source == null || r.spellLevel == null || r.spellSchool == null)
+				System.out.println(r.name);
+
 		if(gui)
 			guiStuff(data);
 		else

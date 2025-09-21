@@ -30,6 +30,7 @@ public class StyleContainer {
 	public final static Font BTN_FONT_MAIN = new Font("Monospaced", Font.BOLD, 24);
 	public final static Font FNT_BODY_PLAIN = new Font("Monospaced", Font.PLAIN, 16);
 	public final static Font FNT_HEADER_BOLD = new Font("Monospaced", Font.BOLD, 18);
+	public final static int SIDE_STRING_LIMIT = 23;
 	
 	
 	public final static String BACKGROUND_FILE = "background.jpg";

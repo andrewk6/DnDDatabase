@@ -3,11 +3,7 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.EventQueue;
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,7 +15,6 @@ import java.util.Queue;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
-import javax.swing.DesktopManager;
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
@@ -28,7 +23,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -293,6 +287,9 @@ public class DnD_Database_Tool extends JFrame {
 		StyleContainer.SetFontHeader(toolsMenu);
 		menu.add(toolsMenu);
 		
+		toolsMenu.add(CompFactory.createNewJMenuItem("Configure Sources", _->{
+			data.showSourceDialog(this);
+		}));
 		toolsMenu.add(CompFactory.createNewJMenuItem(
 				"Initiative Tracker", ()->new InitiativeIFrame(data, gd, dPane), dPane));
 		toolsMenu.add(CompFactory.createNewJMenuItem(
@@ -388,7 +385,6 @@ public class DnD_Database_Tool extends JFrame {
 		buildMenu.add(CompFactory.createNewJMenuItem("Feat Builder", fBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Bastion Room Builder", brBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Hazard Builder", hBuildFrame));
-		
 		/*
 		 * LOADED CAMPAIGN
 		 */

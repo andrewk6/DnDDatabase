@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import javax.swing.text.StyledDocument;
 
 import data.Feat;
+import data.interfaces.SourceProvider;
 import data.DataContainer.Abilities;
 import data.DataContainer.Skills;
 import data.DataContainer.Source;
 import data.items.Item;
 
-public class Background implements Serializable
+public class Background implements Serializable, SourceProvider
 {
 	/**
 	 * 
@@ -30,4 +31,9 @@ public class Background implements Serializable
 	public int startGoldWithEquip;
 	
 	public final int noEquipGold = 50;
+
+	
+	public Source getSource() {
+		return src;
+	}
 }
