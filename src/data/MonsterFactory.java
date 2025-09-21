@@ -33,6 +33,7 @@ public class MonsterFactory {
 		m.dmgRes = d.dmgResist;
 		m.dmgVul = d.dmgVuln;
 		m.immune = d.invuln;
+		m.source = d.source;
 		return m;
 	}
 
