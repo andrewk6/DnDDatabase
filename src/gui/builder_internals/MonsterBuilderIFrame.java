@@ -20,6 +20,7 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -41,10 +42,12 @@ import data.*;
 import data.DataContainer.MapType;
 import data.DataContainer.Proficiency;
 import data.DataContainer.Skills;
+import data.DataContainer.Source;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.DocumentHelper;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
+import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.StyleContainer;
 import utils.ErrorLogger;
@@ -73,6 +76,8 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 	private JTabbedPane tabPane;
 	
 	private HashMap<String, String> rEditReps;
+	
+	private JComboBox<Source> srcCombo;
 	
 	private final Dimension limitSize = new Dimension(200, Integer.MAX_VALUE);
 
@@ -364,9 +369,14 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 
 	private void BuildStatsPane(JPanel hPane) {
 		hPane.setLayout(new BorderLayout());
-
+		
 		JPanel tPane = new JPanel();
 		tPane.setLayout(new BorderLayout());
+		
+		JPanel nameSrcPane = new JPanel();
+		nameSrcPane.setLayout(new BorderLayout());
+		tPane.add(nameSrcPane, BorderLayout.CENTER);
+		
 		monsterNameField = new ReminderField("", "Enter the name for the monster...");
 		StyleContainer.SetFontHeader(monsterNameField);
 		monsterNameField.setFont(monsterNameField.getFont().deriveFont((float) 22));
@@ -378,8 +388,19 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 				rEditReps.put("<NAME>", monsterNameField.getText().toLowerCase());
 			}
 		});
-		tPane.add(monsterNameField, BorderLayout.CENTER);
-
+		nameSrcPane.add(monsterNameField, BorderLayout.CENTER);
+		
+		JPanel srcPane = new JPanel();
+		srcPane.setLayout(new BorderLayout());
+		nameSrcPane.add(srcPane, BorderLayout.EAST);
+		
+		JLabel srcLbl = CompFactory.createNewLabel("Source:", ComponentType.HEADER);
+		srcPane.add(srcLbl, BorderLayout.WEST);
+		
+		srcCombo = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
+		srcCombo.setSelectedItem(Source.MonsterManual2024);
+		srcPane.add(srcCombo, BorderLayout.CENTER);
+		
 		monsterTypeField = new ReminderField("", "Enter the monster size type, alignment");
 		monsterTypeField.setFont(StyleContainer.FNT_BODY_PLAIN.deriveFont(Font.ITALIC));
 		tPane.add(monsterTypeField, BorderLayout.SOUTH);
@@ -787,7 +808,7 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 	private void BuildMonstListPane() {
 		SwingUtilities.invokeLater(()->{
 			monstGridPane.removeAll();
-			monstGridPane.setLayout(new GridLayout(0, 2));
+			monstGridPane.setLayout(new GridLayout(0, 1));
 			
 			ArrayList<String> sortKeys = new ArrayList<String>();
 			for(String key : monstMap.keySet()) {
@@ -799,48 +820,33 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 				}
 				
 			}
+
 			Collections.sort(sortKeys);
+			
 			for (String key : sortKeys) {
+				JPanel pane = new JPanel();
+				pane.setLayout(new BorderLayout());
+				monstGridPane.add(pane);
+				
 //				System.out.println(key);
 				String name = key;
 				if(name.length() > 13)
 					name = name.substring(0, 13);
-				JTextField monstName = new JTextField(name);
 				
-				monstName.setToolTipText(key);
-				StyleContainer.SetFontMain(monstName);
-				monstName.setColumns(15);
-				monstName.addMouseListener(new MouseListener() {
-
-					@Override
-					public void mouseClicked(MouseEvent e) {
-//						JFrame monstDisp = new JFrame();
-//						monstDisp.setTitle(key);
-//						monstDisp.setContentPane(new MonsterDispPane(monstMap.get(key), data, new GuiDirector(new JDesktopPane())));
-//						monstDisp.setSize(645, 515);
-//						monstDisp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);						
-//						monstDisp.setVisible(true);
-//						monstDisp.setResizable(false);
-						
-						int opt = JOptionPane.showConfirmDialog(null, 
+				JLabel monstName = CompFactory.createSideLabel(name, ComponentType.BODY);
+				monstName.addMouseListener(CompFactory.createSideMouseListener(monstName, ()->{
+					int opt = JOptionPane.showConfirmDialog(null, 
 								"Load: " + key + "? Any unadded work on current monster will be lost.", 
 								"Load Confirm", JOptionPane.YES_NO_OPTION);
 						if(opt == JOptionPane.YES_OPTION)
 							LoadEditMonster(monstMap.get(key));
-					}
-					public void mousePressed(MouseEvent e) {}
-					public void mouseReleased(MouseEvent e) {}
-					public void mouseEntered(MouseEvent e) {monstName.setFont(monstName.getFont().deriveFont(Font.BOLD));}
-					public void mouseExited(MouseEvent e) {monstName.setFont(monstName.getFont().deriveFont(Font.PLAIN));}
-				});
-				monstName.setEditable(false);
-				monstName.setFocusable(false);
+				}));
 
-				monstGridPane.add(monstName);
+				pane.add(monstName, BorderLayout.CENTER);
 
 				JButton mDel = new JButton("Delete");
 				StyleContainer.SetFontBtn(mDel);
-				mDel.addActionListener(e -> {
+				mDel.addActionListener(_ -> {
 					int delOpt = JOptionPane.showConfirmDialog(null, ("Delete: " + key), "Delete Confirmation", 
 							JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 					if(delOpt == JOptionPane.YES_OPTION) {
@@ -855,7 +861,7 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 					}
 					
 				});
-				monstGridPane.add(mDel);
+				pane.add(mDel, BorderLayout.EAST);
 			}
 			monstGridPane.repaint();
 			monstGridPane.revalidate();
@@ -913,6 +919,7 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 			mData.senses = sensesField.getText();
 			mData.skills = skills;
 			mData.spd = speedField.getText();
+			mData.source = (Source) srcCombo.getSelectedItem();
 			mData.str = Integer.parseInt(strField.getText());
 			mData.strSProf = strSaveP.isSelected();
 			ArrayList<String> tagVals = new ArrayList<String>();
@@ -924,6 +931,7 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 			mData.type = monsterTypeField.getText();
 			mData.wis = Integer.parseInt(wisField.getText());
 			mData.wisSProf = wisSaveP.isSelected();
+//			mData.
 
 			Monster m = MonsterFactory.BuildMonster(mData);
 			monstMap.put(m.name, m);
@@ -973,6 +981,8 @@ public class MonsterBuilderIFrame extends JInternalFrame {
 		monsterNameField.setEditable(false);
 		monsterNameField.setFocusable(false);
 		monsterTypeField.setText(m.typeSizeAlignment);
+		srcCombo.setSelectedItem(m.source);
+		System.out.println(m.source.toString());
 		acField.setText(m.ac);
 		initBnsField.setText("0");
 		hpField.setText(m.hp);

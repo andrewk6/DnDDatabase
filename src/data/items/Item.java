@@ -3,8 +3,10 @@ package data.items;
 import java.io.Serializable;
 
 import data.DataContainer.Source;
+import data.interfaces.SourceProvider;
 
-public sealed class Item implements Serializable permits Weapon, Armor, ToolSet, Gear, MagicItem{
+public sealed class Item implements Serializable, SourceProvider
+		permits Weapon, Armor, ToolSet, Gear, MagicItem{
 	private static final long serialVersionUID = 1L;
 	
 	public static final int CP = 0;
@@ -27,5 +29,9 @@ public sealed class Item implements Serializable permits Weapon, Armor, ToolSet,
 	
 	public String toString() {
 		return name;
+	}
+
+	public Source getSource() {
+		return source;
 	}
 }

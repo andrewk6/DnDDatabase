@@ -218,7 +218,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         
         
 
-        editor.getDocument().addDocumentListener(documentListener);
+        addDocumentListeners();
         editor.addKeyListener(keyAdapter);
         suggestionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -344,19 +344,6 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                     e.consume();
                 }
             }
-        });
-        
-        editor.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                SwingUtilities.invokeLater(() -> checkForSlash());
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) { }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) { }
         });
     }
     
@@ -585,8 +572,12 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 
                 Collections.sort(matches);
                 if (!matches.isEmpty()) {
-                	showMatches = true;
-                    updateSuggestions(matches, caretPos);
+                	if(matches.size() == 1) {
+                		insertSuggestion(matches.getFirst());
+                	}else {
+                		showMatches = true;
+                        updateSuggestions(matches, caretPos);
+                	}
                 }
             }
             
@@ -617,7 +608,6 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     }
 
     private void updateSuggestions(List<String> suggestions, int caretEnd) {
-    	System.out.println("In Update: " + showMatches);
     	if(showMatches) {
             suggestionList.setListData(suggestions.toArray(new String[0]));
             suggestionList.setSelectedIndex(0);
@@ -639,8 +629,6 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     }
 
     private void insertSuggestion(String selected) {
-    	System.out.println(replacements == null);
-    	
         if (atPosition >= 0 && selected != null) {
             try {
                 boolean isSpell = selected.endsWith(" (spell)");
@@ -1097,10 +1085,67 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     
     public void LoadDocument(StyledDocument doc) {
     	this.editor.setStyledDocument(doc);
+    	RebuildOffsets();
+    	addDocumentListeners();
+    }
+    private void RebuildOffsets() {
+    	StyledDocument doc = getStyledDocument();
+    	int length = doc.getLength();
+    	for (int i = 0; i < length; i++) {
+    	    Element elem = doc.getCharacterElement(i);
+    	    AttributeSet attr = elem.getAttributes();
+    	    
+            String ruleName = (String) attr.getAttribute("ruleLink");
+            String spellName = (String) attr.getAttribute("spellLink");
+            String monsterName = (String) attr.getAttribute("monstLink");
+            String itemName = (String) attr.getAttribute("itemLink");
+            String featName = (String) attr.getAttribute("featLink");
+            String className = (String) attr.getAttribute("classLink");
+            String speciesName = (String)attr.getAttribute("speciesLink");
+            String backgroundName = (String)attr.getAttribute("backgroundLink");
+            
+            if(ruleName != null)
+            	ruleOffsets.put(i, ruleName);
+            else if(spellName != null)
+            	spellOffsets.put(i, spellName);
+            else if(monsterName != null)
+            	monstOffsets.put(i, monsterName);
+            else if(itemName != null)
+            	itemOffsets.put(i, itemName);
+            else if(featName != null)
+            	featOffsets.put(i, featName);
+            else if(className != null)
+            	classOffsets.put(i, className);
+            else if(speciesName != null)
+            	speciesOffsets.put(i, speciesName);
+            else if(backgroundName != null)
+            	backgroundOffsets.put(i, backgroundName);
+    	}
     }
 
     public void close() {
         rulePreviewWindow.dispose();
+    }
+    
+    /*
+     * editor.getDocument().addDocumentListener(documentListener);
+     */
+    
+    private void addDocumentListeners() {
+    	editor.getDocument().addDocumentListener(documentListener);
+    	
+    	editor.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                SwingUtilities.invokeLater(() -> checkForSlash());
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) { }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) { }
+        });
     }
     
     public void updateData() {

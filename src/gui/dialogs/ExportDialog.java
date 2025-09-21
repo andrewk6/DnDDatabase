@@ -1,4 +1,4 @@
-package gui.gui_helpers;
+package gui.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
 
 @SuppressWarnings("serial")
@@ -28,7 +29,7 @@ public class ExportDialog extends JDialog
 	
 	
 	public ExportDialog(JFrame frm) {
-		super(frm, "Create Subclass", ModalityType.APPLICATION_MODAL);
+		super(frm, "Export Database Selector", ModalityType.APPLICATION_MODAL);
 		expoTarget = null;
 		init(this.getContentPane());
 		this.pack();

@@ -4,7 +4,10 @@ import java.io.Serializable;
 
 import javax.swing.text.StyledDocument;
 
-public class BastionRoom implements Serializable
+import data.DataContainer.Source;
+import data.interfaces.SourceProvider;
+
+public class BastionRoom implements Serializable, SourceProvider
 {
 	/**
 	 * 
@@ -19,4 +22,9 @@ public class BastionRoom implements Serializable
 	public int unlockLevel;
 	public SpaceRequired spaceReq;
 	public Order roomOrder;
+	public Source src;
+	
+	public Source getSource() {
+		return src;
+	}
 }

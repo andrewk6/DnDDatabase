@@ -159,7 +159,6 @@ public class BastionPane extends JPanel implements DataChangeListener
 		Collections.sort(keys);
 
 		for(String key : keys) {
-			System.out.println(key);
 			JLabel lbl = CompFactory.createNewLabel(key, ComponentType.BODY);
 			lbl.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 			lbl.addMouseListener(CompFactory.createSideMouseListener(lbl, ()->{
