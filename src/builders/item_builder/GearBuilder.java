@@ -199,7 +199,6 @@ public class GearBuilder extends JPanel {
         nameField.requestFocus();
         descriptionArea.setText("");
         weightField.setText("");
-        poisonBox.setSelected(false);
 
         for (ReminderField field : costFields) field.setText("");
     }
