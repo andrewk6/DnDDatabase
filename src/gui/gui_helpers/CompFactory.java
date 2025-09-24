@@ -1,5 +1,6 @@
 package gui.gui_helpers;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -36,6 +37,7 @@ import javax.swing.event.InternalFrameListener;
 import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
+import data.DataContainer.Source;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
@@ -134,6 +136,18 @@ public class CompFactory
 		return lbl;
 	}
 	
+	public static JLabel createNewLabel(String text) {
+		JLabel lbl = new JLabel(text);		
+		setFont(lbl, ComponentType.BODY);		
+		return lbl;
+	}
+	
+	public static JLabel createNewLabel(String text, float fontMod) {
+		JLabel lbl = createNewLabel(text, ComponentType.BODY);
+		lbl.setFont(lbl.getFont().deriveFont(lbl.getFont().getSize() + fontMod));
+		return lbl;
+	}
+	
 	public static JLabel createSideLabel(String text, ComponentType type) {
 		JLabel sideLbl;
 		if(text.length() > StyleContainer.SIDE_STRING_LIMIT) 
@@ -151,6 +165,27 @@ public class CompFactory
 					type, fontMod);
 		else
 			sideLbl = createNewLabel(text, type, fontMod);
+		sideLbl.setToolTipText(text);
+		return sideLbl;
+	}
+	
+	public static JLabel createSideLabel(String text) {
+		JLabel sideLbl;
+		if(text.length() > StyleContainer.SIDE_STRING_LIMIT) 
+			sideLbl = createNewLabel(text.substring(0, StyleContainer.SIDE_STRING_LIMIT), ComponentType.BODY);
+		else
+			sideLbl = createNewLabel(text, ComponentType.BODY);
+		sideLbl.setToolTipText(text);
+		return sideLbl;
+	}
+	
+	public static JLabel createSideLabel(String text, float fontMod) {
+		JLabel sideLbl;
+		if(text.length() > StyleContainer.SIDE_STRING_LIMIT) 
+			sideLbl = createNewLabel(text.substring(0, StyleContainer.SIDE_STRING_LIMIT), 
+					ComponentType.BODY, fontMod);
+		else
+			sideLbl = createNewLabel(text, ComponentType.BODY, fontMod);
 		sideLbl.setToolTipText(text);
 		return sideLbl;
 	}
@@ -209,6 +244,19 @@ public class CompFactory
 		return cBox;
 	}
 	
+	public static <T extends Enum<T>> EnumCheckbox<T> createEnumCheckbox(T val) {
+		EnumCheckbox<T> cBox = new EnumCheckbox<T>(val);
+		StyleContainer.SetFontMain(cBox);
+		return cBox;
+	}
+	
+	public static <T extends Enum<T>> EnumCheckbox<T> createEnumCheckbox(T val, ActionListener act) {
+		EnumCheckbox<T> cBox = new EnumCheckbox<T>(val);
+		StyleContainer.SetFontMain(cBox);
+		cBox.addActionListener(act);
+		return cBox;
+	}
+	
 	public static ReminderField createReminderField(String tooltip, boolean numbersOnly,
 			int columns, ComponentType font) {
 		ReminderField field = new ReminderField(tooltip);
@@ -237,6 +285,37 @@ public class CompFactory
 	public static ReminderField createReminderField(String tooltip, ComponentType font) {
 		ReminderField field = new ReminderField(tooltip);
 		setFont(field, font);
+		return field;
+	}
+	
+	public static ReminderField createReminderField(String tooltip, boolean numbersOnly,
+			int columns) {
+		ReminderField field = new ReminderField(tooltip);
+		field.setColumns(columns);
+		if(numbersOnly)
+			field.setNumbersOnly();
+		setFont(field, ComponentType.BODY);
+		return field;
+	}
+	
+	public static ReminderField createReminderField(String tooltip, boolean numbersOnly) {
+		ReminderField field = new ReminderField(tooltip);
+		if(numbersOnly)
+			field.setNumbersOnly();
+		setFont(field, ComponentType.BODY);
+		return field;
+	}
+	
+	public static ReminderField createReminderField(String tooltip, int columns) {
+		ReminderField field = new ReminderField(tooltip);
+		field.setColumns(columns);
+		setFont(field, ComponentType.BODY);
+		return field;
+	}
+	
+	public static ReminderField createReminderField(String tooltip) {
+		ReminderField field = new ReminderField(tooltip);
+		setFont(field, ComponentType.BODY);
 		return field;
 	}
 	
@@ -306,6 +385,62 @@ public class CompFactory
 			out.add(b);
 		}
 		return out;
+	}
+	
+	public static JPanel createDescriptionPane(String lbl, String val) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel(lbl, ComponentType.HEADER), BorderLayout.WEST);
+		out.add(createNewLabel(val, ComponentType.BODY), BorderLayout.CENTER);
+		return out;
+	}
+	
+	public static JPanel createDescriptionPane(String lbl, String val, float fontMod) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel(lbl, ComponentType.HEADER, fontMod), BorderLayout.WEST);
+		out.add(createNewLabel(val, ComponentType.BODY, fontMod), BorderLayout.CENTER);
+		return out;
+	}
+	
+	public static JPanel createSplitPane(String lbl, Component val) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel(lbl, ComponentType.HEADER), BorderLayout.WEST);
+		out.add(val, BorderLayout.CENTER);
+		return out;
+	}
+	
+	public static JPanel createSplitPane(String lbl, Component val, float fontMod) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel(lbl, ComponentType.HEADER, fontMod), BorderLayout.WEST);
+		out.add(val, BorderLayout.CENTER);
+		return out;
+	}
+	
+	public static JPanel createTopPane(String name, Source src) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel(name, ComponentType.HEADER), BorderLayout.CENTER);
+		out.add(createSourcePane(src), BorderLayout.EAST);
+		return out;
+	}
+	
+	public static JPanel createTopPane(String name, Source src, float fontMod) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel(name, ComponentType.HEADER, fontMod), BorderLayout.CENTER);
+		out.add(createSourcePane(src), BorderLayout.EAST);
+		return out;
+	}
+	
+	public static JPanel createSourcePane(Source src) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel("Source: ", ComponentType.HEADER), BorderLayout.WEST);
+		out.add(createNewLabel(src.toString(), ComponentType.BODY));
+		return out;		
 	}
 	
 	public static JScrollPane wrapPanelInScroll(JComponent pane) {

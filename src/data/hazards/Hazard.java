@@ -15,7 +15,10 @@ public class Hazard implements Serializable, SourceProvider
 	 * 
 	 */
 	private static final long serialVersionUID = 3430204560013587655L;
-	public enum HazardDanger {Nuisance, Deadly};
+	public enum HazardDanger {
+		Nuisance, 
+		Deadly
+	};
 	
 	public String name;
 	public StyledDocument desc;

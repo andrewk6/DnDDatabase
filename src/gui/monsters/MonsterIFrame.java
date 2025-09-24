@@ -1,4 +1,4 @@
-package gui;
+package gui.monsters;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -31,13 +31,12 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.JCheckBox;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.interfaces.DataChangeListener;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
-import gui.gui_helpers.MonsterDispPane;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;

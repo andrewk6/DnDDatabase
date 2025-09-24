@@ -14,9 +14,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import data.DataChangeListener;
+
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.interfaces.DataChangeListener;
 import data.players.Species;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;

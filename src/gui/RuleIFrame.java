@@ -24,9 +24,10 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import data.DataChangeListener;
+
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.interfaces.DataChangeListener;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;

@@ -38,7 +38,6 @@ import gui.background.BackgroundPane;
 import gui.classes.ClassPane;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.HoverTextPane;
-import gui.gui_helpers.MonsterDispPane;
 import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.AllTab;
@@ -46,7 +45,9 @@ import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 import gui.hazard.HazardPane;
+import gui.monsters.MonsterDispPane;
 import gui.species.SpeciesPane;
+import gui.spells.SpellPane;
 import utils.ErrorLogger;
 
 public class DungeonIViewer extends JInternalFrame implements AllTab
@@ -304,18 +305,8 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
 			mainPane.addTab(s.name, sPane);
 			tabsUI.setTabColor(mainPane.indexOfTab(s.name), Color.PINK);
 
-			JTextField sTitle = new JTextField(s.name);
-			sTitle.setEditable(false);
-			sTitle.setFocusable(false);
-			sTitle.setHorizontalAlignment(JTextField.CENTER);
-			StyleContainer.SetFontHeader(sTitle);
-			sPane.add(sTitle, BorderLayout.NORTH);
-
-			HoverTextPane sDesc = new HoverTextPane(data, gd, gd.getDesktop());
-			sDesc.setDocument(data.getSpells().get(s.name).spellDoc);
-			JScrollPane sScroll = CompFactory.wrapPanelInScroll(sDesc);
-			sPane.add(sScroll, BorderLayout.CENTER);
-
+			sPane.add(new SpellPane(s, data, gd), BorderLayout.CENTER);
+			
 			JPanel btnFlow = new JPanel();
 			btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			sPane.add(btnFlow, BorderLayout.SOUTH);

@@ -20,9 +20,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.StyledDocument;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.interfaces.DataChangeListener;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CompFactory.ScrollPolicy;

@@ -56,7 +56,9 @@ import gui.gui_helpers.structures.StyleContainer;
 import gui.gui_helpers.structures.TaskbarDesktopManager;
 import gui.hazard.HazardIFrame;
 import gui.initative.InitiativeIFrame;
+import gui.monsters.MonsterIFrame;
 import gui.species.SpeciesIFrame;
+import gui.spells.SpellIFrame;
 import utils.ErrorLogger;
 
 public class DnD_Database_Tool extends JFrame {

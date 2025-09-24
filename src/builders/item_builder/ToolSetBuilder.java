@@ -6,6 +6,7 @@ import data.DataContainer.Source;
 import data.items.ToolSet;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
+import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CompFactory.ScrollPolicy;
 
 import javax.swing.*;
@@ -18,19 +19,22 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class ToolSetBuilder extends JPanel {
 
-	private final JTextField nameField = new JTextField(15);
-	private final JComboBox<Abilities> abilBox = new JComboBox<>(Abilities.values());
+	private final ReminderField nameField = 
+			CompFactory.createReminderField("Item name...", 15, ComponentType.HEADER);
+	private final JComboBox<Abilities> abilBox = 
+			CompFactory.createEnumCombo(Abilities.class, ComponentType.BODY);
 	private final JTextArea utilizeArea = new JTextArea(4, 20);
 	private final JTextArea craftArea = new JTextArea(4, 20);
 
-	private final ReminderField weightField = new ReminderField(5);
+	private final ReminderField weightField = CompFactory.createReminderField("Weight", true, 5);
 	private final ReminderField[] costFields = {
-		new ReminderField(3), new ReminderField(3),
-		new ReminderField(3), new ReminderField(3),
-		new ReminderField(3)
+			CompFactory.createReminderField("CP", true, 3), // CP
+	        CompFactory.createReminderField("SP", true, 3), // SP
+	        CompFactory.createReminderField("EP", true, 3), // EP
+	        CompFactory.createReminderField("GP", true, 3), // GP
+	        CompFactory.createReminderField("PP", true, 3)  // PP
 	};
-	private final JCheckBox customBox = new JCheckBox("Custom");
-	private final JComboBox<Source> sourceBox = new JComboBox<>(Source.values());
+	private final JComboBox<Source> sourceBox = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
 
 
 	private final Map<String, ToolSet> toolMap = new LinkedHashMap<>();
@@ -41,8 +45,6 @@ public class ToolSetBuilder extends JPanel {
 		this.data = data;
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(10, 10, 10, 10));
-
-		setNumbersOnly();
 
 		// Left panel: item list
 		listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
@@ -57,11 +59,6 @@ public class ToolSetBuilder extends JPanel {
 		add(new JScrollPane(wrapper), BorderLayout.CENTER);
 	}
 
-	private void setNumbersOnly() {
-		weightField.setNumbersOnly();
-		for (ReminderField f : costFields) f.setNumbersOnly();
-	}
-
 	private JPanel buildFormPanel() {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -72,30 +69,30 @@ public class ToolSetBuilder extends JPanel {
 		int row = 0;
 
 		gbc.gridx = 0; gbc.gridy = row;
-		panel.add(new JLabel("Name:"), gbc);
+		panel.add(CompFactory.createNewLabel("Name:", ComponentType.HEADER), gbc);
 		gbc.gridx = 1;
 		panel.add(nameField, gbc);
 
 		row++;
 		gbc.gridx = 0; gbc.gridy = row;
-		panel.add(new JLabel("Ability:"), gbc);
+		panel.add(CompFactory.createNewLabel("Ability:", ComponentType.HEADER), gbc);
 		gbc.gridx = 1;
 		panel.add(abilBox, gbc);
 
 		row++;
 		gbc.gridx = 0; gbc.gridy = row;
-		panel.add(new JLabel("Weight:"), gbc);
+		panel.add(CompFactory.createNewLabel("Weight", ComponentType.HEADER), gbc);
 		gbc.gridx = 1;
 		panel.add(weightField, gbc);
 
 		row++;
 		gbc.gridx = 0; gbc.gridy = row;
-		panel.add(new JLabel("Cost:"), gbc);
+		panel.add(CompFactory.createNewLabel("Cost:", ComponentType.HEADER), gbc);
 		gbc.gridx = 1;
 		JPanel costPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
 		String[] labels = {"CP", "SP", "EP", "GP", "PP"};
 		for (int i = 0; i < 5; i++) {
-			costPanel.add(new JLabel(labels[i]));
+			costPanel.add(CompFactory.createNewLabel(labels[i], ComponentType.HEADER));
 			costPanel.add(costFields[i]);
 		}
 		panel.add(costPanel, gbc);
@@ -103,7 +100,7 @@ public class ToolSetBuilder extends JPanel {
 		row++;
 		gbc.gridx = 0; gbc.gridy = row;
 		gbc.gridwidth = 2;
-		panel.add(new JLabel("Utilize:"), gbc);
+		panel.add(CompFactory.createNewLabel("Utilize:", ComponentType.HEADER), gbc);
 
 		row++;
 		gbc.gridy = row;
@@ -112,7 +109,7 @@ public class ToolSetBuilder extends JPanel {
 
 		row++;
 		gbc.gridy = row;
-		panel.add(new JLabel("Craft:"), gbc);
+		panel.add(CompFactory.createNewLabel("Craft:", ComponentType.HEADER), gbc);
 
 		row++;
 		gbc.gridy = row;
@@ -121,26 +118,19 @@ public class ToolSetBuilder extends JPanel {
 
 		row++;
 		gbc.gridx = 0; gbc.gridy = row;
-		panel.add(new JLabel("Source:"), gbc);
+		panel.add(CompFactory.createNewLabel("Source:", ComponentType.HEADER), gbc);
 		gbc.gridx = 1;
 		panel.add(sourceBox, gbc);
 
 		row++;
-		gbc.gridx = 0; gbc.gridy = row;
-		gbc.gridwidth = 2;
-		panel.add(customBox, gbc);
-		gbc.gridwidth = 1;
-
-		row++;
 		gbc.gridy = row;
-		JButton addButton = new JButton("Add Tool Set");
-		addButton.addActionListener(this::handleAddTool);
+		JButton addButton = CompFactory.createNewButton("Add Tool Set", this::handleAddTool);
 		panel.add(addButton, gbc);
 
 		return panel;
 	}
 
-	private void handleAddTool(ActionEvent e) {
+	private void handleAddTool() {
 		String name = nameField.getText().trim();
 		if (name.isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Tool set name cannot be empty.");
@@ -162,7 +152,6 @@ public class ToolSetBuilder extends JPanel {
 				tool.costs[i] = 0;
 			}
 		}
-		tool.custom = customBox.isSelected();
 		tool.source = (Source) sourceBox.getSelectedItem();
 
 
@@ -217,7 +206,6 @@ public class ToolSetBuilder extends JPanel {
 		utilizeArea.setText(tool.utilize);
 		craftArea.setText(tool.craft);
 		weightField.setText(String.valueOf(tool.weight));
-		customBox.setSelected(tool.custom);
 		sourceBox.setSelectedItem(tool.source);
 
 		for (int i = 0; i < 5; i++) {
@@ -232,7 +220,6 @@ public class ToolSetBuilder extends JPanel {
 		utilizeArea.setText("");
 		craftArea.setText("");
 		weightField.setText("");
-		customBox.setSelected(false);
 		sourceBox.setSelectedIndex(0);
 		for (ReminderField f : costFields) f.setText("");
 		nameField.requestFocus();

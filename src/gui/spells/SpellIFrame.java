@@ -1,4 +1,4 @@
-package gui;
+package gui.spells;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -27,9 +27,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.interfaces.DataChangeListener;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
@@ -185,18 +185,8 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 		sPane.setLayout(new BorderLayout());
 		spellTab.addTab(key, sPane);
 		
-		JTextField spellTitle = new JTextField(key);
-		spellTitle.setEditable(false);
-		spellTitle.setFocusable(false);
-		spellTitle.setHorizontalAlignment(JTextField.CENTER);
-		StyleContainer.SetFontHeader(spellTitle);
-		sPane.add(spellTitle, BorderLayout.NORTH);
-		
-		HoverTextPane spellDesc = new HoverTextPane(data, gd, dPane);
-//		spellDesc.SetSpellTabbedPane(this);
-		spellDesc.setDocument(data.getSpells().get(key).spellDoc);
-		JScrollPane spellScroll = CompFactory.wrapPanelInScroll(spellDesc);
-		sPane.add(spellScroll, BorderLayout.CENTER);
+		SpellPane spellDesc = new SpellPane(data.getSpells().get(key), data, gd);
+		sPane.add(spellDesc, BorderLayout.CENTER);
 		
 		JPanel btnFlow = new JPanel();
 		btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));

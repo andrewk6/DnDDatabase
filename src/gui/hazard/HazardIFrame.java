@@ -14,10 +14,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import data.DataChangeListener;
+
 import data.DataContainer;
 import data.DataContainer.MapType;
 import data.hazards.Hazard;
+import data.interfaces.DataChangeListener;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.ReminderField;

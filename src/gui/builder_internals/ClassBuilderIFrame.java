@@ -33,12 +33,12 @@ import javax.swing.text.StyledDocument;
 
 import builders.class_builder.AbilityPaneBuilder;
 import builders.class_builder.SubclassPaneBuilder;
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.Abilities;
 import data.DataContainer.MapType;
 import data.DataContainer.Skills;
 import data.DataContainer.Source;
+import data.interfaces.DataChangeListener;
 import data.items.Item;
 import data.items.Armor.ArmorType;
 import data.players.classes.ClassAbility;

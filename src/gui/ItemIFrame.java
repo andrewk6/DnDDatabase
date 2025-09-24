@@ -14,9 +14,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.interfaces.DataChangeListener;
 import gui.gui_helpers.structures.ContentFrame;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;

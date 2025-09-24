@@ -42,7 +42,6 @@ public class MagicItemBuilder extends JPanel {
 	private final JCheckBox attuneBox = CompFactory.createNewCheckbox("Requires Attunement");
 	private RichEditor descriptionEditor;
 	
-	private final JCheckBox customBox = CompFactory.createNewCheckbox("Custom");
 	private final JComboBox<Source> sourceBox = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
 	private final ReminderField subtypeField = CompFactory.createReminderField("Subtype...", 15, ComponentType.BODY);
 	private final JComboBox<Rarity> rarityBox = CompFactory.createEnumCombo(Rarity.class, ComponentType.BODY);
@@ -177,14 +176,8 @@ public class MagicItemBuilder extends JPanel {
 		panel.add(sourceBox, gbc);
 
 		row++;
-		gbc.gridx = 0; gbc.gridy = row;
-		gbc.gridwidth = 2;
-		panel.add(customBox, gbc);
-
-		row++;
 		gbc.gridy = row;
 		JButton addButton = CompFactory.createNewButton("Add Magic Item", this::handleAddItem);
-//		addButton.addActionListener(this::handleAddItem);
 		panel.add(addButton, gbc);
 
 		return panel;
@@ -214,7 +207,6 @@ public class MagicItemBuilder extends JPanel {
 
 		item.atttune = attuneBox.isSelected();
 		item.desc = descriptionEditor.getStyledDocument();
-		item.custom = customBox.isSelected();
 		item.source = (Source) sourceBox.getSelectedItem();
 		item.subtype = subtypeField.getText().trim();
 		item.rare = (Rarity) rarityBox.getSelectedItem();
@@ -233,7 +225,6 @@ public class MagicItemBuilder extends JPanel {
 		for (ReminderField field : costFields)
 			field.setText("");
 		attuneBox.setSelected(false);
-		customBox.setSelected(false);
 		sourceBox.setSelectedItem(Source.DungeonMastersGuide2024);
 		subtypeField.setText("");
 		rarityBox.setSelectedItem(Rarity.Common);
@@ -295,7 +286,6 @@ public class MagicItemBuilder extends JPanel {
 		costFields[Item.PP].setText("" + i.costs[Item.PP]);
 		
 		attuneBox.setSelected(i.atttune);
-		customBox.setSelected(i.custom);
 		sourceBox.setSelectedItem(i.source);
 		subtypeField.setText(i.subtype != null ? i.subtype : "");
 		rarityBox.setSelectedItem(i.rare != null ? i.rare : Rarity.Common);

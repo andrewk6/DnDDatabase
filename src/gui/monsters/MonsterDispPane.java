@@ -1,4 +1,4 @@
-package gui.gui_helpers;
+package gui.monsters;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -31,7 +31,10 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import data.*;
-import gui.MonsterIFrame;
+import gui.gui_helpers.CompFactory;
+import gui.gui_helpers.HoverTextPane;
+import gui.gui_helpers.ReminderField;
+import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
@@ -297,12 +300,20 @@ public class MonsterDispPane extends JTabbedPane {
 		JPanel tPane = new JPanel();
 		tPane.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK));
 		tPane.setLayout(new BorderLayout());
+		
+		JPanel headPane = new JPanel();
+		headPane.setLayout(new BorderLayout());
+		tPane.add(headPane, BorderLayout.CENTER);
+		
 		monsterNameField = new JTextField(m.name);
 		monsterNameField.setEditable(false);
 		monsterNameField.setFocusable(false);
 		StyleContainer.SetFontHeader(monsterNameField);
 		monsterNameField.setFont(monsterNameField.getFont().deriveFont((float) 22));
-		tPane.add(monsterNameField, BorderLayout.CENTER);
+		headPane.add(monsterNameField, BorderLayout.CENTER);
+		
+		JPanel srcPane = CompFactory.createSourcePane(m.source);
+		headPane.add(srcPane, BorderLayout.EAST);
 
 		monsterTypeField = new JTextField(m.typeSizeAlignment);
 		monsterTypeField.setEditable(false);

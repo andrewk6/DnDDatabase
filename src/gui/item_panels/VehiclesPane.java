@@ -17,9 +17,9 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.interfaces.DataChangeListener;
 import data.vehicles.LargeVehicle;
 import data.vehicles.Mount;
 import gui.gui_helpers.CompFactory;

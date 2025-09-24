@@ -10,10 +10,15 @@ import data.items.Weapon.WeaponMastery;
 import data.items.Weapon.WeaponProperty;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
+import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CompFactory.ScrollPolicy;
+import gui.gui_helpers.EnumCheckbox;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.*;
@@ -22,31 +27,47 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class WeaponBuilderPanel extends JPanel {
-    private final JTextField nameField = new JTextField(15);
-    private final JTextField damageField = new JTextField(10);
-    private final JTextField versDamageField = new JTextField(10);
-    private final JComboBox<DamageTypes> dmgTypeBox = new JComboBox<>(DamageTypes.values());
-    private final JComboBox<WeaponMastery> masteryBox = new JComboBox<>(WeaponMastery.values());
+    private final ReminderField nameField = 
+    		CompFactory.createReminderField("Item name...", 15, ComponentType.HEADER);
+    private final ReminderField damageField = 
+    		CompFactory.createReminderField("Damage...", 10, ComponentType.BODY);
+    private final ReminderField versDamageField = 
+    		CompFactory.createReminderField("Vers. Damage...", 10, ComponentType.BODY);
+    private final JComboBox<DamageTypes> dmgTypeBox = 
+    		CompFactory.createEnumCombo(DamageTypes.class, ComponentType.BODY);
+    private final JComboBox<WeaponMastery> masteryBox = 
+    		CompFactory.createEnumCombo(WeaponMastery.class, ComponentType.BODY);
 
-    private final JCheckBox rangedBox = new JCheckBox("Ranged");
-    private final JCheckBox martialBox = new JCheckBox("Martial");
+    private final JCheckBox rangedBox = CompFactory.createNewCheckbox("Ranged");
+    private final JCheckBox martialBox = CompFactory.createNewCheckbox("Martial");
+    private final JCheckBox modernBox = CompFactory.createNewCheckbox("Modern");
+    private final JCheckBox futureBox = CompFactory.createNewCheckbox("Futuristic");
 
 //    private final ReminderField reachField = new ReminderField(5);
-    private final ReminderField rangeLowField = new ReminderField(5);
-    private final ReminderField rangeHighField = new ReminderField(5);
+    private final ReminderField rangeLowField = 
+    		CompFactory.createReminderField("Low Range...", true, 5);
+    private final ReminderField rangeHighField = 
+    		CompFactory.createReminderField("High Range...", true, 5);
+    private final ReminderField reloadField = 
+    		CompFactory.createReminderField("Reload...", true, 5);
+    private final ReminderField weightField = 
+    		CompFactory.createReminderField("Weight...", true, 5);
+    //3
+    private final ReminderField cpField = 
+    		CompFactory.createReminderField("CP", true, 3);
+    private final ReminderField spField = 
+    		CompFactory.createReminderField("SP", true, 3);
+    private final ReminderField epField = 
+    		CompFactory.createReminderField("EP", true, 3);
+    private final ReminderField gpField = 
+    		CompFactory.createReminderField("GP", true, 3);
+    private final ReminderField ppField = 
+    		CompFactory.createReminderField("PP", true, 3);
+        
+    private final JComboBox<Source> sourceBox = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
 
-    private final ReminderField weightField = new ReminderField(5);
-    private final ReminderField cpField = new ReminderField(3);
-    private final ReminderField spField = new ReminderField(3);
-    private final ReminderField epField = new ReminderField(3);
-    private final ReminderField gpField = new ReminderField(3);
-    private final ReminderField ppField = new ReminderField(3);
-    
-    private final JCheckBox customBox = new JCheckBox("Custom");
-    private final JComboBox<Source> sourceBox = new JComboBox<>(Source.values());
-
-    private final List<JCheckBox> propertyCheckboxes = Arrays.stream(Weapon.WeaponProperty.values())
-            .map(prop -> new JCheckBox(prop.name()))
+    private final List<EnumCheckbox<WeaponProperty>> propertyCheckboxes = Arrays.stream(Weapon.WeaponProperty.values())
+    		.map(prop -> CompFactory.createEnumCheckbox(prop))
             .collect(Collectors.toList());
 
     private final Map<String, Weapon> weaponMap = new LinkedHashMap<>();
@@ -80,24 +101,40 @@ public class WeaponBuilderPanel extends JPanel {
         wrapper.add(formPanel, BorderLayout.NORTH);
         JScrollPane formScroll = new JScrollPane(wrapper);
         add(formScroll, BorderLayout.CENTER);
-        SetNumbersOnly();
-    }
-    
-    private void SetNumbersOnly() {
-//    	reachField.setNumbersOnly();
-    	rangeLowField.setNumbersOnly();
-    	rangeHighField.setNumbersOnly();
-    	weightField.setNumbersOnly();
-    	cpField.setNumbersOnly();
-    	spField.setNumbersOnly();
-    	epField.setNumbersOnly();
-    	gpField.setNumbersOnly();
-    	ppField.setNumbersOnly();
     }
 
     private JPanel buildFormPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
+        JPanel reloadPane = new JPanel();
+        JPanel rangePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
+        JLabel rangeLabel = CompFactory.createNewLabel("Range (Low-High):", ComponentType.HEADER);
+        rangePane.setVisible(false);
+        rangeLabel.setVisible(false);
         GridBagConstraints gbc = new GridBagConstraints();
+        
+        ItemListener showReload = new ItemListener() {
+        	public void itemStateChanged(ItemEvent e) {
+        		if(!modernBox.isSelected() && !futureBox.isSelected()) {
+        			reloadPane.setVisible(false);
+        		} else {
+        			reloadPane.setVisible(true);
+        			rangedBox.setSelected(true);
+        		}
+        	}
+        };
+        
+        ItemListener showRange = new ItemListener() {
+        	public void itemStateChanged(ItemEvent e) {
+        		if(!rangedBox.isSelected()) {
+        			rangePane.setVisible(false);
+        			rangeLabel.setVisible(false);
+        		}else {
+        			rangePane.setVisible(true);
+        			rangeLabel.setVisible(true);
+        		}
+        	}
+        };
+        
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
@@ -105,39 +142,64 @@ public class WeaponBuilderPanel extends JPanel {
         int row = 0;
 
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Name:"), gbc);
+        panel.add(CompFactory.createNewLabel("Name:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(nameField, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Damage:"), gbc);
+        panel.add(CompFactory.createNewLabel("Damage:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(damageField, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Versatile Dmg:"), gbc);
+        panel.add(CompFactory.createNewLabel("Versatile Dmg:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(versDamageField, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Damage Type:"), gbc);
+        panel.add(CompFactory.createNewLabel("Damage Types:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(dmgTypeBox, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Mastery:"), gbc);
+        panel.add(CompFactory.createNewLabel("Mastery:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(masteryBox, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(rangedBox, gbc);
+        JPanel checkFlow = new JPanel();
+        
+        checkFlow.setLayout(new FlowLayout(FlowLayout.LEFT));
+        checkFlow.add(martialBox);
+        rangedBox.addItemListener(showRange);
+        checkFlow.add(rangedBox);
+
+        modernBox.addItemListener(showReload);
+        checkFlow.add(modernBox);
+        futureBox.addItemListener(showReload);
+        checkFlow.add(futureBox);
+        
+        panel.add(checkFlow, gbc);
+        
+        reloadPane.setLayout(new BorderLayout());
+        reloadPane.setVisible(false);
         gbc.gridx = 1;
-        panel.add(martialBox, gbc);
+        panel.add(reloadPane, gbc);
+        
+        reloadPane.add(CompFactory.createNewLabel("Reload(Ammo/Shots):", ComponentType.HEADER), BorderLayout.WEST);
+        reloadPane.add(reloadField, BorderLayout.CENTER);
+        
+//        gbc.gridx = 1;
+//        panel.add(martialBox, gbc);
+//        gbc.gridx = 2;
+//        panel.add(modernBox, gbc);
+//        gbc.gridx = 3;
+//        panel.add(futureBox, gbc);
 
 //        row++;
 //        gbc.gridx = 0; gbc.gridy = row;
@@ -147,36 +209,40 @@ public class WeaponBuilderPanel extends JPanel {
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Range (Low-High):"), gbc);
+        panel.add(rangeLabel, gbc);
         gbc.gridx = 1;
-        JPanel rangePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
-        rangePanel.add(rangeLowField);
-        rangePanel.add(new JLabel("-"));
-        rangePanel.add(rangeHighField);
-        panel.add(rangePanel, gbc);
+        rangePane.add(rangeLowField);
+        rangePane.add(new JLabel("-"));
+        rangePane.add(rangeHighField);
+        panel.add(rangePane, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Weight (lb):"), gbc);
+        panel.add(CompFactory.createNewLabel("Weight (lb):", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(weightField, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Cost:"), gbc);
+        panel.add(CompFactory.createNewLabel("Cost:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         JPanel costPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
-        costPanel.add(new JLabel("CP")); costPanel.add(cpField);
-        costPanel.add(new JLabel("SP")); costPanel.add(spField);
-        costPanel.add(new JLabel("EP")); costPanel.add(epField);
-        costPanel.add(new JLabel("GP")); costPanel.add(gpField);
-        costPanel.add(new JLabel("PP")); costPanel.add(ppField);
+        costPanel.add(CompFactory.createNewLabel("CP", ComponentType.HEADER)); 
+        costPanel.add(cpField);
+        costPanel.add(CompFactory.createNewLabel("SP", ComponentType.HEADER)); 
+        costPanel.add(spField);
+        costPanel.add(CompFactory.createNewLabel("EP", ComponentType.HEADER)); 
+        costPanel.add(epField);
+        costPanel.add(CompFactory.createNewLabel("GP", ComponentType.HEADER)); 
+        costPanel.add(gpField);
+        costPanel.add(CompFactory.createNewLabel("PP", ComponentType.HEADER)); 
+        costPanel.add(ppField);
         panel.add(costPanel, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
         gbc.gridwidth = 2;
-        panel.add(new JLabel("Properties:"), gbc);
+        panel.add(CompFactory.createNewLabel("Properties:", ComponentType.HEADER), gbc);
 
         row++;
         gbc.gridy = row;
@@ -190,26 +256,19 @@ public class WeaponBuilderPanel extends JPanel {
         
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Source:"), gbc);
+        panel.add(CompFactory.createNewLabel("Source:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(sourceBox, gbc);
 
         row++;
-        gbc.gridx = 0; gbc.gridy = row;
-        gbc.gridwidth = 2;
-        panel.add(customBox, gbc);
-
-
-        row++;
         gbc.gridy = row;
-        JButton addButton = new JButton("Add Weapon");
-        addButton.addActionListener(this::handleAddWeapon);
+        JButton addButton = CompFactory.createNewButton("Add Weapon", this::handleAddWeapon);
         panel.add(addButton, gbc);
 
         return panel;
     }
 
-    private void handleAddWeapon(ActionEvent e) {
+    private void handleAddWeapon() {
         String name = nameField.getText().trim();
         if (name.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Weapon name cannot be empty.");
@@ -223,6 +282,10 @@ public class WeaponBuilderPanel extends JPanel {
         weapon.mastery = (Weapon.WeaponMastery) masteryBox.getSelectedItem();
         weapon.ranged = rangedBox.isSelected();
         weapon.martial = martialBox.isSelected();
+        weapon.modern = modernBox.isSelected();
+        weapon.future = futureBox.isSelected();
+        if(reloadField.getText().length() > 0)
+        	weapon.reload = Integer.parseInt(reloadField.getText());
 
 //        try { weapon.reach = Integer.parseInt(reachField.getText().trim()); } catch (NumberFormatException ignored) {}
         try { weapon.rangeLow = Integer.parseInt(rangeLowField.getText().trim()); } catch (NumberFormatException ignored) {}
@@ -237,10 +300,9 @@ public class WeaponBuilderPanel extends JPanel {
 
         weapon.properties = propertyCheckboxes.stream()
                 .filter(JCheckBox::isSelected)
-                .map(cb -> Weapon.WeaponProperty.valueOf(cb.getText()))
+                .map(EnumCheckbox::getValue)
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        weapon.custom = customBox.isSelected();
         weapon.source = (Source) sourceBox.getSelectedItem();
 
         weaponMap.put(name, weapon);
@@ -257,6 +319,9 @@ public class WeaponBuilderPanel extends JPanel {
     	masteryBox.setSelectedItem(w.mastery);
     	rangedBox.setSelected(w.ranged);
     	martialBox.setSelected(w.martial);
+    	modernBox.setSelected(w.modern);
+    	futureBox.setSelected(w.future);
+    	reloadField.setText(w.reload + "");
 //    	reachField.setText("" + w.reach);
     	rangeLowField.setText("" + w.rangeLow);
     	rangeHighField.setText("" + w.rangeHigh);
@@ -266,12 +331,11 @@ public class WeaponBuilderPanel extends JPanel {
     	epField.setText("" + w.costs[Weapon.EP]);
     	gpField.setText("" + w.costs[Weapon.GP]);
     	ppField.setText("" + w.costs[Weapon.PP]);
-    	customBox.setSelected(w.custom);
     	sourceBox.setSelectedItem(w.source);
 
     	for(WeaponProperty prop : w.properties) {
-    		for (JCheckBox cb : propertyCheckboxes)
-    			if(cb.getText().equals(prop.name()))
+    		for (EnumCheckbox<WeaponProperty> cb : propertyCheckboxes)
+    			if(cb.getValue().equals(prop))
     				cb.setSelected(true);
     	}
     	
@@ -281,22 +345,25 @@ public class WeaponBuilderPanel extends JPanel {
         nameField.setText("");
         nameField.setEditable(true);
         nameField.requestFocus();
+        
         damageField.setText("");
         versDamageField.setText("");
         dmgTypeBox.setSelectedIndex(0);
         masteryBox.setSelectedIndex(0);
         rangedBox.setSelected(false);
         martialBox.setSelected(false);
+        modernBox.setSelected(false);
+        futureBox.setSelected(false);
+        reloadField.setText("");
 //        reachField.setText("");
         rangeLowField.setText("");
         rangeHighField.setText("");
         weightField.setText("");
         cpField.setText(""); spField.setText("");
         epField.setText(""); gpField.setText(""); ppField.setText("");
-        customBox.setSelected(false);
-        sourceBox.setSelectedIndex(0);
+//        sourceBox.setSelectedIndex(0);
 
-        for (JCheckBox cb : propertyCheckboxes) cb.setSelected(false);
+        for (EnumCheckbox<WeaponProperty> cb : propertyCheckboxes) cb.setSelected(false);
     }
 
     private void updateWeaponList() {

@@ -1,6 +1,6 @@
 package data.items;
 
-public final class Gear extends Item
+public sealed class Gear extends Item permits Poison
 {
 	/**
 	 * 
