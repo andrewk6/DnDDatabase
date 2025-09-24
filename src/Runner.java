@@ -24,7 +24,7 @@ public class Runner
 	private static DataContainer data;
 	private static LoadFrame load;
 	
-	//TODO: Fix monster stat blocks from Tashas/Xanathers
+	//TODO: Update view tools to show more details, Monsters/Spells
 	public static void main(String[] args) throws InvocationTargetException, InterruptedException {
 		SwingUtilities.invokeAndWait(()->{
 			load = new LoadFrame("Loading");

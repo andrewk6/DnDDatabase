@@ -3,15 +3,21 @@ package builders.item_builder;
 import data.DataContainer;
 import data.DataContainer.Source;
 import data.items.Gear;
+import data.items.Poison;
+import data.items.Poison.Poison_Type;
 import data.items.Weapon;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
+import gui.gui_helpers.structures.StyleContainer;
+import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CompFactory.ScrollPolicy;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.LinkedHashMap;
@@ -20,18 +26,22 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class GearBuilder extends JPanel {
 
-    private final JTextField nameField = new JTextField(15);
+//    private final JTextField nameField = new JTextField(15);
+	private final ReminderField nameField = 
+			CompFactory.createReminderField("Gear name...", 15, ComponentType.HEADER);
     private final JTextArea descriptionArea = new JTextArea(5, 20);
-    private final ReminderField weightField = new ReminderField();
+    private final ReminderField weightField = CompFactory.createReminderField("Item weight...");
     private final ReminderField[] costFields = {
-        new ReminderField(3), // CP
-        new ReminderField(3), // SP
-        new ReminderField(3), // EP
-        new ReminderField(3), // GP
-        new ReminderField(3)  // PP
+        CompFactory.createReminderField("CP", true, 3), // CP
+        CompFactory.createReminderField("SP", true, 3), // SP
+        CompFactory.createReminderField("EP", true, 3), // EP
+        CompFactory.createReminderField("GP", true, 3), // GP
+        CompFactory.createReminderField("PP", true, 3)  // PP
     };
-    private final JCheckBox customBox = new JCheckBox("Custom");
-    private final JComboBox<Source> sourceBox = new JComboBox<>(Source.values());
+    private final JCheckBox poisonBox = CompFactory.createNewCheckbox("Poison");
+    private final JComboBox<Source> sourceBox = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
+    private final JComboBox<Poison_Type> poisonCombo = 
+    		CompFactory.createEnumCombo(Poison_Type.class, ComponentType.BODY);
 
 
     private final Map<String, Gear> gearMap = new LinkedHashMap<>();
@@ -39,9 +49,11 @@ public class GearBuilder extends JPanel {
     private final JPanel listPanel = new JPanel();
     
     public static void main(String[]args) {
+    	DataContainer data = new DataContainer();
+    	data.init();
     	SwingUtilities.invokeLater(()->{
     		JFrame frm = new JFrame();
-    		GearBuilder aBuild = new GearBuilder(new DataContainer());
+    		GearBuilder aBuild = new GearBuilder(data);
     		frm.setContentPane(aBuild);
     		frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     		frm.pack();
@@ -53,9 +65,6 @@ public class GearBuilder extends JPanel {
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(10, 10, 10, 10));
         this.data = data;
-
-        for (ReminderField field : costFields) field.setNumbersOnly();
-        weightField.setNumbersOnly();
 
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         JScrollPane scrollPane = CompFactory.wrapPanelInScroll(listPanel, ScrollPolicy.VERTICAL);
@@ -71,7 +80,9 @@ public class GearBuilder extends JPanel {
     }
 
     private JPanel buildFormPanel() {
+    	JPanel poisonPane = CompFactory.createSplitPane("Poison Type", poisonCombo);
         JPanel panel = new JPanel(new GridBagLayout());
+        
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -80,17 +91,18 @@ public class GearBuilder extends JPanel {
         int row = 0;
 
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Name:"), gbc);
+        panel.add(CompFactory.createNewLabel("Name:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(nameField, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
         gbc.anchor = GridBagConstraints.NORTH;
-        panel.add(new JLabel("Description:"), gbc);
+        panel.add(CompFactory.createNewLabel("Description:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         descriptionArea.setLineWrap(true);
         descriptionArea.setWrapStyleWord(true);
+        descriptionArea.setFont(StyleContainer.FNT_BODY_PLAIN);
         JScrollPane descScroll = new JScrollPane(descriptionArea);
         descScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         panel.add(descScroll, gbc);
@@ -98,53 +110,63 @@ public class GearBuilder extends JPanel {
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Weight (lb):"), gbc);
+        panel.add(CompFactory.createNewLabel("Weight (lb):", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(weightField, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Cost:"), gbc);
+        panel.add(CompFactory.createNewLabel("Cost:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         JPanel costPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
         String[] labels = {"CP", "SP", "EP", "GP", "PP"};
         for (int i = 0; i < 5; i++) {
-            costPanel.add(new JLabel(labels[i]));
+            costPanel.add(CompFactory.createNewLabel(labels[i], ComponentType.HEADER));
             costPanel.add(costFields[i]);
         }
         panel.add(costPanel, gbc);
         
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Source:"), gbc);
+        panel.add(CompFactory.createNewLabel("Source:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(sourceBox, gbc);
 
+        poisonBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED)
+					poisonPane.setVisible(true);
+				else
+					poisonPane.setVisible(false);
+			}
+        });
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        gbc.gridwidth = 2;
-        panel.add(customBox, gbc);
         gbc.gridwidth = 1;
-
+        panel.add(poisonBox, gbc);
+        
+        poisonPane.setVisible(false);
+        gbc.gridx = 1;
+        gbc.gridwidth = 1;
+        panel.add(poisonPane, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
         gbc.gridwidth = 2;
-        JButton addButton = new JButton("Add Gear");
-        addButton.addActionListener(this::handleAddGear);
+        JButton addButton = CompFactory.createNewButton("Add Gear", this::handleAddGear);
         panel.add(addButton, gbc);
 
         return panel;
     }
 
-    private void handleAddGear(ActionEvent e) {
+    private void handleAddGear() {
         String name = nameField.getText().trim();
         if (name.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Gear name cannot be empty.");
             return;
         }
 
-        Gear gear = new Gear(name);
+        Gear gear = ((poisonBox.isSelected()) ? new Poison(name) : new Gear(name));
         gear.description = descriptionArea.getText().trim();
 
         try {
@@ -161,9 +183,10 @@ public class GearBuilder extends JPanel {
             }
         }
         
-        gear.custom = customBox.isSelected();
         gear.source = (Source) sourceBox.getSelectedItem();
 
+        if(gear instanceof Poison p)
+        	p.poisonType = (Poison_Type) poisonCombo.getSelectedItem();
 
         gearMap.put(name, gear);
         updateGearList();
@@ -176,8 +199,7 @@ public class GearBuilder extends JPanel {
         nameField.requestFocus();
         descriptionArea.setText("");
         weightField.setText("");
-        customBox.setSelected(false);
-        sourceBox.setSelectedIndex(0);
+        poisonBox.setSelected(false);
 
         for (ReminderField field : costFields) field.setText("");
     }
@@ -217,6 +239,10 @@ public class GearBuilder extends JPanel {
     }
     
     private void LoadEdit(Gear g) {
+    	if(g instanceof Poison p) {
+    		poisonBox.setSelected(true);
+    		poisonCombo.setSelectedItem(p.poisonType);
+    	}
     	nameField.setText(g.name);
     	nameField.setEditable(false);
         descriptionArea.setText(g.description);
@@ -226,8 +252,6 @@ public class GearBuilder extends JPanel {
         costFields[Weapon.EP].setText("" + g.costs[Weapon.EP]);
         costFields[Weapon.GP].setText("" + g.costs[Weapon.GP]);
         costFields[Weapon.PP].setText("" + g.costs[Weapon.PP]);
-        customBox.setSelected(g.custom);
-        sourceBox.setSelectedItem(g.source);
     }
     
     public void LoadItems() {

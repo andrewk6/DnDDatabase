@@ -41,13 +41,13 @@ import data.DataContainer.Skills;
 import data.DataContainer.Source;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.DocumentHelper;
-import gui.gui_helpers.MonsterDispPane;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import gui.monsters.MonsterDispPane;
 
 @SuppressWarnings("serial")
 public class MonsterBuilderPane extends JPanel {

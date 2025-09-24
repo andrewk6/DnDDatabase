@@ -21,9 +21,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.interfaces.DataChangeListener;
 import data.players.classes.ClassAbility;
 import data.players.classes.DnDClass;
 import gui.FeatIFrame;

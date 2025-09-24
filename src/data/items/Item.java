@@ -18,7 +18,6 @@ public sealed class Item implements Serializable, SourceProvider
 	public String name;
 	public int weight;
 	public int[] costs = new int[5];
-	public boolean custom = false;
 	public Source source = Source.PlayersHandbook2024;
 	
 	

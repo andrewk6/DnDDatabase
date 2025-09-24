@@ -16,6 +16,7 @@ import javax.swing.SwingUtilities;
 import data.DataContainer;
 import data.DataContainer.MapType;
 import data.items.Item;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.structures.StyleContainer;
 
 @SuppressWarnings("serial")
@@ -92,11 +93,7 @@ public class ItemBuilder extends JFrame
 		cPane.add(savePane, BorderLayout.SOUTH);
 		
 		
-		JButton saveBtn = new JButton("Save");
-		StyleContainer.SetFontBtn(saveBtn);
-		saveBtn.addActionListener(_ ->{
-			Save();
-		});
+		JButton saveBtn = CompFactory.createNewButton("Save", this::Save);
 		savePane.add(saveBtn);
 	}
 	

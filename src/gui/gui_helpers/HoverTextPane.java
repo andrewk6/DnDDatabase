@@ -10,6 +10,7 @@ import gui.ItemIFrame;
 import gui.campaign.PartyIFrame;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import gui.monsters.MonsterDispPane;
 import utils.ErrorLogger;
 import data.Monster;
 

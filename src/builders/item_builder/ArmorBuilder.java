@@ -22,24 +22,32 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class ArmorBuilder extends JPanel {
 
-    private final JTextField nameField = new JTextField(15);
-    private final ReminderField acField = new ReminderField(5);
+	/*
+	 *    private void SetNumbersOnly() {
+    	minStrField.setNumbersOnly();
+    	weightField.setNumbersOnly();
+    	for(ReminderField f : costFields) {
+    		f.setNumbersOnly();
+    	}
+    }
+	 */
+    private final ReminderField nameField = CompFactory.createReminderField("Armor name...", 15);
+    private final ReminderField acField = CompFactory.createReminderField("AC Field", true, 5);;
     private final JComboBox<Armor.ArmorType> typeBox = 
     		CompFactory.createEnumCombo(ArmorType.class, ComponentType.BODY);
-    private final ReminderField minStrField = new ReminderField(5);
+    private final ReminderField minStrField = CompFactory.createReminderField("Min Str", true, 5);
     private final JCheckBox stealthDisadvBox = CompFactory.createNewCheckbox("Stealth Disadvantage");
     private final JCheckBox addDexBox = CompFactory.createNewCheckbox("Add Dex to AC");
     private final JCheckBox addDexCappedBox = CompFactory.createNewCheckbox("Cap Dex Bonus");
-    private final JCheckBox customBox = CompFactory.createNewCheckbox("Custom");
     private final JComboBox<Source> sourceBox = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
 
-    private final ReminderField weightField = new ReminderField(5);
+    private final ReminderField weightField = CompFactory.createReminderField("Weight...", true, 5);
     private final ReminderField[] costFields = {
-            new ReminderField(3), // CP
-            new ReminderField(3), // SP
-            new ReminderField(3), // EP
-            new ReminderField(3), // GP
-            new ReminderField(3)  // PP
+    		CompFactory.createReminderField("CP", true, 3), // CP
+            CompFactory.createReminderField("SP", true, 3), // SP
+            CompFactory.createReminderField("EP", true, 3), // EP
+            CompFactory.createReminderField("GP", true, 3), // GP
+            CompFactory.createReminderField("PP", true, 3)  // PP
     };
     private final DataContainer data;
 
@@ -75,17 +83,6 @@ public class ArmorBuilder extends JPanel {
         wrapper.add(formPanel, BorderLayout.NORTH);
         JScrollPane formScroll = new JScrollPane(wrapper);
         add(formScroll, BorderLayout.CENTER);
-        
-        SetNumbersOnly();
-    }
-    
-    private void SetNumbersOnly() {
-    	minStrField.setNumbersOnly();
-    	weightField.setNumbersOnly();
-    	acField.setNumbersOnly();
-    	for(ReminderField f : costFields) {
-    		f.setNumbersOnly();
-    	}
     }
 
     private JPanel buildFormPanel() {
@@ -98,26 +95,26 @@ public class ArmorBuilder extends JPanel {
         int row = 0;
 
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Name:"), gbc);
+        panel.add(CompFactory.createNewLabel("Name:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(nameField, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("AC:"), gbc);
+        panel.add(CompFactory.createNewLabel("AC:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(acField, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Type:"), gbc);
+        panel.add(CompFactory.createNewLabel("Type:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(typeBox, gbc);
 
         
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Min STR:"), gbc);
+        panel.add(CompFactory.createNewLabel("Min Str:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(minStrField, gbc);
 
@@ -139,45 +136,38 @@ public class ArmorBuilder extends JPanel {
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Weight (lb):"), gbc);
+        panel.add(CompFactory.createNewLabel("Weight (lb):", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(weightField, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Cost:"), gbc);
+        panel.add(CompFactory.createNewLabel("Cost:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         JPanel costPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
         String[] labels = {"CP", "SP", "EP", "GP", "PP"};
         for (int i = 0; i < 5; i++) {
-            costPanel.add(new JLabel(labels[i]));
+            costPanel.add(CompFactory.createNewLabel(labels[i], ComponentType.HEADER));
             costPanel.add(costFields[i]);
         }
         panel.add(costPanel, gbc);
         
         row++;
         gbc.gridx = 0; gbc.gridy = row;
-        panel.add(new JLabel("Source:"), gbc);
+        panel.add(CompFactory.createNewLabel("Source:", ComponentType.HEADER), gbc);
         gbc.gridx = 1;
         panel.add(sourceBox, gbc);
 
         row++;
         gbc.gridx = 0; gbc.gridy = row;
         gbc.gridwidth = 2;
-        panel.add(customBox, gbc);
-        gbc.gridwidth = 1;
-
-        row++;
-        gbc.gridx = 0; gbc.gridy = row;
-        gbc.gridwidth = 2;
-        JButton addButton = new JButton("Add Armor");
-        addButton.addActionListener(this::handleAddArmor);
+        JButton addButton = CompFactory.createNewButton("Add Armor", this::handleAddArmor);
         panel.add(addButton, gbc);
 
         return panel;
     }
 
-    private void handleAddArmor(ActionEvent e) {
+    private void handleAddArmor() {
         String name = nameField.getText().trim();
         if (name.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Armor name cannot be empty.");
@@ -202,7 +192,6 @@ public class ArmorBuilder extends JPanel {
                 armor.costs[i] = 0;
             }
         }
-        armor.custom = customBox.isSelected();
         armor.source = (Source) sourceBox.getSelectedItem();
 
         armorMap.put(name, armor);
@@ -221,7 +210,6 @@ public class ArmorBuilder extends JPanel {
         addDexBox.setSelected(false);
         addDexCappedBox.setSelected(false);
         typeBox.setSelectedIndex(0);
-        customBox.setSelected(false);
         sourceBox.setSelectedIndex(0);
 
         for (JTextField field : costFields) field.setText("");
@@ -276,7 +264,6 @@ public class ArmorBuilder extends JPanel {
         costFields[Weapon.EP].setText("" + a.costs[Weapon.EP]);
         costFields[Weapon.GP].setText("" + a.costs[Weapon.GP]);
         costFields[Weapon.PP].setText("" + a.costs[Weapon.PP]);
-        customBox.setSelected(a.custom);
         sourceBox.setSelectedItem(a.source);
     }
     

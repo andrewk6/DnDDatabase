@@ -41,6 +41,7 @@ import data.campaign.Campaign;
 import data.campaign.Player;
 import data.hazards.Hazard;
 import data.hazards.Trap;
+import data.interfaces.DataChangeListener;
 import data.interfaces.SourceProvider;
 import data.items.Armor;
 import data.items.Gear;
@@ -235,6 +236,69 @@ public class DataContainer {
         executor.shutdown();
 		
 		SortKeys();
+		LoadConfig();
+		loadFinsihed();
+		initiatlized = true;
+	}
+	
+	public void init(MapType map) {
+		
+		 // Or however many cores/files you're importing
+			List<Callable<Boolean>> tasks = new ArrayList<>();
+			switch (map) {
+			case MapType.SPELLS:
+				tasks.add(this::ImportSpellMap);
+				break;
+			case MapType.RULES:
+				tasks.add(this::ImportRuleMap);
+				break;
+			case MapType.MONSTERS:
+				tasks.add(this::ImportMonsters);
+				break;
+			case MapType.INSERTS:
+				tasks.add(this::ImportInsertHelpers);
+				break;
+			case MapType.ITEMS:
+				tasks.add(this::ImportItems);
+				tasks.add(this::ImportVehicles);
+				break;
+			case MapType.VEHICLES:
+				tasks.add(this::ImportItems);
+				tasks.add(this::ImportVehicles);
+				break;
+			case MapType.FEATS:
+				tasks.add(this::ImportFeats);
+				break;
+			case MapType.CLASSES:
+				tasks.add(this::ImportClassMap);
+				break;
+			case MapType.SPECIES:
+				tasks.add(this::ImportSpeciesMap);
+				break;
+			case MapType.BACKGROUNDS:
+				tasks.add(this::ImportBackgrounds);
+				break;
+			case MapType.BASTION_ROOMS:
+				tasks.add(this::ImportBastionRooms);
+				tasks.add(this::ImportBastionRules);
+				break;
+			case MapType.HAZARDS:
+				tasks.add(this::ImportHazards);
+				break;
+			default:
+				init();
+			}
+       
+       ExecutorService executor = Executors.newFixedThreadPool(tasks.size());
+       try {
+			executor.invokeAll(tasks);
+		} catch (InterruptedException e) {
+			ErrorLogger.log(e);
+			e.printStackTrace();
+		}
+       executor.shutdown();
+		
+		SortKeys(map);
 		LoadConfig();
 		loadFinsihed();
 		initiatlized = true;
@@ -1841,10 +1905,14 @@ public class DataContainer {
 		
 		try {
 			PrintWriter out = new PrintWriter(new FileWriter(conf));
-			out.println(ruleMap.size());
-			out.println(spellMap.size());
-			out.println(monstMap.size());
-			out.println(itemMap.size());
+			if(ruleMap != null)
+				out.println(ruleMap.size());
+			if(spellMap != null)
+				out.println(spellMap.size());
+			if(monstMap != null)
+				out.println(monstMap.size());
+			if(itemMap != null)
+				out.println(itemMap.size());
 			if(camp != null)
 				out.println(camp.saveLoc.getParent());
 			else if(lastCampPath != null)

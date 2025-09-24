@@ -15,6 +15,7 @@ import data.DataContainer;
 import data.Rule;
 import data.Spell;
 import data.items.Item;
+import data.items.Weapon;
 import data.DataContainer.MapType;
 import data.DataContainer.Source;
 import data.Monster;
@@ -37,9 +38,10 @@ public class Test extends JFrame {
 		data.init();
 		boolean gui = false;
 
-		for(Spell r : data.getSpells().values())
-			if(r.source == null || r.spellLevel == null || r.spellSchool == null)
-				System.out.println(r.name);
+		for(Item r : data.getItems().values())
+			if(r instanceof Weapon w)
+				if(w.modern || w.future)
+					System.out.println(w.properties.toString());
 
 		if(gui)
 			guiStuff(data);

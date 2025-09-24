@@ -25,9 +25,7 @@ import data.Monster;
 import data.dungeon.Dungeon;
 import gui.FeatIFrame;
 import gui.ItemIFrame;
-import gui.MonsterIFrame;
 import gui.RuleIFrame;
-import gui.SpellIFrame;
 import gui.background.BackgroundIFrame;
 import gui.campaign.PartyIFrame;
 import gui.campaign.PlayerPane;
@@ -37,7 +35,9 @@ import gui.dungeon.DungeonIViewer;
 import gui.gui_helpers.PlayerNameTargets;
 import gui.hazard.HazardIFrame;
 import gui.initative.InitiativeIFrame;
+import gui.monsters.MonsterIFrame;
 import gui.species.SpeciesIFrame;
+import gui.spells.SpellIFrame;
 import utils.ErrorLogger;
 
 public class GuiDirector

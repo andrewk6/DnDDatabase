@@ -1,7 +1,6 @@
 package gui.gui_helpers;
 
 import builders.monster_builder.AttackInsertForm;
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
 import data.Feat;
@@ -10,12 +9,14 @@ import data.Rule;
 import data.Spell;
 import data.campaign.Player;
 import data.hazards.Hazard;
+import data.interfaces.DataChangeListener;
 import data.items.Item;
 import data.players.Background;
 import data.players.Species;
 import data.players.classes.DnDClass;
 import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.hazard.HazardPane;
+import gui.monsters.MonsterDispPane;
 import utils.ErrorLogger;
 
 import javax.swing.*;
