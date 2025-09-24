@@ -14,9 +14,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.interfaces.DataChangeListener;
 import gui.gui_helpers.structures.ContentFrame;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
@@ -130,7 +130,6 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChan
 	@Override
 	public void onMapUpdated() {
 		MagicItemPanel miPane = null;
-		System.out.println("Itme I Frame in Map");
 		for (int i = tabs.getTabCount() - 1; i >= 0; i--) {
 		    if(tabs.getComponentAt(i) instanceof MagicItemPanel) {
 		    	System.out.println("Found mi pane");
@@ -147,6 +146,7 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChan
 		BuildArmorPane();
 		BuildToolPane();
 		BuildGearPane();
+		BuildVehiclePane();
 		tabs.addTab("Magic Items", miPane);
 	}
 
@@ -171,6 +171,7 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChan
 			BuildArmorPane();
 			BuildToolPane();
 			BuildGearPane();
+			BuildVehiclePane();
 			tabs.addTab("Magic Items", miPane);
 		}
 	}

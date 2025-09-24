@@ -5,14 +5,11 @@ import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.text.StyledDocument;
-
 import data.DataContainer;
 import data.players.BastionRoom;
-import data.players.BastionRoom.Order;
-import data.players.BastionRoom.SpaceRequired;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.GuiDirector;
 
@@ -61,7 +58,7 @@ public class BastionRoomPane extends JPanel
 		
 		HoverTextPane desc = new HoverTextPane(data, gd, gd.getDesktop());
 		desc.setDocument(room.desc);
-		this.add(desc,BorderLayout.CENTER);
+		this.add(CompFactory.wrapPanelInScroll(desc, ScrollPolicy.VERTICAL),BorderLayout.CENTER);
 	}
 	
 	private JPanel buildPane(String title, String desc) {

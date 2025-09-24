@@ -24,14 +24,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.DataContainer.Source;
 import data.Feat;
 import data.Feat.FeatType;
+import data.interfaces.DataChangeListener;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
-import gui.gui_helpers.InfoLabel;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.GuiDirector;
@@ -47,6 +48,7 @@ public class FeatBuilderIFrame extends JInternalFrame implements DataChangeListe
 	
 	private JPanel featList, mPane;
 	private ReminderField titleField;
+	private JComboBox<Source> srcCombo;
 	private JComboBox<FeatType> featTypeComb;
 	private RichEditor edit;
 
@@ -76,9 +78,23 @@ public class FeatBuilderIFrame extends JInternalFrame implements DataChangeListe
 		tPane.setLayout(new GridLayout(0,1));
 		mPane.add(tPane, BorderLayout.NORTH);
 		
+		JPanel headPane = new JPanel();
+		headPane.setLayout(new BorderLayout());
+		tPane.add(headPane);
+		
 		titleField = new ReminderField("What is the feats title...");
 		titleField.setFont(StyleContainer.FNT_HEADER_BOLD.deriveFont(22f));
-		tPane.add(titleField);
+		headPane.add(titleField, BorderLayout.CENTER);
+		
+		JPanel srcPane = new JPanel();
+		srcPane.setLayout(new BorderLayout());
+		headPane.add(srcPane, BorderLayout.EAST);
+		
+		JLabel srcLbl = CompFactory.createNewLabel("Source:", ComponentType.HEADER);
+		srcPane.add(srcLbl, BorderLayout.WEST);
+		
+		srcCombo = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
+		srcPane.add(srcCombo, BorderLayout.CENTER);
 		
 		featTypeComb = new JComboBox<FeatType>(FeatType.values());
 		featTypeComb.setFont(StyleContainer.FNT_HEADER_BOLD.deriveFont(20f));
@@ -107,6 +123,7 @@ public class FeatBuilderIFrame extends JInternalFrame implements DataChangeListe
 				f.name = titleField.getText();
 				f.desc = edit.getStyledDocument();
 				f.type = (FeatType) featTypeComb.getSelectedItem();
+				f.src = (Source) srcCombo.getSelectedItem();
 				
 				featMap.put(f.name, f);
 				
@@ -132,7 +149,7 @@ public class FeatBuilderIFrame extends JInternalFrame implements DataChangeListe
 		
 		featList = new JPanel();
 		featList.setLayout(new GridLayout(0,1));
-		JScrollPane listScroll = new JScrollPane(featList);
+		JScrollPane listScroll = CompFactory.wrapPanelInScroll(featList, ScrollPolicy.VERTICAL);
 		sPane.add(listScroll, BorderLayout.CENTER);
 		
 		FillSidePane();
@@ -148,21 +165,10 @@ public class FeatBuilderIFrame extends JInternalFrame implements DataChangeListe
 			pane.setLayout(new GridLayout(1,0));
 			pane.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 			featList.add(pane);
-			JLabel lbl;
-			if(f.length() > 10)
-				lbl = CompFactory.createNewLabel(f.substring(0, 10) + "...", ComponentType.BODY);
-			else
-				lbl = CompFactory.createNewLabel(f, ComponentType.BODY);
-			lbl.setFont(lbl.getFont().deriveFont(18f));
-			lbl.addMouseListener(new MouseListener() {
-
-				@Override
-				public void mouseClicked(MouseEvent e) {loadFeatCheck(f);}
-				public void mousePressed(MouseEvent e) {}
-				public void mouseReleased(MouseEvent e) {}
-				public void mouseEntered(MouseEvent e) {lbl.setFont(lbl.getFont().deriveFont(Font.BOLD));}
-				public void mouseExited(MouseEvent e) {lbl.setFont(lbl.getFont().deriveFont(Font.PLAIN));}
-			});
+			JLabel lbl = CompFactory.createSideLabel(f, ComponentType.BODY);
+			lbl.addMouseListener(CompFactory.createSideMouseListener(lbl, ()->{
+				loadFeatCheck(f);
+			}));
 			pane.add(lbl);
 			
 			JButton btn = CompFactory.createNewButton("Delete", _->{
@@ -191,6 +197,7 @@ public class FeatBuilderIFrame extends JInternalFrame implements DataChangeListe
 		titleField.setEditable(false);
 		titleField.setFocusable(false);
 		titleField.setText(f);
+		srcCombo.setSelectedItem(featMap.get(f).src);
 		
 		featTypeComb.setSelectedItem(featMap.get(f).type);
 		edit.LoadDocument(featMap.get(f).desc);

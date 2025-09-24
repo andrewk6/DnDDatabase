@@ -5,6 +5,7 @@ import data.items.Item;
 import data.items.Weapon;
 import data.items.Weapon.WeaponMastery;
 import data.items.Weapon.WeaponProperty;
+import gui.gui_helpers.CompFactory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -33,18 +34,28 @@ public class WeaponPanel extends JPanel {
         List<Weapon> simpleRanged = new ArrayList<>();
         List<Weapon> martialMelee = new ArrayList<>();
         List<Weapon> martialRanged = new ArrayList<>();
+        
+        List<Weapon> modern = new ArrayList<>();
+        List<Weapon> future = new ArrayList<>();
         for (String key : data.getWeaponKeysSorted()) {
             Item item = data.getItems().get(key);
             if (item instanceof Weapon w) {
-                boolean melee = !w.ranged;
+            	if(w.future || w.modern) {
+            		if(w.modern)
+            			modern.add(w);
+            		else
+            			future.add(w);
+            	}else {
+            		boolean melee = !w.ranged;
 
-                if (w.martial) {
-                    if (melee) martialMelee.add(w);
-                    else martialRanged.add(w);
-                } else {
-                    if (melee) simpleMelee.add(w);
-                    else simpleRanged.add(w);
-                }
+                    if (w.martial) {
+                        if (melee) martialMelee.add(w);
+                        else martialRanged.add(w);
+                    } else {
+                        if (melee) simpleMelee.add(w);
+                        else simpleRanged.add(w);
+                    }
+            	}
             }
         }
 
@@ -56,8 +67,10 @@ public class WeaponPanel extends JPanel {
         fullPanel.add(createTableSection("Simple Ranged Weapons", simpleRanged, true));
         fullPanel.add(createTableSection("Martial Melee Weapons", martialMelee, false));
         fullPanel.add(createTableSection("Martial Ranged Weapons", martialRanged, true));
+        fullPanel.add(createTableSection("Modern Firearms", modern, true));
+        fullPanel.add(createTableSection("Futuristic Firearms", future, true));
 
-        JScrollPane scroll = new JScrollPane(fullPanel);
+        JScrollPane scroll = CompFactory.wrapPanelInScroll(fullPanel);
         scroll.setBorder(BorderFactory.createEmptyBorder());
         return scroll;
     }
@@ -79,19 +92,34 @@ public class WeaponPanel extends JPanel {
         table.setPreferredScrollableViewportSize(table.getPreferredSize());
 
         // Add extra padding at bottom of Ranged weapon tables
-        JPanel tableWrapper = new JPanel(new BorderLayout());
-        tableWrapper.add(table.getTableHeader(), BorderLayout.NORTH);
-        tableWrapper.add(table, BorderLayout.CENTER);
-        if (showRange) {
-            tableWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+//        JPanel tableWrapper = new JPanel(new BorderLayout());
+//        tableWrapper.add(table.getTableHeader(), BorderLayout.NORTH);
+//        tableWrapper.add(table, BorderLayout.CENTER);
+//        if (showRange) {
+//            tableWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+//        }
+        
+        int rowCount = table.getRowCount();
+        if(rowCount <= 8) {
+             //Add extra padding at bottom of Ranged weapon tables
+          JPanel tableWrapper = new JPanel(new BorderLayout());
+          tableWrapper.add(table.getTableHeader(), BorderLayout.NORTH);
+          tableWrapper.add(table, BorderLayout.CENTER);
+          if (showRange) {
+              tableWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+          }
+        	panel.add(label, BorderLayout.NORTH);
+        	panel.add(tableWrapper, BorderLayout.CENTER);
+        }else {
+        	JScrollPane scrollPane = CompFactory.wrapPanelInScroll(table);
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
+            scrollPane.setPreferredSize(table.getPreferredSize());
+
+            panel.add(label, BorderLayout.NORTH);
+            panel.add(scrollPane, BorderLayout.CENTER);
         }
-
-        JScrollPane scrollPane = new JScrollPane(tableWrapper);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.setPreferredSize(table.getPreferredSize());
-
-        panel.add(label, BorderLayout.NORTH);
-        panel.add(scrollPane, BorderLayout.CENTER);
+        
+        
 
         return panel;
     }
@@ -120,7 +148,7 @@ public class WeaponPanel extends JPanel {
             panel.add(box);
         }
 
-        JScrollPane scroll = new JScrollPane(panel);
+        JScrollPane scroll = CompFactory.wrapPanelInScroll(panel);
         scroll.setBorder(null);
         return scroll;
     }

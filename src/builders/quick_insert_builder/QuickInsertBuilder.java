@@ -11,10 +11,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,10 +28,13 @@ import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
 import data.DataContainer.MapType;
+import gui.gui_helpers.CompFactory;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.StyleContainer;
 
+@SuppressWarnings("serial")
 public class QuickInsertBuilder extends JFrame
 {
 	private DataContainer data;
@@ -107,7 +108,7 @@ public class QuickInsertBuilder extends JFrame
 		
 		JButton addBtn = new JButton("Add Insert");
 		StyleContainer.SetFontBtn(addBtn);
-		addBtn.addActionListener(e ->{
+		addBtn.addActionListener(_ ->{
 			AddInsert(mPane);
 		});
 		btnPane.add(addBtn);
@@ -119,14 +120,12 @@ public class QuickInsertBuilder extends JFrame
 		sideGPane = new JPanel();
 		sideGPane.setLayout(new GridLayout(0,2));
 		
-		JScrollPane sideScroll = new JScrollPane(sideGPane);
-		sideScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		sideScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sideGPane, ScrollPolicy.VERTICAL);
 		sidePane.add(sideScroll, BorderLayout.CENTER);
 		
 		JButton saveBtn = new JButton("Save");
 		StyleContainer.SetFontBtn(saveBtn);
-		saveBtn.addActionListener(e -> {
+		saveBtn.addActionListener(_ -> {
 			data.setInserts(inMap);
 			data.SafeSaveData(MapType.INSERTS);
 		});
@@ -182,7 +181,7 @@ public class QuickInsertBuilder extends JFrame
 					
 					JButton delBtn = new JButton("Delete");
 					StyleContainer.SetFontBtn(delBtn);
-					delBtn.addActionListener(e ->{
+					delBtn.addActionListener(_ ->{
 						inMap.remove(s);
 						SwingUtilities.invokeLater(()->{
 							sideGPane.remove(delBtn);

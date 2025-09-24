@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import data.DataContainer;
 import data.dungeon.DungeonNote;
@@ -19,7 +20,8 @@ public class NoteViewer extends JPanel
 		
 		HoverTextPane notePane = new HoverTextPane(data, gd, gd.getDesktop());
 		notePane.setDocument(n.note);
-		this.add(notePane, BorderLayout.CENTER);
+		JScrollPane noteScroll = CompFactory.wrapPanelInScroll(notePane);
+		this.add(noteScroll, BorderLayout.CENTER);
 		
 		JLabel titleLbl = CompFactory.createNewLabel(n.title, ComponentType.HEADER);
 		this.add(titleLbl, BorderLayout.NORTH);

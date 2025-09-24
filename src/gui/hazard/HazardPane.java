@@ -16,6 +16,7 @@ import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.GuiDirector;
 
+@SuppressWarnings("serial")
 public class HazardPane extends JPanel
 {
 	private Hazard haz;

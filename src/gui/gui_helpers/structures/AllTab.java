@@ -1,7 +1,5 @@
 package gui.gui_helpers.structures;
 
-import javax.swing.JTabbedPane;
-
 import data.Feat;
 import data.Monster;
 import data.Rule;

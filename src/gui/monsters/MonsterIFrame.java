@@ -1,4 +1,4 @@
-package gui;
+package gui.monsters;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -32,13 +31,12 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.JCheckBox;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
-import data.Monster;
+import data.interfaces.DataChangeListener;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
-import gui.gui_helpers.MonsterDispPane;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
@@ -130,11 +128,8 @@ public class MonsterIFrame extends JInternalFrame implements ContentTab, DataCha
 		monstGridPane.setLayout(new GridLayout(0,1));
 		FillSidePane();
 		
-		JScrollPane spellGridScroll = new JScrollPane(monstGridPane);
-		spellGridScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		spellGridScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		
-		sPane.add(spellGridScroll, BorderLayout.CENTER);
+		JScrollPane monstGridScroll = CompFactory.wrapPanelInScroll(monstGridPane);		
+		sPane.add(monstGridScroll, BorderLayout.CENTER);
 		cPane.add(sPane, BorderLayout.WEST);
 	}
 	

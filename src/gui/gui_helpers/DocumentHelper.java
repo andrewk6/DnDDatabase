@@ -14,8 +14,6 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Element;
 import javax.swing.text.StyledDocument;
 
-import data.DataContainer;
-
 public class DocumentHelper {
 	public static void insertStyledDocument(StyledDocument mainDoc, StyledDocument insertDoc, int caretPosition)
 			throws BadLocationException {

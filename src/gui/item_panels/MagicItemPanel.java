@@ -2,44 +2,29 @@ package gui.item_panels;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.beans.PropertyVetoException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import javax.swing.BorderFactory;
 import javax.swing.JDesktopPane;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.interfaces.DataChangeListener;
 import data.items.MagicItem;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
-import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
-import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
@@ -86,10 +71,7 @@ public class MagicItemPanel extends JPanel implements DataChangeListener{
 		miGridPane.setLayout(new GridLayout(0,1));
 		FillSidePane();
 		
-		JScrollPane miGridScroll = new JScrollPane(miGridPane);
-		miGridScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		miGridScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		
+		JScrollPane miGridScroll = CompFactory.wrapPanelInScroll(miGridPane);		
 		sPane.add(miGridScroll, BorderLayout.CENTER);
 		add(sPane, BorderLayout.WEST);
 	}
@@ -101,8 +83,9 @@ public class MagicItemPanel extends JPanel implements DataChangeListener{
 			Collections.sort(keys);
 			
 			for(String s : keys) {
-				if(s.toLowerCase().startsWith(miFilter.getText().toLowerCase()) || miFilter.getText().length() == 0) {
-					JLabel lbl = CompFactory.createNewLabel(s, ComponentType.BODY);
+				if(s.toLowerCase().startsWith(miFilter.getText().toLowerCase()) || miFilter.getText().length() == 0){
+					JLabel lbl = CompFactory.createSideLabel(s, ComponentType.BODY, 2f);
+					lbl.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 					lbl.addMouseListener(CompFactory.createSideMouseListener(lbl, ()->{
 						//							spellTitle.setText(s);
 //							hPane.setDocument(data.getSpells().get(s).spellDoc);
@@ -159,7 +142,7 @@ public class MagicItemPanel extends JPanel implements DataChangeListener{
 			
 			hPane = new HoverTextPane(data, gd, dPane);
 			hPane.setDocument(i.desc);
-			JScrollPane hScroll = new JScrollPane(hPane);
+			JScrollPane hScroll = CompFactory.wrapPanelInScroll(hPane);
 			miPane.add(hScroll, BorderLayout.CENTER);
 			
 			revalidate();

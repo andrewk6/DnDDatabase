@@ -11,8 +11,6 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Set;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -23,14 +21,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
 import data.Feat;
 import data.Feat.FeatType;
+import data.interfaces.DataChangeListener;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
-import gui.gui_helpers.InfoLabel;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.StyleContainer;
@@ -135,7 +133,7 @@ public class FeatBuilder extends JFrame implements DataChangeListener
 		
 		featList = new JPanel();
 		featList.setLayout(new GridLayout(0,1));
-		JScrollPane listScroll = new JScrollPane(featList);
+		JScrollPane listScroll = CompFactory.wrapPanelInScroll(featList, ScrollPolicy.VERTICAL);
 		sPane.add(listScroll, BorderLayout.CENTER);
 		
 		FillSidePane();

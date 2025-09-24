@@ -13,6 +13,7 @@ import javax.swing.JPopupMenu;
 import data.DataContainer.Source;
 import gui.gui_helpers.structures.StyleContainer;
 
+@SuppressWarnings("serial")
 public class SourceButton extends JButton
 {
 	
@@ -29,7 +30,7 @@ public class SourceButton extends JButton
             JCheckBoxMenuItem cbItem = new JCheckBoxMenuItem(src.toString(), true);
             sourceMenuItems.put(src, cbItem);
             sourcePopup.add(cbItem);
-            cbItem.addItemListener(e -> {
+            cbItem.addItemListener(_ -> {
                 boolean selected = cbItem.isSelected();
                 if (selected) selectedSources.add(src);
                 else selectedSources.remove(src);
@@ -37,7 +38,7 @@ public class SourceButton extends JButton
             });
         }
 
-        addActionListener(e -> {
+        addActionListener(_ -> {
             sourcePopup.show(this, 0, getHeight());
         });
 

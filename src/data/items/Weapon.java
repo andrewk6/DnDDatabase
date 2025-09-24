@@ -7,29 +7,55 @@ import data.DataContainer.DamageTypes;
 
 public final class Weapon extends Item
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6378256851594347752L;
+
 	public enum WeaponMastery{
-		CLEAVE,
-	    GRAZE,
-	    NICK,
-	    PUSH,
-	    SAP,
-	    SLOW,
-	    TOPPLE,
-	    VEX
+		CLEAVE("Cleave"),
+	    GRAZE("Graze"),
+	    NICK("Nick"),
+	    PUSH("Push"),
+	    SAP("Sap"),
+	    SLOW("Slow"),
+	    TOPPLE("Topple"),
+	    VEX("Vex");
+	    
+	    public final String lbl;
+		
+		WeaponMastery(String lbl) {
+			this.lbl = lbl;
+		}
+		
+		public String toString() {
+			return lbl;
+		}
 	}
 	
 	public enum WeaponProperty {
-	    AMMUNITION,
-	    FINESSE,
-	    HEAVY,
-	    LIGHT,
-	    LOADING,
-	    REACH,
-	    SPECIAL,
-	    THROWN,
-	    TWO_HANDED,
-	    VERSATILE,
-	    IMPROVISED
+	    AMMUNITION("Ammunition"),
+	    FINESSE("Finesse"),
+	    HEAVY("Heavy"),
+	    LIGHT("Light"),
+	    LOADING("Loading"),
+	    REACH("Reach"),
+	    SPECIAL("Special"),
+	    THROWN("Thrown"),
+	    TWO_HANDED("Two Handed"),
+	    VERSATILE("Versatile"),
+	    IMPROVISED("Improvised"),
+	    BURST_FIRE("Burst Fire");
+		
+		public final String lbl;
+		
+		WeaponProperty(String lbl) {
+			this.lbl = lbl;
+		}
+		
+		public String toString() {
+			return lbl;
+		}
 	}
 	
 	public static final Map<WeaponMastery, String> WEAPON_MASTERY_DESCR = Map.ofEntries(
@@ -67,7 +93,10 @@ public final class Weapon extends Item
 	public boolean ranged;
 	public boolean martial;
 	
-	public int rangeLow, rangeHigh;
+	public boolean modern = false;
+	public boolean future = false;
+	
+	public int rangeLow, rangeHigh, reload;
 	
 	public Weapon(String name) {
 		super(name);

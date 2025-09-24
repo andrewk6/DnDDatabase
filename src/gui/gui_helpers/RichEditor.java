@@ -1,7 +1,6 @@
 package gui.gui_helpers;
 
 import builders.monster_builder.AttackInsertForm;
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
 import data.Feat;
@@ -10,17 +9,14 @@ import data.Rule;
 import data.Spell;
 import data.campaign.Player;
 import data.hazards.Hazard;
-import data.items.Armor;
-import data.items.Gear;
+import data.interfaces.DataChangeListener;
 import data.items.Item;
-import data.items.MagicItem;
-import data.items.Weapon;
 import data.players.Background;
 import data.players.Species;
 import data.players.classes.DnDClass;
-import gui.classes.ClassPane;
-import gui.gui_helpers.structures.StyleContainer;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.hazard.HazardPane;
+import gui.monsters.MonsterDispPane;
 import utils.ErrorLogger;
 
 import javax.swing.*;
@@ -33,15 +29,13 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.*;
-import java.util.stream.Collectors;
 
+@SuppressWarnings("serial")
 public class RichEditor extends RichEditorBase implements DataChangeListener{
     private final JPopupMenu suggestionPopup = new JPopupMenu();
     private final JList<String> suggestionList = new JList<>();
-    private final JScrollPane scrollPane = new JScrollPane(suggestionList);
+    private final JScrollPane scrollPane = CompFactory.wrapPanelInScroll(suggestionList);
     private final JTextPane editor;
     
     private DataContainer data;
@@ -60,11 +54,12 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 
     private final JWindow rulePreviewWindow = new JWindow();
     private final JTextPane rulePreviewPane = new JTextPane();
-    private final JScrollPane ruleScrollPane = new JScrollPane(rulePreviewPane);
+    private final JScrollPane ruleScrollPane = CompFactory.wrapPanelInScroll(rulePreviewPane);
     
     private final JWindow specialPreviewWindow = new JWindow();
     private final JPanel specialPreviewPane = new JPanel();
-    private final JScrollPane specialScrollPane = new JScrollPane(specialPreviewPane);
+    private final JScrollPane specialScrollPane = 
+    		CompFactory.wrapPanelInScroll(specialPreviewPane, ScrollPolicy.BOTH);
     
     private final Map<Integer, String> ruleOffsets = new HashMap<>();
     private final Map<Integer, String> spellOffsets = new HashMap<>();
@@ -224,7 +219,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         
         
 
-        editor.getDocument().addDocumentListener(documentListener);
+        addDocumentListeners();
         editor.addKeyListener(keyAdapter);
         suggestionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -252,15 +247,15 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             }
         });
 
-        editor.registerKeyboardAction(e -> triggerSuggestion(),
+        editor.registerKeyboardAction(_ -> triggerSuggestion(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.CTRL_DOWN_MASK),
                 JComponent.WHEN_FOCUSED);
         
-        editor.registerKeyboardAction(e -> insertAttack(), 
+        editor.registerKeyboardAction(_ -> insertAttack(), 
         		KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK), 
         		JComponent.WHEN_FOCUSED);
         
-        editor.registerKeyboardAction(e -> copyFunction(), 
+        editor.registerKeyboardAction(_ -> copyFunction(), 
         		KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK), 
         		JComponent.WHEN_FOCUSED);
         
@@ -281,12 +276,11 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         specialPreviewWindow.getContentPane().setLayout(new BorderLayout());
         specialPreviewWindow.add(specialScrollPane, BorderLayout.CENTER);
         specialScrollPane.setPreferredSize(new Dimension(600, 600));
-        specialScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        specialScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         specialPreviewWindow.pack();
         
         editor.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
+            @SuppressWarnings("deprecation")
+			@Override
             public void mouseMoved(MouseEvent e) {
                 Point pt = new Point(e.getX(), e.getY());
                 int pos = editor.viewToModel(pt);
@@ -351,19 +345,6 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                     e.consume();
                 }
             }
-        });
-        
-        editor.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                SwingUtilities.invokeLater(() -> checkForSlash());
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) { }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) { }
         });
     }
     
@@ -592,8 +573,12 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 
                 Collections.sort(matches);
                 if (!matches.isEmpty()) {
-                	showMatches = true;
-                    updateSuggestions(matches, caretPos);
+                	if(matches.size() == 1) {
+                		insertSuggestion(matches.getFirst());
+                	}else {
+                		showMatches = true;
+                        updateSuggestions(matches, caretPos);
+                	}
                 }
             }
             
@@ -624,7 +609,6 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     }
 
     private void updateSuggestions(List<String> suggestions, int caretEnd) {
-    	System.out.println("In Update: " + showMatches);
     	if(showMatches) {
             suggestionList.setListData(suggestions.toArray(new String[0]));
             suggestionList.setSelectedIndex(0);
@@ -634,7 +618,8 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             suggestionPopup.add(scrollPane);
 
             try {
-                Rectangle caretCoords = editor.modelToView(caretEnd);
+                @SuppressWarnings("deprecation")
+				Rectangle caretCoords = editor.modelToView(caretEnd);
                 suggestionPopup.show(editor, caretCoords.x, caretCoords.y + 20);
                 suggestionList.requestFocusInWindow();
             } catch (BadLocationException e) {
@@ -645,8 +630,6 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     }
 
     private void insertSuggestion(String selected) {
-    	System.out.println(replacements == null);
-    	
         if (atPosition >= 0 && selected != null) {
             try {
                 boolean isSpell = selected.endsWith(" (spell)");
@@ -772,7 +755,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         super.setTextStyle();
     }
     
-    private void insertStyledHTMLLikeText(String htmlLikeText, StyledDocument doc) {
+    /*private void insertStyledHTMLLikeText(String htmlLikeText, StyledDocument doc) {
         int pos = doc.getLength();
 
         // Create base styles
@@ -827,7 +810,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         	ErrorLogger.log(e);
             e.printStackTrace();
         }
-    }
+    }*/
 
 
     private void showRulePreview(String ruleName, Point screenLocation) {
@@ -1103,10 +1086,67 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     
     public void LoadDocument(StyledDocument doc) {
     	this.editor.setStyledDocument(doc);
+    	RebuildOffsets();
+    	addDocumentListeners();
+    }
+    private void RebuildOffsets() {
+    	StyledDocument doc = getStyledDocument();
+    	int length = doc.getLength();
+    	for (int i = 0; i < length; i++) {
+    	    Element elem = doc.getCharacterElement(i);
+    	    AttributeSet attr = elem.getAttributes();
+    	    
+            String ruleName = (String) attr.getAttribute("ruleLink");
+            String spellName = (String) attr.getAttribute("spellLink");
+            String monsterName = (String) attr.getAttribute("monstLink");
+            String itemName = (String) attr.getAttribute("itemLink");
+            String featName = (String) attr.getAttribute("featLink");
+            String className = (String) attr.getAttribute("classLink");
+            String speciesName = (String)attr.getAttribute("speciesLink");
+            String backgroundName = (String)attr.getAttribute("backgroundLink");
+            
+            if(ruleName != null)
+            	ruleOffsets.put(i, ruleName);
+            else if(spellName != null)
+            	spellOffsets.put(i, spellName);
+            else if(monsterName != null)
+            	monstOffsets.put(i, monsterName);
+            else if(itemName != null)
+            	itemOffsets.put(i, itemName);
+            else if(featName != null)
+            	featOffsets.put(i, featName);
+            else if(className != null)
+            	classOffsets.put(i, className);
+            else if(speciesName != null)
+            	speciesOffsets.put(i, speciesName);
+            else if(backgroundName != null)
+            	backgroundOffsets.put(i, backgroundName);
+    	}
     }
 
     public void close() {
         rulePreviewWindow.dispose();
+    }
+    
+    /*
+     * editor.getDocument().addDocumentListener(documentListener);
+     */
+    
+    private void addDocumentListeners() {
+    	editor.getDocument().addDocumentListener(documentListener);
+    	
+    	editor.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                SwingUtilities.invokeLater(() -> checkForSlash());
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) { }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) { }
+        });
     }
     
     public void updateData() {

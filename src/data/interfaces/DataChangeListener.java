@@ -1,4 +1,4 @@
-package data;
+package data.interfaces;
 
 import data.DataContainer.MapType;
 

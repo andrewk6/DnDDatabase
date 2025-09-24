@@ -3,11 +3,8 @@ package gui.builder_internals;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,24 +12,20 @@ import java.util.HashMap;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
-import javax.swing.text.StyledDocument;
-
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.DataContainer.Source;
 import data.players.BastionRoom;
 import data.players.BastionRoom.Order;
 import data.players.BastionRoom.SpaceRequired;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.StyleContainer;
 import gui.gui_helpers.DocumentHelper;
 import gui.gui_helpers.ReminderField;
@@ -47,6 +40,7 @@ public class BastionBuilderIFrame extends JInternalFrame
 	
 	private JComboBox<SpaceRequired> spaceCombo;
 	private JComboBox<Order> orderCombo;
+	private JComboBox<Source> srcCombo;
 	private ReminderField nameField, prereqField, hirelingField, levelField;
 	private RichEditor edit;
 	
@@ -78,8 +72,22 @@ public class BastionBuilderIFrame extends JInternalFrame
 		hPane.setLayout(new BorderLayout());
 		mPane.add(hPane, BorderLayout.NORTH);
 		
+		JPanel headerPane = new JPanel();
+		headerPane.setLayout(new BorderLayout());
+		hPane.add(headerPane, BorderLayout.NORTH);
+		
 		nameField = CompFactory.createReminderField("Room Name...", ComponentType.HEADER);
-		hPane.add(nameField, BorderLayout.NORTH);
+		headerPane.add(nameField, BorderLayout.CENTER);
+		
+		JPanel srcPane = new JPanel();
+		srcPane.setLayout(new BorderLayout());
+		headerPane.add(srcPane, BorderLayout.EAST);
+		
+		JLabel srcLbl = CompFactory.createNewLabel("Source:", ComponentType.HEADER);
+		srcPane.add(srcLbl, BorderLayout.WEST);
+		
+		srcCombo = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
+		srcPane.add(srcCombo, BorderLayout.CENTER);
 		
 		JPanel statsPane = new JPanel();
 		statsPane.setLayout(new GridLayout(2, 3));
@@ -116,7 +124,7 @@ public class BastionBuilderIFrame extends JInternalFrame
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
 		FillSidePane();
-		JScrollPane sideScroll = new JScrollPane(sidePane);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sidePane, ScrollPolicy.VERTICAL);
 		sideScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		sideWrapper.add(sideScroll, BorderLayout.CENTER);
 		
@@ -240,6 +248,7 @@ public class BastionBuilderIFrame extends JInternalFrame
 		}else {
 			BastionRoom room = new BastionRoom();
 			room.name = nameField.getText();
+			room.src = (Source) srcCombo.getSelectedItem();
 			
 			room.prereq = prereqField.getText();
 			room.hirelings = hirelingField.getText();
@@ -263,6 +272,7 @@ public class BastionBuilderIFrame extends JInternalFrame
 		nameField.setEditable(false);
 		nameField.setFocusable(false);
 		
+		srcCombo.setSelectedItem(r.src);
 		prereqField.setText(r.prereq);
 		hirelingField.setText(r.hirelings);
 		levelField.setText("" + r.unlockLevel);

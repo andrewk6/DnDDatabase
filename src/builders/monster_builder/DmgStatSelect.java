@@ -18,14 +18,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.text.BadLocationException;
-
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.structures.StyleContainer;
 
+@SuppressWarnings("serial")
 public class DmgStatSelect extends JDialog{
 	private JTextField insertTarget;
 	public boolean finished;
@@ -121,7 +119,7 @@ public class DmgStatSelect extends JDialog{
 		
 		JButton finBtn = new JButton("Insert");
 		StyleContainer.SetFontBtn(finBtn);
-		finBtn.addActionListener(e ->{
+		finBtn.addActionListener(_ ->{
 			finished = true;
 			String build = buildText();
 			if(build.length() > 0)

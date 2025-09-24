@@ -1,26 +1,15 @@
 package gui.dungeon;
 
-import gui.dungeon.dialogs.EncounterDialog;
-import gui.dungeon.dialogs.NoteDialog;
 import gui.dungeon.tile.*;
 import gui.dungeon.tile.Tile.TILE_TYPE;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.structures.GuiDirector;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import data.DataContainer;
-import data.Monster;
-import data.dungeon.DungeonNote;
-import data.dungeon.EncounterNote;
-
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 
 public class DungeonViewerPane extends JPanel {

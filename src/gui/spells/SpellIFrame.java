@@ -1,4 +1,4 @@
-package gui;
+package gui.spells;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -8,10 +8,7 @@ import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyVetoException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -30,9 +27,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.interfaces.DataChangeListener;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
@@ -133,10 +130,7 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 		spellGridPane.setLayout(new GridLayout(0,1));
 		FillSidePane();
 		
-		JScrollPane spellGridScroll = new JScrollPane(spellGridPane);
-		spellGridScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		spellGridScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		
+		JScrollPane spellGridScroll = CompFactory.wrapPanelInScroll(spellGridPane);		
 		sPane.add(spellGridScroll, BorderLayout.CENTER);
 		cPane.add(sPane, BorderLayout.WEST);
 	}
@@ -191,19 +185,8 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 		sPane.setLayout(new BorderLayout());
 		spellTab.addTab(key, sPane);
 		
-		JTextField spellTitle = new JTextField(key);
-		spellTitle.setEditable(false);
-		spellTitle.setFocusable(false);
-		spellTitle.setHorizontalAlignment(JTextField.CENTER);
-		StyleContainer.SetFontHeader(spellTitle);
-		sPane.add(spellTitle, BorderLayout.NORTH);
-		
-		HoverTextPane spellDesc = new HoverTextPane(data, gd, dPane);
-//		spellDesc.SetSpellTabbedPane(this);
-		spellDesc.setDocument(data.getSpells().get(key).spellDoc);
-		JScrollPane spellScroll = new JScrollPane(spellDesc);
-		spellScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		sPane.add(spellScroll, BorderLayout.CENTER);
+		SpellPane spellDesc = new SpellPane(data.getSpells().get(key), data, gd);
+		sPane.add(spellDesc, BorderLayout.CENTER);
 		
 		JPanel btnFlow = new JPanel();
 		btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));

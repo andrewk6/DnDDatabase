@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("serial")
 public class FilterCombo extends JComboBox<String> {
     private final List<String> originalItems = new ArrayList<>();
     private boolean isAdjusting = false;

@@ -12,7 +12,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -24,12 +23,9 @@ import javax.swing.event.InternalFrameListener;
 
 import data.Monster;
 import data.dungeon.Dungeon;
-import gui.ComboIFrame;
 import gui.FeatIFrame;
 import gui.ItemIFrame;
-import gui.MonsterIFrame;
 import gui.RuleIFrame;
-import gui.SpellIFrame;
 import gui.background.BackgroundIFrame;
 import gui.campaign.PartyIFrame;
 import gui.campaign.PlayerPane;
@@ -39,7 +35,9 @@ import gui.dungeon.DungeonIViewer;
 import gui.gui_helpers.PlayerNameTargets;
 import gui.hazard.HazardIFrame;
 import gui.initative.InitiativeIFrame;
+import gui.monsters.MonsterIFrame;
 import gui.species.SpeciesIFrame;
+import gui.spells.SpellIFrame;
 import utils.ErrorLogger;
 
 public class GuiDirector
@@ -450,7 +448,7 @@ public class GuiDirector
 
 	    for (String type : types) {
 	        JButton button = new JButton(type);
-	        button.addActionListener(e -> {
+	        button.addActionListener(_ -> {
 	            result[0] = type;
 	            dialog.dispose();
 	        });
@@ -458,7 +456,7 @@ public class GuiDirector
 	    }
 
 	    JButton cancelButton = new JButton("Cancel");
-	    cancelButton.addActionListener(e -> dialog.dispose());
+	    cancelButton.addActionListener(_ -> dialog.dispose());
 	    buttonPanel.add(cancelButton);
 
 	    dialog.add(buttonPanel, BorderLayout.CENTER);

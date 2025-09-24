@@ -9,6 +9,7 @@ import javax.swing.text.StyledDocument;
 import data.DataContainer;
 import gui.gui_helpers.structures.GuiDirector;
 
+@SuppressWarnings("serial")
 public class RichViewer extends JPanel
 {
 	private HoverTextPane hPane;
@@ -18,8 +19,7 @@ public class RichViewer extends JPanel
 		
 		hPane = new HoverTextPane(data, gd, gd.getDesktop());
 		hPane.setDocument(doc);
-		JScrollPane scroll = new JScrollPane(hPane);
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane scroll = CompFactory.wrapPanelInScroll(hPane);
 		this.add(scroll, BorderLayout.CENTER);
 	}
 	
@@ -27,8 +27,7 @@ public class RichViewer extends JPanel
 		this.setLayout(new BorderLayout());
 		
 		hPane = new HoverTextPane(data, gd, gd.getDesktop());
-		JScrollPane scroll = new JScrollPane(hPane);
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane scroll = CompFactory.wrapPanelInScroll(hPane);
 		this.add(scroll, BorderLayout.CENTER);
 	}
 	

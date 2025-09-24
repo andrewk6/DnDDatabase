@@ -6,7 +6,6 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -15,14 +14,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
 import data.hazards.Hazard;
-import data.players.Species;
+import data.interfaces.DataChangeListener;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.ReminderField;
@@ -30,6 +26,7 @@ import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 
+@SuppressWarnings("serial")
 public class HazardIFrame extends JInternalFrame implements ContentTab, DataChangeListener
 {
 	private DataContainer data;
@@ -73,7 +70,7 @@ public class HazardIFrame extends JInternalFrame implements ContentTab, DataChan
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
 		FillSidePane();
-		JScrollPane sideScroll = new JScrollPane(sidePane);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sidePane);
 		
 		cPane.add(sideScroll, BorderLayout.WEST);
 	}

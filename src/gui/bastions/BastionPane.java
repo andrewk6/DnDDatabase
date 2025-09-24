@@ -20,11 +20,12 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.StyledDocument;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.interfaces.DataChangeListener;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.GuiDirector;
 
@@ -112,7 +113,7 @@ public class BastionPane extends JPanel implements DataChangeListener
 		
 		roomSide = new JPanel();
 		roomSide.setLayout(new GridLayout(0,1));
-		JScrollPane roomScroll = new JScrollPane(roomSide);
+		JScrollPane roomScroll = CompFactory.wrapPanelInScroll(roomSide, ScrollPolicy.VERTICAL);
 		sideWrapper.add(roomScroll, BorderLayout.CENTER);
 		FillRoomSide();
 	}
@@ -146,10 +147,10 @@ public class BastionPane extends JPanel implements DataChangeListener
 		
 	}
 	
-	private HoverTextPane getRulePane(String key) {
+	private JScrollPane getRulePane(String key) {
 		HoverTextPane ruleDesc = new HoverTextPane(data, gd, gd.getDesktop());
 		ruleDesc.setDocument(data.getBastionRules().get(key));
-		return ruleDesc;
+		return CompFactory.wrapPanelInScroll(ruleDesc, ScrollPolicy.VERTICAL);
 	}
 	
 	private void FillRoomSide() {
@@ -158,7 +159,6 @@ public class BastionPane extends JPanel implements DataChangeListener
 		Collections.sort(keys);
 
 		for(String key : keys) {
-			System.out.println(key);
 			JLabel lbl = CompFactory.createNewLabel(key, ComponentType.BODY);
 			lbl.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 			lbl.addMouseListener(CompFactory.createSideMouseListener(lbl, ()->{

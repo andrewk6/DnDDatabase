@@ -1,7 +1,6 @@
 package builders.class_builder;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -26,8 +25,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
-import javax.swing.text.StyledDocument;
-
 import data.DataContainer;
 import data.DataContainer.Abilities;
 import data.DataContainer.MapType;
@@ -42,6 +39,7 @@ import data.players.classes.DnDClass.WeaponProficiency;
 import data.players.classes.Subclass;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.DocumentHelper;
 import gui.gui_helpers.FilterCombo;
 import gui.gui_helpers.ReminderField;
@@ -49,6 +47,7 @@ import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.structures.StyleContainer;
 import utils.ErrorLogger;
 
+@SuppressWarnings("serial")
 public class ClassBuilder extends JFrame
 {
 	private DataContainer data;
@@ -126,7 +125,7 @@ public class ClassBuilder extends JFrame
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
 		FillSidePane();
-		JScrollPane sideScroll = new JScrollPane(sidePane);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sidePane, ScrollPolicy.VERTICAL);
 		sideOPane.add(sideScroll, BorderLayout.CENTER);
 		
 		JPanel headerPane = new JPanel();

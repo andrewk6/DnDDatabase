@@ -8,9 +8,10 @@ import javax.swing.text.StyledDocument;
 
 import data.DataContainer.Skills;
 import data.DataContainer.Source;
+import data.interfaces.SourceProvider;
 import data.DataContainer.Proficiency;;
 
-public class Monster implements Serializable
+public class Monster implements Serializable, SourceProvider
 {
 	/**
 	 * 
@@ -260,6 +261,11 @@ public class Monster implements Serializable
 	    result = 31 * result + java.util.Arrays.hashCode(stats);
 	    result = 31 * result + java.util.Arrays.hashCode(saves);
 	    return result;
+	}
+
+	@Override
+	public Source getSource() {
+		return source;
 	}
 
 }

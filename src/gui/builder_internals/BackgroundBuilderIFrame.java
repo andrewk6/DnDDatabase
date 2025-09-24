@@ -2,25 +2,18 @@ package gui.builder_internals;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -29,8 +22,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
-import javax.swing.text.StyledDocument;
-
 import data.Feat;
 import data.Feat.FeatType;
 import data.DataContainer;
@@ -50,17 +41,7 @@ import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.DocumentHelper;
 
 public class BackgroundBuilderIFrame extends JInternalFrame
-{
-	public static void main(String[]args) {
-		DataContainer data = new DataContainer();
-		data.init();
-		
-		SwingUtilities.invokeLater(() -> {
-			BackgroundBuilderIFrame build = new BackgroundBuilderIFrame(data);
-			build.setVisible(true);
-		});
-	}
-	
+{	
 	private DataContainer data;
 	private HashMap<String, Background> bMap;
 	private ArrayList<Feat> originFeats;
@@ -253,7 +234,7 @@ public class BackgroundBuilderIFrame extends JInternalFrame
 		addSkillsPane.add(addSkillBtn, BorderLayout.SOUTH);
 		
 		JList<Skills> skillsList = CompFactory.createJList(skillsModel, ComponentType.BODY);
-		JScrollPane listScroll = new JScrollPane(skillsList);
+		JScrollPane listScroll = CompFactory.wrapPanelInScroll(skillsList, ScrollPolicy.VERTICAL);
 		skillsPane.add(listScroll, BorderLayout.CENTER);
 	}
 	
@@ -282,7 +263,7 @@ public class BackgroundBuilderIFrame extends JInternalFrame
 		goldPane.add(startGoldEquipField, BorderLayout.CENTER);
 		
 		JList<Item> itemList = CompFactory.createJList(itemModel, ComponentType.BODY);
-		JScrollPane itemScroll = new JScrollPane(itemList);
+		JScrollPane itemScroll = CompFactory.wrapPanelInScroll(itemList, ScrollPolicy.VERTICAL);
 		itemsPane.add(itemScroll, BorderLayout.CENTER);
 		
 		JPanel addItemsPane = new JPanel();

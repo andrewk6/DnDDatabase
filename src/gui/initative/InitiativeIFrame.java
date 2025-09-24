@@ -15,18 +15,18 @@ import gui.campaign.PlayerPane;
 import gui.classes.ClassPane;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
-import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.FilterCombo;
 import gui.gui_helpers.HoverTextPane;
-import gui.gui_helpers.MonsterDispPane;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.structures.AllTab;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 import gui.hazard.HazardPane;
+import gui.monsters.MonsterDispPane;
 import gui.species.SpeciesPane;
+import gui.spells.SpellPane;
 import utils.DiceCalculator;
 import utils.ErrorLogger;
 import utils.IllegalDiceNotationException;
@@ -53,6 +53,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("serial")
 public class InitiativeIFrame extends JInternalFrame implements AllTab {
     private final DataContainer data;
     private final GuiDirector gd;
@@ -192,7 +193,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
             	}
             }
         });
-        leftPanel.add(new JScrollPane(initiativeList), BorderLayout.CENTER);
+        leftPanel.add(CompFactory.wrapPanelInScroll(initiativeList), BorderLayout.CENTER);
 
         JButton nextTurn = new JButton("Next");
         nextTurn.addActionListener(e -> advanceTurn());
@@ -294,7 +295,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
             inputPanel.add(field);
         }
 
-        int result = JOptionPane.showConfirmDialog(this, new JScrollPane(inputPanel),
+        int result = JOptionPane.showConfirmDialog(this, CompFactory.wrapPanelInScroll(inputPanel),
                 "Set Player Initiatives", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
@@ -619,18 +620,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 			tabs.addTab(s.name, sPane);
 			tabsUI.setTabColor(tabs.indexOfTab(s.name), Color.PINK);
 
-			JTextField sTitle = new JTextField(s.name);
-			sTitle.setEditable(false);
-			sTitle.setFocusable(false);
-			sTitle.setHorizontalAlignment(JTextField.CENTER);
-			StyleContainer.SetFontHeader(sTitle);
-			sPane.add(sTitle, BorderLayout.NORTH);
-
-			HoverTextPane sDesc = new HoverTextPane(data, gd, dPane);
-			sDesc.setDocument(data.getSpells().get(s.name).spellDoc);
-			JScrollPane sScroll = new JScrollPane(sDesc);
-			sScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-			sPane.add(sScroll, BorderLayout.CENTER);
+			sPane.add(new SpellPane(s, data, gd), BorderLayout.CENTER);
 
 			JPanel btnFlow = new JPanel();
 			btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -666,8 +656,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
 			HoverTextPane fDesc = new HoverTextPane(data, gd, gd.getDesktop());
 			fDesc.setDocument(data.getFeats().get(f.name).desc);
-			JScrollPane fScroll = new JScrollPane(fDesc);
-			fScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			JScrollPane fScroll = CompFactory.wrapPanelInScroll(fDesc);
 			fPane.add(fScroll, BorderLayout.CENTER);
 
 			JPanel btnFlow = new JPanel();
@@ -730,8 +719,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
 			HoverTextPane ruleDesc = new HoverTextPane(data, gd, dPane);
 			ruleDesc.setDocument(data.getRules().get(r.name).ruleDoc);
-			JScrollPane rScroll = new JScrollPane(ruleDesc);
-			rScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			JScrollPane rScroll = CompFactory.wrapPanelInScroll(ruleDesc);
 			rPane.add(rScroll, BorderLayout.CENTER);
 
 			JPanel btnFlow = new JPanel();

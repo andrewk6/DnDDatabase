@@ -12,9 +12,7 @@ import java.awt.event.WindowListener;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -30,19 +28,19 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
 import data.Rule;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.RichEditor;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -203,8 +201,7 @@ public class RuleBuilder {
 
 		rulesListPane = new JPanel();
 		rulesListPane.setLayout(new GridLayout(0, 1));
-		JScrollPane rulesScroller = new JScrollPane(rulesListPane);
-		rulesScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane rulesScroller = CompFactory.wrapPanelInScroll(rulesListPane, ScrollPolicy.VERTICAL);
 		rulesPane.add(rulesScroller, BorderLayout.CENTER);
 		BuildRulesList();
 		
@@ -289,7 +286,6 @@ public class RuleBuilder {
 		rulesListPane.repaint();
 	}
 
-	@SuppressWarnings("unchecked")
 	public void loadRulesList() {
 		File rulesFile = new File(rulesFileName);
 		if (rulesFile.exists()) {

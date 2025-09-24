@@ -9,9 +9,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -27,12 +24,10 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.interfaces.DataChangeListener;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
@@ -111,11 +106,9 @@ public class RuleIFrame extends JInternalFrame implements ContentTab, DataChange
 		ruleGridPane.setLayout(new GridLayout(0,1));
 		FillSidePane();
 		
-		JScrollPane spellGridScroll = new JScrollPane(ruleGridPane);
-		spellGridScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		spellGridScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane ruleGridScroll = CompFactory.wrapPanelInScroll(ruleGridPane);
 		
-		sPane.add(spellGridScroll, BorderLayout.CENTER);
+		sPane.add(ruleGridScroll, BorderLayout.CENTER);
 		cPane.add(sPane, BorderLayout.WEST);
 	}
 	

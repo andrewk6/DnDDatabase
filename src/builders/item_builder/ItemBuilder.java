@@ -6,8 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.HashMap;
-import java.util.Map;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -18,8 +16,10 @@ import javax.swing.SwingUtilities;
 import data.DataContainer;
 import data.DataContainer.MapType;
 import data.items.Item;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.structures.StyleContainer;
 
+@SuppressWarnings("serial")
 public class ItemBuilder extends JFrame
 {
 	private final DataContainer data;
@@ -35,8 +35,10 @@ public class ItemBuilder extends JFrame
 	
 	public static void main(String[] args) 
 	{
+		DataContainer data = new DataContainer();
+		data.init();
 		SwingUtilities.invokeLater(()->{
-			ItemBuilder builder = new ItemBuilder(new DataContainer());
+			ItemBuilder builder = new ItemBuilder(data);
 			builder.setVisible(true);
 		});
 	}
@@ -91,11 +93,7 @@ public class ItemBuilder extends JFrame
 		cPane.add(savePane, BorderLayout.SOUTH);
 		
 		
-		JButton saveBtn = new JButton("Save");
-		StyleContainer.SetFontBtn(saveBtn);
-		saveBtn.addActionListener(e ->{
-			Save();
-		});
+		JButton saveBtn = CompFactory.createNewButton("Save", this::Save);
 		savePane.add(saveBtn);
 	}
 	

@@ -30,8 +30,10 @@ import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.structures.StyleContainer;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.FilterCombo;
 
+@SuppressWarnings("serial")
 public class VehicleBuilderPane extends JPanel
 {
 	public static void main(String[]args) {
@@ -49,8 +51,6 @@ public class VehicleBuilderPane extends JPanel
 	}
 	private DataContainer data;
 	private HashMap<String, Vehicle> vMap;
-	
-	@SuppressWarnings("unchecked")
 	private String[] vehicleTypes = new String[]{
             Mount.class.getSimpleName(), 
             LargeVehicle.class.getSimpleName()
@@ -86,7 +86,6 @@ public class VehicleBuilderPane extends JPanel
 		this.setLayout(new BorderLayout());
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void BuildContent() {
 		JPanel hPane = new JPanel();
 		hPane.setLayout(new BorderLayout());
@@ -150,7 +149,7 @@ public class VehicleBuilderPane extends JPanel
 		
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
-		JScrollPane sideScroll = new JScrollPane(sidePane);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sidePane, ScrollPolicy.VERTICAL);
 		sideWrapper.add(sideScroll, BorderLayout.CENTER);
 		
 		JButton saveButton = CompFactory.createNewButton("Save", this::Save);

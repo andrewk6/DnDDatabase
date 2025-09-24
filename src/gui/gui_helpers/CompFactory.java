@@ -1,5 +1,6 @@
 package gui.gui_helpers;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -12,7 +13,6 @@ import java.awt.event.WindowListener;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.swing.DefaultComboBoxModel;
@@ -20,6 +20,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -36,10 +37,11 @@ import javax.swing.event.InternalFrameListener;
 import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
-import gui.campaign.PartyIFrame;
+import data.DataContainer.Source;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import gui.gui_helpers.structures.TaskbarDesktopManager;
 import utils.ErrorLogger;
 
 public class CompFactory
@@ -53,7 +55,11 @@ public class CompFactory
 	}
 	
 	private final static DefaultListCellRenderer seperateItems = new DefaultListCellRenderer() {
-	    @Override
+	    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 2197727826324863692L;
+		
 	    public Component getListCellRendererComponent(JList<?> list,
 	                                                  Object value,
 	                                                  int index,
@@ -70,6 +76,8 @@ public class CompFactory
 	        return label;
 	    }
 	};
+	
+	public static final int DEFAULT_SCROLL_SPEED = 16;
 	
 	private static <T> void setFont(Component c, ComponentType font) {
 		switch(font) {
@@ -128,6 +136,60 @@ public class CompFactory
 		return lbl;
 	}
 	
+	public static JLabel createNewLabel(String text) {
+		JLabel lbl = new JLabel(text);		
+		setFont(lbl, ComponentType.BODY);		
+		return lbl;
+	}
+	
+	public static JLabel createNewLabel(String text, float fontMod) {
+		JLabel lbl = createNewLabel(text, ComponentType.BODY);
+		lbl.setFont(lbl.getFont().deriveFont(lbl.getFont().getSize() + fontMod));
+		return lbl;
+	}
+	
+	public static JLabel createSideLabel(String text, ComponentType type) {
+		JLabel sideLbl;
+		if(text.length() > StyleContainer.SIDE_STRING_LIMIT) 
+			sideLbl = createNewLabel(text.substring(0, StyleContainer.SIDE_STRING_LIMIT), type);
+		else
+			sideLbl = createNewLabel(text, type);
+		sideLbl.setToolTipText(text);
+		return sideLbl;
+	}
+	
+	public static JLabel createSideLabel(String text, ComponentType type, float fontMod) {
+		JLabel sideLbl;
+		if(text.length() > StyleContainer.SIDE_STRING_LIMIT) 
+			sideLbl = createNewLabel(text.substring(0, StyleContainer.SIDE_STRING_LIMIT), 
+					type, fontMod);
+		else
+			sideLbl = createNewLabel(text, type, fontMod);
+		sideLbl.setToolTipText(text);
+		return sideLbl;
+	}
+	
+	public static JLabel createSideLabel(String text) {
+		JLabel sideLbl;
+		if(text.length() > StyleContainer.SIDE_STRING_LIMIT) 
+			sideLbl = createNewLabel(text.substring(0, StyleContainer.SIDE_STRING_LIMIT), ComponentType.BODY);
+		else
+			sideLbl = createNewLabel(text, ComponentType.BODY);
+		sideLbl.setToolTipText(text);
+		return sideLbl;
+	}
+	
+	public static JLabel createSideLabel(String text, float fontMod) {
+		JLabel sideLbl;
+		if(text.length() > StyleContainer.SIDE_STRING_LIMIT) 
+			sideLbl = createNewLabel(text.substring(0, StyleContainer.SIDE_STRING_LIMIT), 
+					ComponentType.BODY, fontMod);
+		else
+			sideLbl = createNewLabel(text, ComponentType.BODY, fontMod);
+		sideLbl.setToolTipText(text);
+		return sideLbl;
+	}
+	
 	public static JMenuItem createNewJMenuItem(String text) {
 		JMenuItem out = new JMenuItem(text);
 		StyleContainer.SetFontMain(out);
@@ -144,7 +206,7 @@ public class CompFactory
 	public static JMenuItem createNewJMenuItem(String text, Supplier<JInternalFrame> fSup, JDesktopPane dPane) {
 		JMenuItem out = new JMenuItem(text);
 		StyleContainer.SetFontMain(out);
-		out.addActionListener(e ->{
+		out.addActionListener(_ ->{
 			JInternalFrame frm = fSup.get();
 			dPane.add(frm);
 			frm.setVisible(true);
@@ -182,6 +244,19 @@ public class CompFactory
 		return cBox;
 	}
 	
+	public static <T extends Enum<T>> EnumCheckbox<T> createEnumCheckbox(T val) {
+		EnumCheckbox<T> cBox = new EnumCheckbox<T>(val);
+		StyleContainer.SetFontMain(cBox);
+		return cBox;
+	}
+	
+	public static <T extends Enum<T>> EnumCheckbox<T> createEnumCheckbox(T val, ActionListener act) {
+		EnumCheckbox<T> cBox = new EnumCheckbox<T>(val);
+		StyleContainer.SetFontMain(cBox);
+		cBox.addActionListener(act);
+		return cBox;
+	}
+	
 	public static ReminderField createReminderField(String tooltip, boolean numbersOnly,
 			int columns, ComponentType font) {
 		ReminderField field = new ReminderField(tooltip);
@@ -213,6 +288,37 @@ public class CompFactory
 		return field;
 	}
 	
+	public static ReminderField createReminderField(String tooltip, boolean numbersOnly,
+			int columns) {
+		ReminderField field = new ReminderField(tooltip);
+		field.setColumns(columns);
+		if(numbersOnly)
+			field.setNumbersOnly();
+		setFont(field, ComponentType.BODY);
+		return field;
+	}
+	
+	public static ReminderField createReminderField(String tooltip, boolean numbersOnly) {
+		ReminderField field = new ReminderField(tooltip);
+		if(numbersOnly)
+			field.setNumbersOnly();
+		setFont(field, ComponentType.BODY);
+		return field;
+	}
+	
+	public static ReminderField createReminderField(String tooltip, int columns) {
+		ReminderField field = new ReminderField(tooltip);
+		field.setColumns(columns);
+		setFont(field, ComponentType.BODY);
+		return field;
+	}
+	
+	public static ReminderField createReminderField(String tooltip) {
+		ReminderField field = new ReminderField(tooltip);
+		setFont(field, ComponentType.BODY);
+		return field;
+	}
+	
 	public static JTabbedPane createTabbedPane() {
 		JTabbedPane tabs = new JTabbedPane();
 		tabs = new JTabbedPane();
@@ -223,7 +329,8 @@ public class CompFactory
 	}
 	
 	public static <T> JComboBox<T> createCombo(Class<T> type, List<T> items, ComponentType font) {
-	    JComboBox<T> combo = new JComboBox<>(new 
+	    @SuppressWarnings("unchecked")
+		JComboBox<T> combo = new JComboBox<>(new 
 	    		DefaultComboBoxModel<>(items.toArray((T[]) java.lang.reflect.Array.newInstance(type, 0))));
 	    setFont(combo, font);
 	    return combo;
@@ -280,18 +387,105 @@ public class CompFactory
 		return out;
 	}
 	
-	public static JScrollPane wrapPanelInScroll(JPanel pane, ScrollPolicy pol) {
+	public static JPanel createDescriptionPane(String lbl, String val) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel(lbl, ComponentType.HEADER), BorderLayout.WEST);
+		out.add(createNewLabel(val, ComponentType.BODY), BorderLayout.CENTER);
+		return out;
+	}
+	
+	public static JPanel createDescriptionPane(String lbl, String val, float fontMod) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel(lbl, ComponentType.HEADER, fontMod), BorderLayout.WEST);
+		out.add(createNewLabel(val, ComponentType.BODY, fontMod), BorderLayout.CENTER);
+		return out;
+	}
+	
+	public static JPanel createSplitPane(String lbl, Component val) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel(lbl, ComponentType.HEADER), BorderLayout.WEST);
+		out.add(val, BorderLayout.CENTER);
+		return out;
+	}
+	
+	public static JPanel createSplitPane(String lbl, Component val, float fontMod) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel(lbl, ComponentType.HEADER, fontMod), BorderLayout.WEST);
+		out.add(val, BorderLayout.CENTER);
+		return out;
+	}
+	
+	public static JPanel createTopPane(String name, Source src) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel(name, ComponentType.HEADER), BorderLayout.CENTER);
+		out.add(createSourcePane(src), BorderLayout.EAST);
+		return out;
+	}
+	
+	public static JPanel createTopPane(String name, Source src, float fontMod) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel(name, ComponentType.HEADER, fontMod), BorderLayout.CENTER);
+		out.add(createSourcePane(src), BorderLayout.EAST);
+		return out;
+	}
+	
+	public static JPanel createSourcePane(Source src) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel("Source: ", ComponentType.HEADER), BorderLayout.WEST);
+		out.add(createNewLabel(src.toString(), ComponentType.BODY));
+		return out;		
+	}
+	
+	public static JScrollPane wrapPanelInScroll(JComponent pane) {
+		JScrollPane out = wrapPanelInScroll(pane, ScrollPolicy.VERTICAL);
+		out.getVerticalScrollBar().setUnitIncrement(DEFAULT_SCROLL_SPEED);
+		return out;
+	}
+	
+	public static JScrollPane wrapPanelInScroll(JComponent pane, int scrollSpeed) {
+		JScrollPane out = wrapPanelInScroll(pane, ScrollPolicy.VERTICAL);
+		out.getVerticalScrollBar().setUnitIncrement(scrollSpeed);
+		return out;
+	}
+	
+	public static JScrollPane wrapPanelInScroll(JComponent pane, ScrollPolicy pol) {
 		JScrollPane out = new JScrollPane(pane);
 		if(pol == ScrollPolicy.VERTICAL) {
-//			out.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			out.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 			out.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		}else if(pol == ScrollPolicy.HORIZONTAL) {
 			out.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-//			out.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+			out.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		}else {
 			out.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			out.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		}
+		out.getVerticalScrollBar().setUnitIncrement(DEFAULT_SCROLL_SPEED);
+		out.getHorizontalScrollBar().setUnitIncrement(DEFAULT_SCROLL_SPEED);
+		return out;
+	}
+	
+	public static JScrollPane wrapPanelInScroll(JComponent pane, int scrollSpeed, ScrollPolicy pol) {
+		JScrollPane out = new JScrollPane(pane);
+		if(pol == ScrollPolicy.VERTICAL) {
+			out.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			out.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		}else if(pol == ScrollPolicy.HORIZONTAL) {
+			out.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			out.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+		}else {
+			out.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			out.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		}
+		out.getVerticalScrollBar().setUnitIncrement(scrollSpeed);
+		out.getHorizontalScrollBar().setUnitIncrement(scrollSpeed);
 		return out;
 	}
 	
@@ -341,7 +535,13 @@ public class CompFactory
 			iFrame.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
 		return new InternalFrameListener() {
 			public void internalFrameOpened(InternalFrameEvent e) {}
-			public void internalFrameClosing(InternalFrameEvent e) {iFrame.setVisible(false);}
+			public void internalFrameClosing(InternalFrameEvent e) {
+				iFrame.setVisible(false);
+				((TaskbarDesktopManager)iFrame.getDesktopPane()
+						.getDesktopManager()).repositionIcons(iFrame.getDesktopPane());
+				iFrame.getDesktopPane().revalidate();
+				iFrame.getDesktopPane().repaint();
+			}
 			public void internalFrameClosed(InternalFrameEvent e) {}
 			public void internalFrameIconified(InternalFrameEvent e) {}
 			public void internalFrameDeiconified(InternalFrameEvent e) {}

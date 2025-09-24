@@ -2,42 +2,24 @@ package builders.monster_builder;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -46,7 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -57,14 +38,19 @@ import data.*;
 import data.DataContainer.MapType;
 import data.DataContainer.Proficiency;
 import data.DataContainer.Skills;
+import data.DataContainer.Source;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.DocumentHelper;
-import gui.gui_helpers.MonsterDispPane;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
+import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
+import gui.monsters.MonsterDispPane;
 
-public class MonsterBuilder extends JFrame {
+@SuppressWarnings("serial")
+public class MonsterBuilderPane extends JPanel {
 	private DataContainer data;
 
 	private ReminderField monsterNameField, monsterTypeField, acField, initBnsField, hpField, speedField, strField,
@@ -74,6 +60,8 @@ public class MonsterBuilder extends JFrame {
 	private JCheckBox initProfChck, initExpertChck, strSaveP, dexSaveP, conSaveP, intSaveP, wisSaveP, chaSaveP;
 
 	private RichEditor traits, actions, bonusActions, reactions, legendActions;
+	
+	private JComboBox<Source> srcCombo;
 
 	private HashMap<DataContainer.Skills, DataContainer.Proficiency> skills;
 
@@ -91,27 +79,26 @@ public class MonsterBuilder extends JFrame {
 	
 
 	public static void main(String[] args) {
+		DataContainer data = new DataContainer();
+		data.init();
 		SwingUtilities.invokeLater(() -> {
-			MonsterBuilder monstBuild = new MonsterBuilder(new DataContainer());
-			monstBuild.setVisible(true);
+			StyleContainer.SetLookAndFeel();
+			JFrame frm = new JFrame();
+			frm.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			frm.addWindowListener(CompFactory.createSafeExitWindowListener(frm, data));
+			frm.setContentPane(new MonsterBuilderPane(data));
+			frm.pack();
+			frm.setSize(new Dimension(800, 800));
+			frm.setVisible(true);
 		});
 	}
 
-	public MonsterBuilder(DataContainer data) {
+	public MonsterBuilderPane(DataContainer data) {
 		this.data = data;
-		System.out.println(data.getMonsterKeysSorted().size());
 		tagFields = new ArrayList<ReminderField>();
 		skills = new HashMap<Skills, Proficiency>();
-		try {
-			BufferedImage iconImage = ImageIO.read(
-				    getClass().getResource("/"+ StyleContainer.MONSTER_ICON_FILE));
-			this.setIconImage(iconImage);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+		ConfigurePane();
 		BuildReplacements();
-		ConfigureFrame(this.getContentPane());
 	}
 	
 	private void BuildReplacements() {
@@ -119,33 +106,9 @@ public class MonsterBuilder extends JFrame {
 		rEditReps.put("<Name>", "");
 	}
 
-	private void ConfigureFrame(Container cPane) {
-		this.setSize(800, 800);
-		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		this.addWindowListener(new WindowListener() {
-			public void windowOpened(WindowEvent e) {}
-			public void windowClosing(WindowEvent e) {
-				int closeOpt = JOptionPane.showOptionDialog(cPane, "Would you like to Save, Exit, or Cancel", 
-						"Exit Confirmation", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, 
-						null, new String[] {"Save", "Exit Without Saving", "Cancel"}, 3);
-				if(closeOpt == 0) {
-					WriteMonsters();
-					data.shutDownAndWait();
-					dispose();
-					System.exit(0);
-				}else if(closeOpt == 1) {
-					dispose();
-					data.shutDownAndWait();
-					System.exit(0);
-				}
-			}
-			public void windowClosed(WindowEvent e) {}
-			public void windowIconified(WindowEvent e) {}
-			public void windowDeiconified(WindowEvent e) {}
-			public void windowActivated(WindowEvent e) {}
-			public void windowDeactivated(WindowEvent e) {}			
-		});
-		cPane.setLayout(new BorderLayout());
+	private void ConfigurePane() {
+
+		setLayout(new BorderLayout());
 
 		tabPane = new JTabbedPane();
 //		StyleContainer.SetLookAndFeel();
@@ -178,15 +141,15 @@ public class MonsterBuilder extends JFrame {
 		BuildTagsPane(tagPane);
 		tabPane.addTab("Tags", tagPane);
 
-		cPane.add(tabPane, BorderLayout.CENTER);
+		add(tabPane, BorderLayout.CENTER);
 
 		JPanel addBtnPane = new JPanel();
 		addBtnPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		cPane.add(addBtnPane, BorderLayout.SOUTH);
+		add(addBtnPane, BorderLayout.SOUTH);
 		
 		JButton addMonster = new JButton("Add Monster");
 		StyleContainer.SetFontBtn(addMonster);
-		addMonster.addActionListener(e -> {
+		addMonster.addActionListener(_ -> {
 			if(AddMonster())
 				ResetEditor();
 		});
@@ -195,7 +158,7 @@ public class MonsterBuilder extends JFrame {
 		
 		JButton addMonsterRetain = new JButton("Add: Retain");
 		StyleContainer.SetFontBtn(addMonsterRetain);
-		addMonsterRetain.addActionListener(e -> {
+		addMonsterRetain.addActionListener(_ -> {
 			if(AddMonster()) {
 				System.out.println("Adding Monster");
 				BuildMonstListPane();
@@ -214,13 +177,13 @@ public class MonsterBuilder extends JFrame {
 		sidePane.setLayout(new BorderLayout());
 		monstGridPane = new JPanel();
 		LoadMonsters(data.getMonsters());
-		cPane.add(sidePane, BorderLayout.WEST);
+		add(sidePane, BorderLayout.WEST);
 		
-		JScrollPane monstScroll = new JScrollPane(monstGridPane);
+		JScrollPane monstScroll = CompFactory.wrapPanelInScroll(monstGridPane, ScrollPolicy.VERTICAL);
 		sidePane.add(monstScroll, BorderLayout.CENTER);
 		JButton saveBtn = new JButton("Save");
 		StyleContainer.SetFontBtn(saveBtn);
-		saveBtn.addActionListener(e ->{
+		saveBtn.addActionListener(_ ->{
 			WriteMonsters();
 			
 		});
@@ -363,7 +326,7 @@ public class MonsterBuilder extends JFrame {
 		tagGrid = new JPanel();
 		tagGrid.setLayout(new GridLayout(0, 2));
 
-		JScrollPane tagScroll = new JScrollPane(tagGrid);
+		JScrollPane tagScroll = CompFactory.wrapPanelInScroll(tagGrid, ScrollPolicy.VERTICAL);
 		pane.add(tagScroll, BorderLayout.CENTER);
 
 		JPanel btnPane = new JPanel();
@@ -372,7 +335,7 @@ public class MonsterBuilder extends JFrame {
 		JButton addTagBtn = new JButton("Add Tag");
 		addTagBtn.setFocusable(false);
 		StyleContainer.SetFontBtn(addTagBtn);
-		addTagBtn.addActionListener(e -> {
+		addTagBtn.addActionListener(_ -> {
 			SwingUtilities.invokeLater(() -> {
 				ReminderField tagField = new ReminderField("", "Enter Tag");
 				StyleContainer.SetFontHeader(tagField);
@@ -380,7 +343,7 @@ public class MonsterBuilder extends JFrame {
 				JButton dTagBtn = new JButton("Delete");
 				StyleContainer.SetFontBtn(dTagBtn);
 				dTagBtn.setFocusable(false);
-				dTagBtn.addActionListener(e2 -> {
+				dTagBtn.addActionListener(_ -> {
 					SwingUtilities.invokeLater(() -> {
 						tagFields.remove(tagField);
 						tagGrid.remove(tagField);
@@ -410,6 +373,11 @@ public class MonsterBuilder extends JFrame {
 
 		JPanel tPane = new JPanel();
 		tPane.setLayout(new BorderLayout());
+		
+		JPanel headerPane = new JPanel();
+		headerPane.setLayout(new BorderLayout());
+		tPane.add(headerPane, BorderLayout.CENTER);
+		
 		monsterNameField = new ReminderField("", "Enter the name for the monster...");
 		StyleContainer.SetFontHeader(monsterNameField);
 		monsterNameField.setFont(monsterNameField.getFont().deriveFont((float) 22));
@@ -421,7 +389,16 @@ public class MonsterBuilder extends JFrame {
 				rEditReps.put("<NAME>", monsterNameField.getText().toLowerCase());
 			}
 		});
-		tPane.add(monsterNameField, BorderLayout.CENTER);
+		headerPane.add(monsterNameField, BorderLayout.CENTER);
+		
+		JPanel srcPane = new JPanel();
+		srcPane.setLayout(new BorderLayout());
+		headerPane.add(srcPane, BorderLayout.EAST);
+		
+		srcPane.add(CompFactory.createNewLabel("Source:", ComponentType.BODY), BorderLayout.WEST);
+		
+		srcCombo = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
+		srcPane.add(srcCombo, BorderLayout.CENTER);
 
 		monsterTypeField = new ReminderField("", "Enter the monster size type, alignment");
 		monsterTypeField.setFont(StyleContainer.FNT_BODY_PLAIN.deriveFont(Font.ITALIC));
@@ -457,7 +434,7 @@ public class MonsterBuilder extends JFrame {
 		JButton addSkills = new JButton("Add Skills");
 		StyleContainer.SetFontBtn(addSkills);
 		addSkills.setFocusable(false);
-		addSkills.addActionListener(e -> {
+		addSkills.addActionListener(_ -> {
 			SwingUtilities.invokeLater(() -> {
 				SkillsSelectFrame skillFrame = new SkillsSelectFrame(skills);
 
@@ -492,7 +469,7 @@ public class MonsterBuilder extends JFrame {
 		JButton setVuln = new JButton("Set Vuln");
 		setVuln.setFocusable(false);
 		StyleContainer.SetFontBtn(setVuln);
-		setVuln.addActionListener(e ->{
+		setVuln.addActionListener(_ ->{
 			DmgStatSelect vulnSet = new DmgStatSelect(dmgVulnField);
 			vulnSet.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 			vulnSet.setVisible(true);
@@ -511,7 +488,7 @@ public class MonsterBuilder extends JFrame {
 		StyleContainer.SetFontBtn(setResist);
 		setResist.setFocusable(false);
 		setResist.setFont(setResist.getFont().deriveFont((float) setResist.getFont().getSize() - 3));
-		setResist.addActionListener(e ->{
+		setResist.addActionListener(_ ->{
 			DmgStatSelect setR = new DmgStatSelect(dmgResistField);
 			setR.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 			setR.setVisible(true);
@@ -530,7 +507,7 @@ public class MonsterBuilder extends JFrame {
 		setImmune.setFocusable(false);
 		StyleContainer.SetFontBtn(setImmune);
 		setImmune.setFont(setImmune.getFont().deriveFont((float) setImmune.getFont().getSize() - 3));
-		setImmune.addActionListener(e ->{
+		setImmune.addActionListener(_ ->{
 			DmgStatSelect setI = new DmgStatSelect(immuneField);
 			setI.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 			setI.setVisible(true);
@@ -592,7 +569,7 @@ public class MonsterBuilder extends JFrame {
 		initExpertChck = new JCheckBox("Expertise?");
 		initExpertChck.setFocusable(false);
 
-		initProfChck.addActionListener(e -> {
+		initProfChck.addActionListener(_ -> {
 //			if (!initProfChck.isSelected())
 //				initExpertChck.setSelected(false);
 			if(initProfChck.isSelected())
@@ -602,7 +579,7 @@ public class MonsterBuilder extends JFrame {
 		StyleContainer.SetFontMain(initProfChck);
 		initPane.add(initProfChck);
 
-		initExpertChck.addActionListener(e -> {
+		initExpertChck.addActionListener(_ -> {
 //			if (initExpertChck.isSelected()) {
 //				initProfChck.setSelected(true);
 //			}
@@ -829,43 +806,35 @@ public class MonsterBuilder extends JFrame {
 	private void BuildMonstListPane() {
 		SwingUtilities.invokeLater(()->{
 			monstGridPane.removeAll();
-			monstGridPane.setLayout(new GridLayout(0, 2));
+			monstGridPane.setLayout(new GridLayout(0, 1));
 			
-			ArrayList<String> sortKeys = new ArrayList<String>();
-			for(String key : monstMap.keySet()) {
-				sortKeys.add(key);
-			}
+			ArrayList<String> sortKeys = new ArrayList<String>(monstMap.keySet());
 			Collections.sort(sortKeys);
+			
 			for (String key : sortKeys) {
+				JPanel pane = new JPanel();
+				pane.setLayout(new BorderLayout());
+				monstGridPane.add(pane);
+				
 //				System.out.println(key);
-				JTextField monstName = new JTextField(key);
-				StyleContainer.SetFontMain(monstName);
-				monstName.setColumns(15);
-				monstName.addMouseListener(new MouseListener() {
+				String name = key;
+				if(name.length() > 13)
+					name = name.substring(0, 13);
+				
+				JLabel monstName = CompFactory.createSideLabel(name, ComponentType.BODY);
+				monstName.addMouseListener(CompFactory.createSideMouseListener(monstName, ()->{
+					int opt = JOptionPane.showConfirmDialog(null, 
+								"Load: " + key + "? Any unadded work on current monster will be lost.", 
+								"Load Confirm", JOptionPane.YES_NO_OPTION);
+						if(opt == JOptionPane.YES_OPTION)
+							LoadEditMonster(monstMap.get(key));
+				}));
 
-					@Override
-					public void mouseClicked(MouseEvent e) {
-						JFrame monstDisp = new JFrame();
-						monstDisp.setTitle(key);
-						monstDisp.setContentPane(new MonsterDispPane(monstMap.get(key), data, new GuiDirector(new JDesktopPane())));
-						monstDisp.setSize(645, 515);
-						monstDisp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);						
-						monstDisp.setVisible(true);
-						monstDisp.setResizable(false);
-					}
-					public void mousePressed(MouseEvent e) {}
-					public void mouseReleased(MouseEvent e) {}
-					public void mouseEntered(MouseEvent e) {monstName.setFont(monstName.getFont().deriveFont(Font.BOLD));}
-					public void mouseExited(MouseEvent e) {monstName.setFont(monstName.getFont().deriveFont(Font.PLAIN));}
-				});
-				monstName.setEditable(false);
-				monstName.setFocusable(false);
-
-				monstGridPane.add(monstName);
+				pane.add(monstName, BorderLayout.CENTER);
 
 				JButton mDel = new JButton("Delete");
 				StyleContainer.SetFontBtn(mDel);
-				mDel.addActionListener(e -> {
+				mDel.addActionListener(_ -> {
 					int delOpt = JOptionPane.showConfirmDialog(null, ("Delete: " + key), "Delete Confirmation", 
 							JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 					if(delOpt == JOptionPane.YES_OPTION) {
@@ -880,7 +849,7 @@ public class MonsterBuilder extends JFrame {
 					}
 					
 				});
-				monstGridPane.add(mDel);
+				pane.add(mDel, BorderLayout.EAST);
 			}
 			monstGridPane.repaint();
 			monstGridPane.revalidate();
@@ -949,6 +918,7 @@ public class MonsterBuilder extends JFrame {
 			mData.type = monsterTypeField.getText();
 			mData.wis = Integer.parseInt(wisField.getText());
 			mData.wisSProf = wisSaveP.isSelected();
+			mData.source = (Source) srcCombo.getSelectedItem();
 
 			Monster m = MonsterFactory.BuildMonster(mData);
 			System.out.println("Return true, add monst");
@@ -1000,28 +970,6 @@ public class MonsterBuilder extends JFrame {
 	}
 	
 	public boolean WriteMonsters() {
-//		File monstFile = new File(DataContainer.MONSTERS_FILE_NAME);
-//		if(!monstFile.exists()) {
-//			try {
-//				monstFile.createNewFile();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//		
-//		try {
-//			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(monstFile));
-//			for (String s : monstMap.keySet()) {
-//				oos.writeObject(monstMap.get(s));
-//			}
-//			oos.flush();
-//			oos.close();
-//			return true;
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			return false;
-//		}
-		
 		data.SetMonstersMap(monstMap);
 		data.SafeSaveData(MapType.MONSTERS);
 		return true;
@@ -1090,6 +1038,116 @@ public class MonsterBuilder extends JFrame {
 		
 		repaint();
 		revalidate();
+	}
+	
+	private void LoadEditMonster(Monster m) {
+		ResetEditor();
+		monsterNameField.setText(m.name);
+		monsterNameField.setEditable(false);
+		monsterNameField.setFocusable(false);
+		monsterTypeField.setText(m.typeSizeAlignment);
+		srcCombo.setSelectedItem(m.source);
+		System.out.println(m.source.toString());
+		acField.setText(m.ac);
+		initBnsField.setText("0");
+		hpField.setText(m.hp);
+		speedField.setText(m.speed);
+		strField.setText("" + m.stats[Monster.STR]);
+		dexField.setText("" + m.stats[Monster.DEX]);
+		conField.setText("" + m.stats[Monster.CON]);
+		intField.setText("" + m.stats[Monster.INT]);
+		wisField.setText("" + m.stats[Monster.WIS]);
+		chaField.setText("" + m.stats[Monster.CHA]);
+		dmgResistField.setText(m.dmgRes);
+		dmgVulnField.setText(m.dmgVul);
+		immuneField.setText(m.immune);
+		sensesField.setText(m.senses);
+		langField.setText(m.languages);
+		crField.setText(m.cr + "");
+		numLActs.setText(m.lActNum + "");
+		numLActsBns.setText(m.lActBns + "");
+		int prof = m.profByCR();
+		int init = m.GetInitBonus();
+		int dex = m.stats[Monster.DEX];
+		if(init > Monster.AbilityModCalc(dex)) {
+			if(prof+Monster.AbilityModCalc(dex) == init) {
+				initProfChck.setSelected(true);
+				initExpertChck.setSelected(false);
+			}else {
+				initProfChck.setSelected(false);
+				initExpertChck.setSelected(true);
+			}
+		}
+		strSaveP.setSelected(m.saves[Monster.STR]);
+		dexSaveP.setSelected(m.saves[Monster.DEX]);
+		conSaveP.setSelected(m.saves[Monster.CON]);
+		intSaveP.setSelected(m.saves[Monster.INT]);
+		wisSaveP.setSelected(m.saves[Monster.WIS]);
+		chaSaveP.setSelected(m.saves[Monster.CHA]);
+		
+//		traitsPane.remove(traits);
+		removeAndDergister(traitsPane, traits);
+		traits = new RichEditor(data, rEditReps);
+		traits.LoadDocument(m.traits);
+		traitsPane.add(traits);
+//		actPane.remove(actions);
+		removeAndDergister(actPane, actions);
+		actions = new RichEditor(data, rEditReps);
+		actions.LoadDocument(m.actions);
+		actPane.add(actions);
+//		baPane.remove(bonusActions);
+		removeAndDergister(baPane, bonusActions);
+		bonusActions = new RichEditor(data, rEditReps);
+		bonusActions.LoadDocument(m.bonusActions);
+		baPane.add(bonusActions);
+//		reactPane.remove(reactions);
+		removeAndDergister(reactPane, reactions);
+		reactions = new RichEditor(data, rEditReps);
+		reactions.LoadDocument(m.reactions);
+		reactPane.add(reactions);
+//		legendActPane.remove(legendActions);
+		removeAndDergister(legendActPane, legendActions);
+		legendActions = new RichEditor(data, rEditReps);
+		legendActions.LoadDocument(m.legendActions);
+		legendActPane.add(legendActions);
+		
+		srcCombo.setSelectedItem(m.source);
+		
+		skills = m.skills;
+		tagFields.clear();
+		
+		for(String s : m.tags)
+			AddTag(s);
+		
+		tabPane.setSelectedIndex(0);
+		
+		repaint();
+		revalidate();
+	}
+	
+	private void AddTag(String s) {
+		ReminderField tagField = new ReminderField("", "Enter Tag");
+		tagField.setText(s);
+		StyleContainer.SetFontHeader(tagField);
+
+		JButton dTagBtn = new JButton("Delete");
+		StyleContainer.SetFontBtn(dTagBtn);
+		dTagBtn.setFocusable(false);
+		dTagBtn.addActionListener(e2 -> {
+			SwingUtilities.invokeLater(() -> {
+				tagFields.remove(tagField);
+				tagGrid.remove(tagField);
+				tagGrid.remove(dTagBtn);
+
+				tagGrid.revalidate();
+				tagGrid.repaint();
+			});
+		});
+
+		tagGrid.add(tagField);
+		tagGrid.add(dTagBtn);
+		tagField.requestFocus();
+		tagFields.add(tagField);
 	}
 	
 	public void removeAndDergister(JPanel pane, RichEditor r) {

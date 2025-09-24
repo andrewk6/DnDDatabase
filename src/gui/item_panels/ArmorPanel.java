@@ -53,7 +53,7 @@ public class ArmorPanel extends JPanel {
         table.getTableHeader().setResizingAllowed(false);
         table.setFont(StyleContainer.FNT_BODY_PLAIN);
 
-        JScrollPane scrollPane = new JScrollPane(table);
+        JScrollPane scrollPane = CompFactory.wrapPanelInScroll(table);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         scrollPane.setPreferredSize(new Dimension(600, table.getRowHeight() * Math.max(1, table.getRowCount()) + 24));
 

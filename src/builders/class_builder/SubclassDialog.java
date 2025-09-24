@@ -8,6 +8,7 @@ import java.awt.*;
 
 // Example enum for Source, replace with your actual Source class/enum
 
+@SuppressWarnings("serial")
 public class SubclassDialog extends JDialog {
     private JTextField nameField;
     private JComboBox<Source> sourceBox;
@@ -34,11 +35,11 @@ public class SubclassDialog extends JDialog {
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("Cancel");
 
-        okButton.addActionListener(e -> {
+        okButton.addActionListener(_ -> {
             confirmed = true;
             setVisible(false);
         });
-        cancelButton.addActionListener(e -> {
+        cancelButton.addActionListener(_ -> {
             confirmed = false;
             setVisible(false);
         });

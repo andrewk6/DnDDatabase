@@ -12,14 +12,9 @@ import javax.swing.SwingUtilities;
 
 import gui.gui_helpers.structures.LoadListener;
 
+@SuppressWarnings("serial")
 public class LoadFrame extends JFrame implements LoadListener
 {
-	public static void main(String[]args) {
-		SwingUtilities.invokeLater(() -> {
-			LoadFrame f = new LoadFrame("Test");
-			f.setVisible(true);
-		});
-	}
 	public LoadFrame(String title) {
 		this.setTitle(title);
 		this.setResizable(false);

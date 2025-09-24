@@ -16,18 +16,20 @@ import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.interfaces.DataChangeListener;
 import data.players.classes.ClassAbility;
 import data.players.classes.DnDClass;
 import gui.FeatIFrame;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.structures.ContentTab;
 import gui.gui_helpers.structures.GuiDirector;
@@ -95,7 +97,8 @@ public class ClassIFrame extends JInternalFrame implements ContentTab, DataChang
 		
 		listPane = new JPanel();
 		listPane.setLayout(new GridLayout(0,1));
-		sidePane.add(listPane, BorderLayout.CENTER);
+		JScrollPane listScroll = CompFactory.wrapPanelInScroll(listPane, ScrollPolicy.VERTICAL);
+		sidePane.add(listScroll, BorderLayout.CENTER);
 		FillSidePane();
 	}
 	

@@ -25,6 +25,7 @@ public class MonsterFactory {
 		m.senses = d.senses;
 		m.skills = d.skills;
 		m.speed = d.spd;
+		m.source = d.source;
 		m.stats = stats;
 		m.tags = d.tags;
 		m.traits = d.traits;
@@ -32,6 +33,7 @@ public class MonsterFactory {
 		m.dmgRes = d.dmgResist;
 		m.dmgVul = d.dmgVuln;
 		m.immune = d.invuln;
+		m.source = d.source;
 		return m;
 	}
 

@@ -1,57 +1,44 @@
 package gui.builder_internals;
 
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.DataContainer.Source;
 import data.Rule;
+import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.DocumentHelper;
 import gui.gui_helpers.RichEditor;
+import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.StyleContainer;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 public class RuleBuilderIFrame extends JInternalFrame{
 	
@@ -60,6 +47,7 @@ public class RuleBuilderIFrame extends JInternalFrame{
 //	private RuleEditor rulesDesc;
 	private RichEditor rulesDesc;
 	private JTextField rulesName;
+	private JComboBox<Source> srcCombo;
 
 	private HashMap<String, Rule> rulesList;
 
@@ -108,6 +96,14 @@ public class RuleBuilderIFrame extends JInternalFrame{
 		rulesName.setToolTipText("Enter a name for the rules.");
 		rulesName.setFont(new Font("Monospaced", Font.BOLD, 20));
 		rulesHeader.add(rulesName, BorderLayout.CENTER);
+		
+		JPanel srcPane = new JPanel();
+		srcPane.setLayout(new BorderLayout());
+		rulesHeader.add(srcPane, BorderLayout.EAST);
+		
+		srcPane.add(CompFactory.createNewLabel("Source:", ComponentType.HEADER), BorderLayout.WEST);
+		srcCombo = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
+		srcPane.add(srcCombo, BorderLayout.CENTER);
 
 		JButton addBtn = new JButton();
 		addBtn.setText("Add Rules");
@@ -116,9 +112,13 @@ public class RuleBuilderIFrame extends JInternalFrame{
 			public void actionPerformed(ActionEvent e) {
 				if (rulesName.getText().length() > 0 && rulesDesc.getText().length() > 0) {
 					StyledDocument styledDoc = DocumentHelper.deepCopyDocument(rulesDesc.getStyledDocument());
-					rulesList.put(rulesName.getText(),
-							new Rule(rulesName.getText(), rulesDesc.getText(),
-							rulesDesc.convertDocumentToHTML(), styledDoc));
+					Rule r = new Rule();
+					r.name = rulesName.getText();
+					r.desc_basic = rulesDesc.getText();
+					r.desc_HTML = rulesDesc.convertDocumentToHTML();
+					r.ruleDoc = styledDoc;
+					r.src = (Source) srcCombo.getSelectedItem();
+					rulesList.put(r.name, r);
 					ResetEditor();
 					BuildRulesList();
 				} else {
@@ -128,7 +128,10 @@ public class RuleBuilderIFrame extends JInternalFrame{
 			}
 		});
 		addBtn.setFocusable(false);
-		rulesHeader.add(addBtn, BorderLayout.EAST);
+		JPanel btnFlow = CompFactory.createButtonFlowPane(FlowLayout.RIGHT, new JButton[0]);
+		descPane.add(btnFlow, BorderLayout.SOUTH);
+		
+		btnFlow.add(addBtn);
 
 //		rulesDesc = new RuleEditor();
 		rulesDesc = new RichEditor(data);
@@ -152,8 +155,7 @@ public class RuleBuilderIFrame extends JInternalFrame{
 
 		rulesListPane = new JPanel();
 		rulesListPane.setLayout(new GridLayout(0, 1));
-		JScrollPane rulesScroller = new JScrollPane(rulesListPane);
-//		rulesScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane rulesScroller = CompFactory.wrapPanelInScroll(rulesListPane, ScrollPolicy.VERTICAL);
 		rulesPane.add(rulesScroller, BorderLayout.CENTER);
 		BuildRulesList();
 		
@@ -184,29 +186,24 @@ public class RuleBuilderIFrame extends JInternalFrame{
 
 		for (Rule r : rulesSorted) {
 			JPanel pane = new JPanel();
+			pane.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 			pane.setLayout(new BorderLayout());
 			
-			JTextField ruleField = new JTextField(r.name);
-			ruleField.setFont(new Font("Monospaced", Font.PLAIN, 16));
-			ruleField.setEditable(false);
-			ruleField.setFocusable(false);
-			ruleField.addMouseListener(new MouseListener() {
-				public void mouseClicked(MouseEvent e) {
-					LoadRule(r.name);
-				}
-
-				public void mousePressed(MouseEvent e) {}
-				public void mouseReleased(MouseEvent e) {}
-				public void mouseEntered(MouseEvent e) {}
-				public void mouseExited(MouseEvent e) {}
-			});
-			pane.add(ruleField, BorderLayout.CENTER);
+			JLabel ruleLbl = CompFactory.createSideLabel(r.name, ComponentType.BODY);
+			ruleLbl.addMouseListener(CompFactory.createSideMouseListener(ruleLbl, ()->{
+				LoadRule(r.name);
+			}));
+			pane.add(ruleLbl, BorderLayout.CENTER);
 			
 			JButton del = new JButton("Delete");
 			StyleContainer.SetFontBtn(del);
-			del.addActionListener(e ->{
-				rulesList.remove(r.name);
-				BuildRulesList();
+			del.addActionListener(_ ->{
+				int delConf = JOptionPane.showConfirmDialog(this, "Delete " + 
+						r.name + "?", "Delete Confirm", JOptionPane.YES_NO_OPTION);
+				if(delConf == JOptionPane.YES_OPTION) {
+					rulesList.remove(r.name);
+					BuildRulesList();
+				}
 			});
 			pane.add(del, BorderLayout.EAST);
 			
@@ -243,6 +240,7 @@ public class RuleBuilderIFrame extends JInternalFrame{
 			rulesName.setText(key);
 			rulesName.setEditable(false);
 			rulesName.setFocusable(false);
+			srcCombo.setSelectedItem(data.getRules().get(key).getSource());
 		}
 	}
 }

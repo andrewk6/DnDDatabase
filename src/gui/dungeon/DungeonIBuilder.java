@@ -5,6 +5,7 @@ import gui.dungeon.tile.*;
 import gui.dungeon.tile.Tile.TILE_TYPE;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 import utils.ErrorLogger;
@@ -61,7 +62,7 @@ public class DungeonIBuilder extends JInternalFrame {
 		fChoose.setFileFilter(filter);
 		
 		editPane = new JPanel();
-		editScroll = new JScrollPane(editPane);
+		editScroll = CompFactory.wrapPanelInScroll(editPane, ScrollPolicy.BOTH);
 		add(editScroll, BorderLayout.CENTER);
 		
 		configMenu();
@@ -216,43 +217,36 @@ public class DungeonIBuilder extends JInternalFrame {
 		
 		JMenuItem whiteSelect = CompFactory.createNewJMenuItem("White", _->{
 			editor.get(curEditKey).setCurrentColor(Color.WHITE);
-			editor.get(curEditKey).setTool(Tool.BRUSH);
 		});
 		colorMenu.add(whiteSelect);
 		
 		JMenuItem greenSelect = CompFactory.createNewJMenuItem("Green", _->{
 			editor.get(curEditKey).setCurrentColor(Color.GREEN);
-			editor.get(curEditKey).setTool(Tool.BRUSH);
 		});
 		colorMenu.add(greenSelect);
 		
 		JMenuItem redSelect = CompFactory.createNewJMenuItem("Red", _->{
 			editor.get(curEditKey).setCurrentColor(Color.RED);
-			editor.get(curEditKey).setTool(Tool.BRUSH);
 		});
 		colorMenu.add(redSelect);
 		
 		JMenuItem blueSelect = CompFactory.createNewJMenuItem("Blue", _->{
 			editor.get(curEditKey).setCurrentColor(Color.BLUE);
-			editor.get(curEditKey).setTool(Tool.BRUSH);
 		});
 		colorMenu.add(blueSelect);
 		
 		JMenuItem orangeSelect = CompFactory.createNewJMenuItem("Orange", _->{
 			editor.get(curEditKey).setCurrentColor(Color.ORANGE);
-			editor.get(curEditKey).setTool(Tool.BRUSH);
 		});
 		colorMenu.add(orangeSelect);
 		
 		JMenuItem cyanSelect = CompFactory.createNewJMenuItem("Cyan", _->{
 			editor.get(curEditKey).setCurrentColor(Color.CYAN);
-			editor.get(curEditKey).setTool(Tool.BRUSH);
 		});
 		colorMenu.add(cyanSelect);
 		
 		JMenuItem pinkSelect = CompFactory.createNewJMenuItem("Pink", _->{
 			editor.get(curEditKey).setCurrentColor(Color.GREEN);
-			editor.get(curEditKey).setTool(Tool.BRUSH);
 		});
 		colorMenu.add(pinkSelect);
 		
@@ -371,8 +365,7 @@ public class DungeonIBuilder extends JInternalFrame {
 				remove(sideScroll);
 			JPanel sidePane = new JPanel();
 			sidePane.setLayout(new GridLayout(0,1));
-			sideScroll = new JScrollPane(sidePane);
-			sideScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			sideScroll = CompFactory.wrapPanelInScroll(sidePane);
 			add(sideScroll, BorderLayout.WEST);
 			if(d != null) {
 				if(d.floors.size() > 0)

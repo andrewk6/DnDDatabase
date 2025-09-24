@@ -5,8 +5,9 @@ import java.io.Serializable;
 import javax.swing.text.StyledDocument;
 
 import data.DataContainer.Source;
+import data.interfaces.SourceProvider;
 
-public class Species implements Serializable
+public class Species implements Serializable, SourceProvider
 {
 	/**
 	 * 
@@ -16,4 +17,8 @@ public class Species implements Serializable
 	public String name;
 	public StyledDocument desc;
 	public Source src;
+	
+	public Source getSource() {
+		return src;
+	}
 }

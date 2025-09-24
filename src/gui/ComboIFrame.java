@@ -12,7 +12,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,11 +19,9 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -35,7 +32,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
-import data.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.MapType;
 import data.Feat;
@@ -43,6 +39,7 @@ import data.Monster;
 import data.Rule;
 import data.Spell;
 import data.hazards.Hazard;
+import data.interfaces.DataChangeListener;
 import data.players.Background;
 import data.players.Species;
 import data.players.classes.DnDClass;
@@ -51,15 +48,15 @@ import gui.classes.ClassPane;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
-import gui.gui_helpers.MonsterDispPane;
 import gui.gui_helpers.ReminderField;
-import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.AllTab;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 import gui.hazard.HazardPane;
+import gui.monsters.MonsterDispPane;
 import gui.species.SpeciesPane;
+import gui.spells.SpellPane;
 import utils.ErrorLogger;
 
 public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeListener{
@@ -134,10 +131,7 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 		gridPane.setLayout(new GridLayout(0, 1));
 		FillSidePane();
 
-		JScrollPane gridScroll = new JScrollPane(gridPane);
-		gridScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		gridScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
+		JScrollPane gridScroll = CompFactory.wrapPanelInScroll(gridPane);
 		sPane.add(gridScroll, BorderLayout.CENTER);
 		cPane.add(sPane, BorderLayout.WEST);
 	}
@@ -395,8 +389,7 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 
 			HoverTextPane ruleDesc = new HoverTextPane(data, gd, dPane);
 			ruleDesc.setDocument(data.getRules().get(r.name).ruleDoc);
-			JScrollPane rScroll = new JScrollPane(ruleDesc);
-			rScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			JScrollPane rScroll = CompFactory.wrapPanelInScroll(ruleDesc);
 			rPane.add(rScroll, BorderLayout.CENTER);
 
 			JPanel btnFlow = new JPanel();
@@ -425,18 +418,7 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 			tabs.addTab(s.name, sPane);
 			tabsUI.setTabColor(tabs.indexOfTab(s.name), Color.PINK);
 
-			JTextField sTitle = new JTextField(s.name);
-			sTitle.setEditable(false);
-			sTitle.setFocusable(false);
-			sTitle.setHorizontalAlignment(JTextField.CENTER);
-			StyleContainer.SetFontHeader(sTitle);
-			sPane.add(sTitle, BorderLayout.NORTH);
-
-			HoverTextPane sDesc = new HoverTextPane(data, gd, dPane);
-			sDesc.setDocument(data.getSpells().get(s.name).spellDoc);
-			JScrollPane sScroll = new JScrollPane(sDesc);
-			sScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-			sPane.add(sScroll, BorderLayout.CENTER);
+			sPane.add(new SpellPane(s, data, gd), BorderLayout.CENTER);
 
 			JPanel btnFlow = new JPanel();
 			btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -475,8 +457,7 @@ public class ComboIFrame extends JInternalFrame implements AllTab, DataChangeLis
 
 			HoverTextPane fDesc = new HoverTextPane(data, gd, gd.getDesktop());
 			fDesc.setDocument(data.getFeats().get(f.name).desc);
-			JScrollPane fScroll = new JScrollPane(fDesc);
-			fScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			JScrollPane fScroll = CompFactory.wrapPanelInScroll(fDesc);
 			fPane.add(fScroll, BorderLayout.CENTER);
 
 			JPanel btnFlow = new JPanel();

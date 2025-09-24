@@ -19,8 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.text.StyledDocument;
-
 import data.DataContainer;
 import data.players.Ability.UseType;
 import data.players.classes.ClassAbility;
@@ -28,7 +26,9 @@ import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
 import gui.gui_helpers.RichEditor;
 import gui.gui_helpers.CompFactory.ComponentType;
+import gui.gui_helpers.CompFactory.ScrollPolicy;
 
+@SuppressWarnings("serial")
 public class AbilityPaneBuilder extends JPanel
 {
 	private DataContainer data;
@@ -57,7 +57,7 @@ public class AbilityPaneBuilder extends JPanel
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
 		FillSidePane();
-		JScrollPane sideScroll = new JScrollPane(sidePane);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sidePane, ScrollPolicy.VERTICAL);
 		this.add(sideScroll, BorderLayout.WEST);
 		
 		mPane = new JPanel();

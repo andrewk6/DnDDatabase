@@ -9,10 +9,11 @@ import javax.swing.text.StyledDocument;
 import data.DataContainer.Abilities;
 import data.DataContainer.Skills;
 import data.DataContainer.Source;
+import data.interfaces.SourceProvider;
 import data.items.Item;
 import data.items.Armor.ArmorType;
 
-public class DnDClass implements Serializable
+public class DnDClass implements Serializable, SourceProvider
 {
 	/**
 	 * 
@@ -41,4 +42,8 @@ public class DnDClass implements Serializable
 	public int startingGoldNoEquip, startingGoldEquip;
 	public int numStartSkills;
 	public Source src;
+	
+	public Source getSource() {
+		return src;
+	}
 }

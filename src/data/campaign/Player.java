@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.StyledDocument;
 
-import data.DataContainer;
 import data.DataContainer.PlayerClass;
 
 public class Player implements Serializable{

@@ -12,13 +12,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.HashMap;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,7 +30,6 @@ import data.Monster;
 import data.Rule;
 import data.Spell;
 import data.dungeon.Dungeon;
-import data.dungeon.DungeonFloor;
 import data.hazards.Hazard;
 import data.players.Background;
 import data.players.Species;
@@ -43,7 +38,6 @@ import gui.background.BackgroundPane;
 import gui.classes.ClassPane;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.HoverTextPane;
-import gui.gui_helpers.MonsterDispPane;
 import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.structures.AllTab;
@@ -51,7 +45,9 @@ import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 import gui.hazard.HazardPane;
+import gui.monsters.MonsterDispPane;
 import gui.species.SpeciesPane;
+import gui.spells.SpellPane;
 import utils.ErrorLogger;
 
 public class DungeonIViewer extends JInternalFrame implements AllTab
@@ -101,8 +97,7 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
 		
 		sidePane = new JPanel();
 		sidePane.setLayout(new GridLayout(0,1));
-		JScrollPane sideScroll = new JScrollPane(sidePane);
-		sideScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane sideScroll = CompFactory.wrapPanelInScroll(sidePane);
 		cPane.add(sideScroll, BorderLayout.WEST);
 		
 		dungeonLbl = CompFactory.createNewLabel("", ComponentType.HEADER);
@@ -174,7 +169,7 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
 					} else {
 						System.out.println("Adding Floor Tab and Floor");
 						dView = new DungeonViewerPane(data, gd, mainPane, d.floors.get(f).tiles);
-						JScrollPane scroller = new JScrollPane(dView);
+						JScrollPane scroller = CompFactory.wrapPanelInScroll(dView, ScrollPolicy.BOTH);
 						mainPane.addTab("Dungeon View", scroller);
 						dungeonLbl.setText(f);
 						mainPane.setTabComponentAt(0, dungeonLbl);
@@ -247,8 +242,7 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
 
 			HoverTextPane ruleDesc = new HoverTextPane(data, gd, gd.getDesktop());
 			ruleDesc.setDocument(data.getRules().get(r.name).ruleDoc);
-			JScrollPane rScroll = new JScrollPane(ruleDesc);
-			rScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			JScrollPane rScroll = CompFactory.wrapPanelInScroll(ruleDesc);
 			rPane.add(rScroll, BorderLayout.CENTER);
 
 			JPanel btnFlow = new JPanel();
@@ -284,8 +278,7 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
 
 			HoverTextPane fDesc = new HoverTextPane(data, gd, gd.getDesktop());
 			fDesc.setDocument(data.getFeats().get(f.name).desc);
-			JScrollPane fScroll = new JScrollPane(fDesc);
-			fScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			JScrollPane fScroll = CompFactory.wrapPanelInScroll(fDesc);
 			fPane.add(fScroll, BorderLayout.CENTER);
 
 			JPanel btnFlow = new JPanel();
@@ -312,19 +305,8 @@ public class DungeonIViewer extends JInternalFrame implements AllTab
 			mainPane.addTab(s.name, sPane);
 			tabsUI.setTabColor(mainPane.indexOfTab(s.name), Color.PINK);
 
-			JTextField sTitle = new JTextField(s.name);
-			sTitle.setEditable(false);
-			sTitle.setFocusable(false);
-			sTitle.setHorizontalAlignment(JTextField.CENTER);
-			StyleContainer.SetFontHeader(sTitle);
-			sPane.add(sTitle, BorderLayout.NORTH);
-
-			HoverTextPane sDesc = new HoverTextPane(data, gd, gd.getDesktop());
-			sDesc.setDocument(data.getSpells().get(s.name).spellDoc);
-			JScrollPane sScroll = new JScrollPane(sDesc);
-			sScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-			sPane.add(sScroll, BorderLayout.CENTER);
-
+			sPane.add(new SpellPane(s, data, gd), BorderLayout.CENTER);
+			
 			JPanel btnFlow = new JPanel();
 			btnFlow.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			sPane.add(btnFlow, BorderLayout.SOUTH);

@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 public class CustomStyledDocument implements StyledDocument, Serializable{
     private Map<Integer, JTable> embeddedTables;  // To store embedded tables at specific positions
     private DefaultStyledDocument baseDoc; // Delegate most methods to DefaultStyledDocument
