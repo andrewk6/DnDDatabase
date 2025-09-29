@@ -22,7 +22,8 @@ import gui.gui_helpers.CompFactory.ComponentType;
 public class ExportDialog extends JDialog
 {
 	private  JCheckBox rules, spells, monsters, items, vehicles, 
-	feats, classes, species, background, bastionRooms, hazards;
+	siegeEquip, feats, classes, species, background, bastionRooms, 
+	hazards;
 	private JLabel fileLbl;
 	public boolean export;
 	public File expoTarget;
@@ -57,6 +58,9 @@ public class ExportDialog extends JDialog
 		
 		vehicles = CompFactory.createNewCheckbox("Export Vehicles");
 		config.add(vehicles);
+		
+		siegeEquip = CompFactory.createNewCheckbox("Export Siege Equipment");
+		config.add(siegeEquip);
 		
 		classes = CompFactory.createNewCheckbox("Export Classes");
 		config.add(classes);
@@ -127,13 +131,25 @@ public class ExportDialog extends JDialog
 				|| items.isSelected() || feats.isSelected() || classes.isSelected();
 	}
 	
+	/*
+	 * private  JCheckBox rules, spells, monsters, items, vehicles, 
+	siegeEquip, feats, classes, species, background, bastionRooms, 
+	hazards;
+	 */
+	
 	public void Reset() {
 		rules.setSelected(false);
 		spells.setSelected(false);
 		monsters.setSelected(false);
 		items.setSelected(false);
+		vehicles.setSelected(false);
+		siegeEquip.setSelected(false);
 		feats.setSelected(false);
 		classes.setSelected(false);
+		species.setSelected(false);
+		background.setSelected(false);
+		bastionRooms.setSelected(false);
+		hazards.setSelected(false);
 		fileLbl.setText("No File Loaded");
 		export = false;
 		expoTarget = null;
@@ -166,6 +182,10 @@ public class ExportDialog extends JDialog
 
 	public boolean getVehicles() {
 		return vehicles.isSelected();
+	}
+	
+	public boolean getSiegeEquipment() {
+		return siegeEquip.isSelected();
 	}
 
 	public boolean getFeats() {

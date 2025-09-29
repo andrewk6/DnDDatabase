@@ -2,53 +2,53 @@ package data;
 
 import java.io.IOException;
 import java.io.Serializable;
-import javax.swing.text.StyledDocument;
-import builders.rule_builder.CustomStyledDocument;
-import data.DataContainer.Source;
-import data.interfaces.SourceProvider;
 
-public class Rule implements Comparable<Rule>, Serializable, SourceProvider{
+import javax.swing.text.BadLocationException;
+import javax.swing.text.StyledDocument;
+import data.DataContainer.Source;
+import data.interfaces.InsertString;
+import data.interfaces.SourceProvider;
+import utils.ErrorLogger;
+
+public class Rule implements Comparable<Rule>, Serializable, SourceProvider, InsertString{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	public String name;
-	public String desc_basic, desc_HTML;
+	public String insertString = null;
 	public StyledDocument ruleDoc;
 	public Source src;
 
 	public Rule() {
 		name = "NONE";
-		desc_basic = "NONE";
-		desc_HTML = "<h>NONE</h>";
 		ruleDoc = null;
 	}
 
-	public Rule(String name, String desc, String desc_HTML, StyledDocument ruleDoc) {
+	public Rule(String name, StyledDocument ruleDoc) {
 		this.name = name;
-		this.desc_basic = desc;
-		this.desc_HTML = desc_HTML;
 		this.ruleDoc = ruleDoc;
 	}
 
 	public String toString() {
-		return name + ": " + desc_basic;
+		try {
+			return name + ": " + ruleDoc.getText(0, ruleDoc.getLength());
+		} catch (BadLocationException e) {
+			ErrorLogger.log(e);
+			return name;
+		}
 	}
 
 	public int compareTo(Rule r) {
 		return name.compareTo(r.name);
 	}
-	
-	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-	    if(ruleDoc instanceof CustomStyledDocument) {
-	    	((CustomStyledDocument) ruleDoc).stopEditingAllTables();
-	    	System.out.println("Running");
-	    }
-	    out.defaultWriteObject();  // Proceed with default serialization
-	}
 
 	@Override
 	public Source getSource() {
 		return src;
+	}
+	
+	public String getInsert() {
+		return insertString;
 	}
 }

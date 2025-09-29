@@ -17,8 +17,9 @@ import java.util.stream.Collectors;
 
 public class GearPanel extends JPanel {
 
-    private final JPanel contentPanel = new JPanel();
+    public final JPanel contentPanel = new JPanel();
     private final List<Gear> allGearList = new ArrayList<>();
+    private final Map<String, JPanel> lblMap = new HashMap<String, JPanel>(); 
 
     public GearPanel(DataContainer dataContainer) {
         setLayout(new BorderLayout());
@@ -108,6 +109,7 @@ public class GearPanel extends JPanel {
         JLabel nameLabel = new JLabel(fullName);
         StyleContainer.SetFontHeader(nameLabel);
         headPane.add(nameLabel, BorderLayout.CENTER);
+        lblMap.put(gear.name, panel);
         
         if(gear instanceof Poison p) {
         	JPanel pPane = CompFactory.createDescriptionPane("Poison Type:", p.poisonType.toString());
@@ -149,6 +151,22 @@ public class GearPanel extends JPanel {
 
     private String formatWeight(int weight) {
         return weight > 0 ? weight + " lb." : "—";
+    }
+    
+    public void scrollToGear(String gearName) {
+        JPanel gearPanel = lblMap.get(gearName);
+        if (gearPanel == null) return;
+
+        SwingUtilities.invokeLater(() -> {
+            JViewport viewport = (JViewport) contentPanel.getParent();
+            Rectangle rect = SwingUtilities.convertRectangle(gearPanel.getParent(), gearPanel.getBounds(), contentPanel);
+
+            int viewHeight = viewport.getExtentSize().height;
+            int y = rect.y + (rect.height / 2) - (viewHeight / 2);
+            y = Math.max(0, Math.min(y, contentPanel.getHeight() - viewHeight));
+
+            viewport.setViewPosition(new Point(0, y));
+        });
     }
 }
 

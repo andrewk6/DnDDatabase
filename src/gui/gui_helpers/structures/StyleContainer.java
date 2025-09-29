@@ -65,6 +65,7 @@ public class StyleContainer {
 	public static final String SPECIES_BUILDER_ICON_FILE = "builder_species_icon.png";
 	public static final String BASTION_ROOM_BUILD_ICON_FILE = "builder_bastion_room_icon.png";
 	public static final String HAZARD_BUILD_ICON_FILE = "builder_hazard_ico.png";
+	public static final String SIEGE_BUILD_ICON_FILE = "builder_siege_ico.png";
 	
 	public final static int ICON_SIZE = 64;
 
@@ -87,6 +88,7 @@ public class StyleContainer {
 		iFrame.setClosable(true);
 		iFrame.setMaximizable(true);
 		iFrame.setResizable(true);
+		iFrame.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
 	}
 	
 	public static void SetIcon(JInternalFrame iFrame, String file) {

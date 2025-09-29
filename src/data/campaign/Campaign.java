@@ -2,10 +2,13 @@ package data.campaign;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import javax.swing.text.StyledDocument;
+
+import data.DataContainer.Source;
 
 public class Campaign implements Serializable
 {
@@ -14,6 +17,8 @@ public class Campaign implements Serializable
 	public File saveLoc;
 	public HashMap<String, Player> party;
 	public LinkedHashMap<String, StyledDocument> notes;
+	
+	public ArrayList<Source> sourceFilters;
 	
 //	public boolean updated = false;
 	

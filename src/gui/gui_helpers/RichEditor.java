@@ -10,10 +10,13 @@ import data.Spell;
 import data.campaign.Player;
 import data.hazards.Hazard;
 import data.interfaces.DataChangeListener;
+import data.interfaces.InsertString;
 import data.items.Item;
 import data.players.Background;
 import data.players.Species;
 import data.players.classes.DnDClass;
+import data.siege_equipment.SiegeEquipment;
+import data.vehicles.Vehicle;
 import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.hazard.HazardPane;
 import gui.monsters.MonsterDispPane;
@@ -50,6 +53,8 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
     private Map<String, Species> speciesMap;
     private Map<String, Background> backgroundMap;
     private Map<String, Hazard> hazardMap;
+    private Map<String, Vehicle> vehicleMap;
+    private Map<String, SiegeEquipment> siegeMap;
 //    private Map<String, Species> 
 
     private final JWindow rulePreviewWindow = new JWindow();
@@ -488,6 +493,18 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
             		matches.add(key + " (hazard)");
             	}
             }
+            
+            for(String key : vehicleMap.keySet()) {
+            	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+            		matches.add(key + " (vehicle)");
+            	}
+            }
+            
+            for(String key : siegeMap.keySet()) {
+            	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+            		matches.add(key + " (siege equipment)");
+            	}
+            }
 
             Collections.sort(matches);
             if (!matches.isEmpty()) {
@@ -561,6 +578,18 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 for(String key : hazardMap.keySet()) {
                 	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
                 		matches.add(key + " (hazard)");
+                	}
+                }
+                
+                for(String key : vehicleMap.keySet()) {
+                	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+                		matches.add(key + " (vehicle)");
+                	}
+                }
+                
+                for(String key : siegeMap.keySet()) {
+                	if(key.toLowerCase().startsWith(currentPartial.toLowerCase())) {
+                		matches.add(key + " (siege equipment)");
                 	}
                 }
                 
@@ -641,6 +670,8 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 boolean isSpecies = selected.endsWith(" (species)");
                 boolean isBackground = selected.endsWith(" (background)");
                 boolean isHazard = selected.endsWith(" (hazard)");
+                boolean isVehicle = selected.endsWith(" (vehicle)");
+                boolean isSiege = selected.endsWith(" (siege equipment)");
                 String plainName;
                 if(isSpell)
                 	plainName = selected.substring(0, selected.length() - 8);
@@ -660,6 +691,10 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 	plainName = selected.substring(0, selected.length() - " (background)".length());
                 else if(isHazard)
                 	plainName= selected.substring(0, selected.length() - " (hazard)".length());
+                else if(isVehicle)
+                	plainName= selected.substring(0, selected.length() - " (vehicle)".length());
+                else if(isSiege)
+                	plainName= selected.substring(0, selected.length() - " (siege equipment)".length());
                 else
                 	plainName =  selected;
                 int caretPos = editor.getCaretPosition();
@@ -667,13 +702,14 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 doc.remove(atPosition, caretPos - atPosition);
 
                 SimpleAttributeSet styleWithAttr;
+                InsertString in = null;
                 if(isSpell) {
                 	styleWithAttr = new SimpleAttributeSet(spellStyle);
                 	styleWithAttr.addAttribute("spellLink", plainName);
                 }else if(isMonster) {
                 	styleWithAttr = new SimpleAttributeSet(monstStyle);
                 	styleWithAttr.addAttribute("monstLink", plainName);
-                }else if(isItem) {
+                }else if(isItem || isVehicle || isSiege) {
                 	styleWithAttr = new SimpleAttributeSet(itemStyle);
                 	styleWithAttr.addAttribute("itemLink", plainName);
                 }else if (isFeat){
@@ -695,21 +731,28 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 	styleWithAttr = new SimpleAttributeSet(hazardStyle);
                 	styleWithAttr.addAttribute("hazardLink", plainName);
                 }else {
+                	in = data.getRules().get(plainName);
                 	styleWithAttr = new SimpleAttributeSet(ruleStyle);
                 	styleWithAttr.addAttribute("ruleLink", plainName);
                 }
 //                styleWithAttr.addAttribute(isSpell? "spellLink" : "ruleLink", plainName);
 //                styleWithAttr.addAttribute("ruleLink", plainName);
+                if(in != null) {
+                	doc.insertString(atPosition, in.getInsert(), styleWithAttr);
+                	editor.setCaretPosition(atPosition + in.getInsert().length());
+                }
+                else {
+                	doc.insertString(atPosition, plainName, styleWithAttr);
+                	editor.setCaretPosition(atPosition + plainName.length());
+                }
+                int iterLen = (in != null)? in.getInsert().length() : plainName.length();
 
-                doc.insertString(atPosition, plainName, styleWithAttr);
-                editor.setCaretPosition(atPosition + plainName.length());
-
-                for (int i = atPosition; i < atPosition + plainName.length(); i++) {
+                for (int i = atPosition; i < atPosition + iterLen; i++) {
                 	if(isSpell)
                 		spellOffsets.put(i, plainName);
                 	else if(isMonster) {
                 		monstOffsets.put(i, plainName);
-                	}else if(isItem) {
+                	}else if(isItem || isVehicle || isSiege) {
                 		itemOffsets.put(i, plainName);
                 	}else if(isFeat){
                 		featOffsets.put(i, plainName);
@@ -755,62 +798,9 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         super.setTextStyle();
     }
     
-    /*private void insertStyledHTMLLikeText(String htmlLikeText, StyledDocument doc) {
-        int pos = doc.getLength();
-
-        // Create base styles
-        SimpleAttributeSet bold = new SimpleAttributeSet();
-        StyleConstants.setBold(bold, true);
-
-        SimpleAttributeSet italic = new SimpleAttributeSet();
-        StyleConstants.setItalic(italic, true);
-
-        SimpleAttributeSet boldItalic = new SimpleAttributeSet();
-        StyleConstants.setBold(boldItalic, true);
-        StyleConstants.setItalic(boldItalic, true);
-
-        SimpleAttributeSet normal = new SimpleAttributeSet();
-
-        // Pattern to match <b>, <i>, </b>, </i>, and text
-        Pattern tagPattern = Pattern.compile("(<(/?)(b|i)>)|([^<>]+)");
-        Matcher matcher = tagPattern.matcher(htmlLikeText);
-
-        boolean inBold = false;
-        boolean inItalic = false;
-
-        try {
-            while (matcher.find()) {
-                if (matcher.group(4) != null) {
-                    // Plain text content
-                    String text = matcher.group(4);
-                    AttributeSet attr;
-                    if (inBold && inItalic) {
-                        attr = boldItalic;
-                    } else if (inBold) {
-                        attr = bold;
-                    } else if (inItalic) {
-                        attr = italic;
-                    } else {
-                        attr = normal;
-                    }
-                    doc.insertString(pos, text, attr);
-                    pos += text.length();
-                } else {
-                    // Tag
-                    String tag = matcher.group(3);
-                    boolean closing = "/".equals(matcher.group(2));
-                    if ("b".equals(tag)) {
-                        inBold = !closing;
-                    } else if ("i".equals(tag)) {
-                        inItalic = !closing;
-                    }
-                }
-            }
-        } catch (BadLocationException e) {
-        	ErrorLogger.log(e);
-            e.printStackTrace();
-        }
-    }*/
+    private void offsetBuilder(String plainName) {
+    	
+    }
 
 
     private void showRulePreview(String ruleName, Point screenLocation) {
@@ -1126,6 +1116,7 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 
     public void close() {
         rulePreviewWindow.dispose();
+        specialPreviewWindow.dispose();
     }
     
     /*
@@ -1155,6 +1146,8 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         this.monstMap = data.getMonsters();
         this.insertMap = data.getInserts();
         this.itemMap = data.getItems();
+        this.vehicleMap = data.getVehicles();
+        this.siegeMap = data.getSiegeEquipment();
         this.featMap = data.getFeats();
         this.playerMap = data.getParty();
         this.classMap = data.getClasses();
@@ -1177,6 +1170,8 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 		case MapType.INSERTS: this.insertMap = data.getInserts(); break;
 		case MapType.FEATS: this.featMap = data.getFeats(); break;
 		case MapType.ITEMS: this.itemMap = data.getItems(); break;
+		case MapType.VEHICLES: this.vehicleMap = data.getVehicles(); break;
+		case MapType.SIEGEEQUIP: this.siegeMap = data.getSiegeEquipment(); break;
 		case MapType.CAMPAIGN: this.playerMap = data.getParty(); break;
 		case MapType.CLASSES: this.classMap = data.getClasses(); break;
 		case MapType.SPECIES: this.speciesMap = data.getSpecies(); break;
@@ -1186,6 +1181,12 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
 		default: System.out.println("Invalid map type: " + mapType);
 		}
 		
+	}
+	
+	public void removeNotify() {
+		super.removeNotify();
+		data.deregisterListener(this);
+		close();
 	}
 }
 
