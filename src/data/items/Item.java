@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import data.DataContainer.Source;
 import data.interfaces.SourceProvider;
+import data.siege_equipment.SiegeEquipment;
 
 public sealed class Item implements Serializable, SourceProvider
 		permits Weapon, Armor, ToolSet, Gear, MagicItem{

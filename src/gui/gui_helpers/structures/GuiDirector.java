@@ -306,7 +306,7 @@ public class GuiDirector
 	public void handleFrame(String key, boolean item) {
 		if(item) {
 			popIFrame();
-			iFrame.handleLink(key);
+			SwingUtilities.invokeLater(() -> iFrame.handleLink(key));
 		}else {
 			pFrame.handleLink(key);
 			popPFrame();

@@ -177,7 +177,6 @@ public class SpellBuilderPane extends JPanel {
 		SwingUtilities.invokeLater(() -> {
 			spellListPane.removeAll();
 			
-			//TODO: Sort by spells compare to not spell names
 			ArrayList<String> keys = new ArrayList<String>(spellMap.keySet());
 			Collections.sort(keys);
 			

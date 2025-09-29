@@ -1,7 +1,9 @@
 package gui.gui_helpers;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
@@ -36,6 +39,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.text.StyledDocument;
 
+import builders.spell_builder.SpellBuilderPane;
 import data.DataContainer;
 import data.DataContainer.Source;
 import gui.gui_helpers.structures.ColorTabbedPaneUI;
@@ -117,7 +121,8 @@ public class CompFactory
 					"Delete Confirm", JOptionPane.YES_NO_OPTION);
 			if(delConf == JOptionPane.YES_OPTION) {
 				map.remove(key);
-				action.run();
+				if(action!=null)
+					action.run();
 			}			
 		});
 		btn.setFocusable(false);
@@ -155,6 +160,7 @@ public class CompFactory
 		else
 			sideLbl = createNewLabel(text, type);
 		sideLbl.setToolTipText(text);
+		sideLbl.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 		return sideLbl;
 	}
 	
@@ -166,6 +172,7 @@ public class CompFactory
 		else
 			sideLbl = createNewLabel(text, type, fontMod);
 		sideLbl.setToolTipText(text);
+		sideLbl.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 		return sideLbl;
 	}
 	
@@ -176,6 +183,7 @@ public class CompFactory
 		else
 			sideLbl = createNewLabel(text, ComponentType.BODY);
 		sideLbl.setToolTipText(text);
+		sideLbl.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 		return sideLbl;
 	}
 	
@@ -187,6 +195,7 @@ public class CompFactory
 		else
 			sideLbl = createNewLabel(text, ComponentType.BODY, fontMod);
 		sideLbl.setToolTipText(text);
+		sideLbl.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 		return sideLbl;
 	}
 	
@@ -487,6 +496,17 @@ public class CompFactory
 		out.getVerticalScrollBar().setUnitIncrement(scrollSpeed);
 		out.getHorizontalScrollBar().setUnitIncrement(scrollSpeed);
 		return out;
+	}
+	
+	public static JFrame createQuickFrame(JPanel pane, DataContainer data) {
+		JFrame frm = new JFrame();
+		frm.addWindowListener(CompFactory.createSafeExitWindowListener(frm, data));
+		frm.setContentPane(pane);
+		frm.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frm.pack();
+		frm.setSize(new Dimension(800,800));
+		
+		return frm;
 	}
 	
 	public static WindowListener createSafeExitWindowListener(JFrame frame, DataContainer d) {

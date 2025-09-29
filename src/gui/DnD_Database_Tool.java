@@ -40,6 +40,7 @@ import gui.builder_internals.ItemBuilderIFrame;
 import gui.builder_internals.MonsterBuilderIFrame;
 import gui.builder_internals.QuickInsertBuilderIFrame;
 import gui.builder_internals.RuleBuilderIFrame;
+import gui.builder_internals.SiegeBuilderIFrame;
 import gui.builder_internals.SpeciesBuilderIFrame;
 import gui.builder_internals.SpellBuilderIFrame;
 import gui.builder_internals.VehicleBuilderIFrame;
@@ -101,6 +102,7 @@ public class DnD_Database_Tool extends JFrame {
 	BackgroundBuilderIFrame bBuildFrame;
 	BastionBuilderIFrame brBuildFrame;
 	HazardBuilderIFrame hBuildFrame;
+	SiegeBuilderIFrame seBuildFrame;
 
 	private final List<LoadListener> loadListeners = new ArrayList<LoadListener>();
 
@@ -249,6 +251,10 @@ public class DnD_Database_Tool extends JFrame {
 		dPane.add(hBuildFrame);
 		hBuildFrame.setVisible(false);
 		
+		seBuildFrame = new SiegeBuilderIFrame(data);
+		dPane.add(seBuildFrame);
+		seBuildFrame.setVisible(false);
+		
 		dViewFrame = new DungeonIViewer(data, gd);
 		dPane.add(dViewFrame);
 		dViewFrame.setVisible(false);
@@ -387,6 +393,7 @@ public class DnD_Database_Tool extends JFrame {
 		buildMenu.add(CompFactory.createNewJMenuItem("Feat Builder", fBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Bastion Room Builder", brBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Hazard Builder", hBuildFrame));
+		buildMenu.add(CompFactory.createNewJMenuItem("Siege Equipment Builder", seBuildFrame));
 		/*
 		 * LOADED CAMPAIGN
 		 */

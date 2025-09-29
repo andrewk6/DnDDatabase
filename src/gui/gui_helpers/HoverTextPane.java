@@ -176,7 +176,9 @@ public class HoverTextPane extends JTextPane {
 						desktop.add(iFrame);
 						gd.RegisterFrame(iFrame);
 					}
-					if (data.getMagicItemKeysSorted().contains(itemName)) {
+					if (data.getItems().keySet().contains(itemName)||
+							data.getVehicles().keySet().contains(itemName)||
+							data.getSiegeEquipment().keySet().contains(itemName)) {
 						gd.handleFrame(itemName, true);
 					}
 				} else {

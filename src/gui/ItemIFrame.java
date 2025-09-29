@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -26,19 +27,31 @@ import gui.item_panels.MagicItemPanel;
 import gui.item_panels.ToolsPanel;
 import gui.item_panels.VehiclesPane;
 import gui.item_panels.WeaponPanel;
+import gui.siege_equipment.SiegeEquipmentPane;
 
 public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChangeListener {
+	public static final int WEAPON_PANE = 0;
+	public static final int ARMOR_PANE = 1;
+	public static final int TOOL_PANE = 2;
+	public static final int GEAR_PANE = 3;
+	public static final int VEHICLE_PANE = 4;
+	public static final int MAGIC_ITEM_PANE = 5;
+	public static final int SIEGE_PANE = 6;
+	
 	private DataContainer data;
 	private JDesktopPane dPane;
 	private GuiDirector gd;
 
 	private JTabbedPane tabs;
 	private MagicItemPanel miPane;
+	private final SiegeEquipmentPane sePane;
 
 	public ItemIFrame(DataContainer data, GuiDirector gd, JDesktopPane dPane) {
 		this.data = data;
 		this.dPane = dPane;
 		this.gd = gd;
+		
+		sePane = new SiegeEquipmentPane(data, gd);
 		
 		data.registerListener(this);
 
@@ -49,10 +62,13 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChan
 		BuildGearPane();
 		BuildVehiclePane();
 		BuildMagicItemPane();
+		tabs.addTab("Siege Equipment",sePane);
 
 //		setVisible(true);
 		StyleContainer.SetIcon(this, StyleContainer.ITEM_ICON_FILE);
+		gd.RegisterFrame(this);
 	}
+	
 	
 	private void BuildMagicItemPane() {
 		miPane = new MagicItemPanel(data, gd, dPane);
@@ -116,24 +132,67 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChan
 			
 			public void internalFrameActivated(InternalFrameEvent e) {}
 		});
-		addInternalFrameListener(GuiDirector.getContentFrameListener(gd, this));
+//		addInternalFrameListener(GuiDirector.getContentFrameListener(gd, this));
 		this.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
 
 	}
 
 	@Override
 	public void handleLink(String obj) {
-		tabs.setSelectedComponent(miPane);
-		miPane.LoadItem(obj);
+		if(data.getWeaponKeysSorted().contains(obj)) {
+			tabs.setSelectedIndex(WEAPON_PANE);
+		}else if(data.getArmorKeysSorted().contains(obj)) {
+			tabs.setSelectedIndex(ARMOR_PANE);
+		}else if(data.getToolKeysSorted().contains(obj)) {
+			tabs.setSelectedIndex(TOOL_PANE);
+			Component comp = tabs.getSelectedComponent();
+	        if (comp instanceof ToolsPanel tPane) {
+	            // Schedule the scroll after all layout passes
+	            SwingUtilities.invokeLater(() -> {
+	            	tPane.contentPanel.revalidate(); // ensure layout is computed
+	            	tPane.contentPanel.repaint();    // optional
+	                SwingUtilities.invokeLater(() -> tPane.scrollToTool(obj));
+	            });
+	        }
+		}else  if (data.getGearKeysSorted().contains(obj)) {
+	        tabs.setSelectedIndex(GEAR_PANE);
+	        Component comp = tabs.getSelectedComponent();
+	        if (comp instanceof GearPanel gPane) {
+	            // Schedule the scroll after all layout passes
+	            SwingUtilities.invokeLater(() -> {
+	                gPane.contentPanel.revalidate(); // ensure layout is computed
+	                gPane.contentPanel.repaint();    // optional
+	                SwingUtilities.invokeLater(() -> gPane.scrollToGear(obj));
+	            });
+	        }
+		}else if(data.getMountKeysSorted().contains(obj)) {
+			tabs.setSelectedIndex(VEHICLE_PANE);
+		}else if(data.getLargeVehicleKeysSorted().contains(obj)) {
+			tabs.setSelectedIndex(VEHICLE_PANE);
+		}else if(data.getMagicItemKeysSorted().contains(obj)) {
+			tabs.setSelectedComponent(miPane);
+			miPane.LoadItem(obj);	
+		}else if(data.getSiegeEquipmentKeysSorted().contains(obj)) {
+			sePane.AddTab(data.getSiegeEquipment().get(obj));
+			tabs.setSelectedComponent(sePane);
+		}
+				
+	}
+	
+	public void handleLink(int pane) {
+		tabs.setSelectedIndex(pane);
 	}
 
 	@Override
 	public void onMapUpdated() {
+		int tab = tabs.getSelectedIndex();
 		MagicItemPanel miPane = null;
+		SiegeEquipmentPane sePane = null;
 		for (int i = tabs.getTabCount() - 1; i >= 0; i--) {
 		    if(tabs.getComponentAt(i) instanceof MagicItemPanel) {
-		    	System.out.println("Found mi pane");
 		    	miPane = (MagicItemPanel) tabs.getComponentAt(i);
+		    }else if(tabs.getComponentAt(i) instanceof SiegeEquipmentPane pane) {
+		    	sePane = pane;
 		    }
 		    tabs.removeTabAt(i);
 		}
@@ -148,31 +207,14 @@ public class ItemIFrame extends JInternalFrame implements ContentFrame, DataChan
 		BuildGearPane();
 		BuildVehiclePane();
 		tabs.addTab("Magic Items", miPane);
+		tabs.addTab("Siege Equipment", sePane);
+		tabs.setSelectedIndex(tab);
 	}
 
 	@Override
 	public void onMapUpdated(MapType mapType) {
 		if(mapType == MapType.ITEMS) {
-			MagicItemPanel miPane = null;
-			System.out.println("Itme I Frame in Map");
-			for (int i = tabs.getTabCount() - 1; i >= 0; i--) {
-			    if(tabs.getComponentAt(i) instanceof MagicItemPanel) {
-			    	System.out.println("Found mi pane");
-			    	miPane = (MagicItemPanel) tabs.getComponentAt(i);
-			    }
-			    tabs.removeTabAt(i);
-			}
-			if(miPane == null) {
-				miPane = new MagicItemPanel(data, gd, dPane);
-			}
-			
-//			BuildFrame();
-			BuildWeaponPane();
-			BuildArmorPane();
-			BuildToolPane();
-			BuildGearPane();
-			BuildVehiclePane();
-			tabs.addTab("Magic Items", miPane);
+			onMapUpdated();
 		}
 	}
 }

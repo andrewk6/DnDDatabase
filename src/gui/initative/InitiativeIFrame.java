@@ -10,6 +10,7 @@ import data.hazards.Hazard;
 import data.players.Background;
 import data.players.Species;
 import data.players.classes.DnDClass;
+import data.siege_equipment.SiegeEquipment;
 import gui.background.BackgroundPane;
 import gui.campaign.PlayerPane;
 import gui.classes.ClassPane;
@@ -25,6 +26,7 @@ import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 import gui.hazard.HazardPane;
 import gui.monsters.MonsterDispPane;
+import gui.siege_equipment.SiegeEquipmentPane;
 import gui.species.SpeciesPane;
 import gui.spells.SpellPane;
 import utils.DiceCalculator;
@@ -203,6 +205,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         JPanel topBar = new JPanel();
         JButton addPlayerBtn = new JButton("Add Player");
         JButton addMonsterBtn = new JButton("Add Monster");
+        JButton reset = CompFactory.createNewButton("Reset Initiative", this::removeAllInitiatives);
         JButton saveBtn = new JButton("Save");
         JButton loadBtn = new JButton("Load");
 
@@ -217,6 +220,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
         topBar.add(addPlayerBtn);
         topBar.add(addMonsterBtn);
+        topBar.add(reset);
         topBar.add(saveBtn);
         topBar.add(loadBtn);
 
@@ -419,6 +423,15 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         for (InitiativeEntry e : entries) {
             initiativeListModel.addElement(e);
         }
+    }
+    
+    public void removeAllInitiatives() {
+    	entries.clear();
+        updateInitiativeList();
+        currentIndex = 0;
+        rightPane.removeAll();
+        rightPane.revalidate();
+        rightPane.repaint();            
     }
     
     public void removeInitiativeEntry(String name) {

@@ -76,7 +76,7 @@ public class SourceToggleDialog extends JDialog
 		cPane.add(srcPane, BorderLayout.CENTER);
 		
 		for(Source s : Source.values()) {
-			JCheckBox cBox = CompFactory.createNewCheckbox(DataContainer.sourceToString(s));
+			JCheckBox cBox = CompFactory.createNewCheckbox(s.toString());
 			if(sources.contains(s))
 				cBox.setSelected(true);
 			cBox.addActionListener(_ -> {
