@@ -9,17 +9,20 @@ import gui.gui_helpers.structures.StyleContainer;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ToolsPanel extends JPanel {
-
+	private final Map<String, JPanel> paneMap = new HashMap<String, JPanel>();
+	public final  JPanel contentPanel = new JPanel();
+	
     public ToolsPanel(DataContainer dataContainer) {
         setLayout(new BorderLayout());
         setOpaque(false);
 
         // Main content panel inside scroll
-        JPanel contentPanel = new JPanel();
+       
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setOpaque(false);
         contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -52,7 +55,7 @@ public class ToolsPanel extends JPanel {
             BorderFactory.createLineBorder(Color.GRAY),
             new EmptyBorder(8, 8, 8, 8)
         ));
-
+        paneMap.put(tool.name, panel);
         // Tool name
         JLabel nameLabel = new JLabel(tool.name);
         StyleContainer.SetFontHeader(nameLabel);
@@ -116,5 +119,22 @@ public class ToolsPanel extends JPanel {
 
     private String formatWeight(int weight) {
         return weight > 0 ? weight + " lb." : "—";
+    }
+    
+    public void scrollToTool(String gearName) {
+        JPanel toolPanel = paneMap.get(gearName);
+        if (toolPanel == null) return;
+
+        SwingUtilities.invokeLater(() -> {
+            JViewport viewport = (JViewport) contentPanel.getParent();
+            Rectangle rect = SwingUtilities.convertRectangle(toolPanel.getParent(), 
+            		toolPanel.getBounds(), contentPanel);
+
+            int viewHeight = viewport.getExtentSize().height;
+            int y = rect.y + (rect.height / 2) - (viewHeight / 2);
+            y = Math.max(0, Math.min(y, contentPanel.getHeight() - viewHeight));
+
+            viewport.setViewPosition(new Point(0, y));
+        });
     }
 }

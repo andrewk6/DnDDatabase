@@ -53,6 +53,7 @@ import data.players.Background;
 import data.players.BastionRoom;
 import data.players.Species;
 import data.players.classes.DnDClass;
+import data.siege_equipment.SiegeEquipment;
 import data.vehicles.LargeVehicle;
 import data.vehicles.Mount;
 import data.vehicles.Vehicle;
@@ -136,6 +137,7 @@ public class DataContainer {
 	public static final String INSERT_FILE_NAME = "Inserts.bol";
 	public static final String ITEMS_FILE_NAME = "Items.iol";
 	public static final String VEHICLES_FILE_NAME = "Vehicles.vol";
+	public static final String SIEGE_EQUIP_FILE_NAME = "SiegeEquipment.seol";
 	public static final String FEATS_FILE_NAME = "Feats.fol";
 	public static final String CLASS_FILE_NAME = "Classes.clol";
 	public static final String SPECIES_FILE_NAME = "Species.spol";
@@ -147,7 +149,7 @@ public class DataContainer {
 	public static final String BASTION_RULES = "BastionRules.baol";
 	
 	public enum MapType {
-		RULES, SPELLS, MONSTERS, INSERTS, ITEMS, VEHICLES, CAMPAIGN, FEATS, CLASSES, 
+		RULES, SPELLS, MONSTERS, INSERTS, ITEMS, VEHICLES, SIEGEEQUIP, CAMPAIGN, FEATS, CLASSES, 
 		SPECIES, BACKGROUNDS, BASTION_ROOMS, HAZARDS
 	}
 
@@ -156,6 +158,7 @@ public class DataContainer {
 	private HashMap<String, Monster> monstMap;
 	private HashMap<String, Item> itemMap;
 	private HashMap<String, Vehicle> vehicleMap;
+	private HashMap<String, SiegeEquipment> siegeEquipMap;
 	private HashMap<String, Feat> featMap;
 	private HashMap<String, DnDClass> classMap;
 	private HashMap<String, Species> speciesMap;
@@ -168,7 +171,7 @@ public class DataContainer {
 	
 	private ArrayList<String> ruleKeysSorted, spellKeysSorted, monstKeysSorted, insertKeysSorted,
 		weaponKeysSorted, armorKeysSorted, gearKeysSorted, toolKeysSorted, magicItemKeysSorted,
-		mountKeysSorted, largeVehicleKeysSorted, featKeysSorted,classKeysSorted, 
+		mountKeysSorted, largeVehicleKeysSorted, siegeEquipmentKeysSorted, featKeysSorted,classKeysSorted, 
 		bastionRoomKeysSorted, speciesKeysSorted, backgroundKeysSorted, hazardKeysSorted, trapKeysSorted;
 	
 
@@ -187,21 +190,6 @@ public class DataContainer {
 	
 	private ExportDialog exportDialog;
 	private boolean exportReady;
-	
-	public static String sourceToString(Source s) {
-		switch(s) {
-		case Source.PlayersHandbook2024: return "Player's Handbook 2024";
-		case Source.DungeonMastersGuide2024: return "Dungeon Master's Guide 2024";
-		case Source.MonsterManual2024: return "Monster Manual 2024;";
-		case Source.XanathersGuideToEverything: return "Xanather's Guide to Everything";
-		case Source.TashasCauldronOfEverything: return "Tasha's Cauldron of Everything";
-		case Source.VecnaEveOfRuin: return "Vecna Eve of Ruin";
-		case Source.UnearthedArcana: return "Unearthed Arcana";
-		case Source.Custom: return "Custom";
-		default:
-			throw new IllegalArgumentException("This shouldn't be possible");
-		}
-	}
 
 	public DataContainer() {
 		StartIOThread();
@@ -218,6 +206,7 @@ public class DataContainer {
         tasks.add(this::ImportInsertHelpers);
         tasks.add(this::ImportItems);
         tasks.add(this::ImportVehicles);
+        tasks.add(this::ImportSiegeEquipment);
         tasks.add(this::ImportFeats);
         tasks.add(this::ImportClassMap);
         tasks.add(this::ImportSpeciesMap);
@@ -359,28 +348,30 @@ public class DataContainer {
 				while(true) {
 					try {
 						Object obj = ois.readObject();
-						if(obj instanceof Rule)
-							ImportObject((Rule) obj, ((Rule)obj).name, ruleMap);
-						else if(obj instanceof Spell) 
-							ImportObject((Spell) obj, ((Spell)obj).name, spellMap);
-						else if(obj instanceof Monster) 
-							ImportObject((Monster) obj, ((Monster)obj).name, monstMap);
-						else if(obj instanceof Item) 
-							ImportObject((Item) obj, ((Item)obj).name, itemMap);
-						else if(obj instanceof Vehicle)
-							ImportObject((Vehicle)obj, ((Vehicle)obj).name, vehicleMap);
-						else if(obj instanceof Feat) 
-							ImportObject((Feat) obj, ((Feat)obj).name, featMap);
-						else if(obj instanceof DnDClass) 
-							ImportObject((DnDClass) obj, ((DnDClass)obj).name, classMap);
-						else if(obj instanceof Species)
-							ImportObject((Species) obj, ((Species)obj).name, speciesMap);
-						else if(obj instanceof Background)
-							ImportObject((Background)obj, ((Background)obj).name, backgroundMap);
-						else if(obj instanceof BastionRoom)
-							ImportObject((BastionRoom)obj, ((BastionRoom)obj).name, bastionRoomMap);
-						else if(obj instanceof Hazard)
-							ImportObject((Hazard)obj, ((Hazard)obj).name, hazardMap);
+						if(obj instanceof Rule r)
+							ImportObject(r, r.name, ruleMap);
+						else if(obj instanceof Spell s) 
+							ImportObject(s, s.name, spellMap);
+						else if(obj instanceof Monster m) 
+							ImportObject(m, m.name, monstMap);
+						else if(obj instanceof Item i) 
+							ImportObject(i, i.name, itemMap);
+						else if(obj instanceof Vehicle v)
+							ImportObject(v, v.name, vehicleMap);
+						else if(obj instanceof SiegeEquipment se)
+							ImportObject(se, se.name, siegeEquipMap);
+						else if(obj instanceof Feat f) 
+							ImportObject(f, f.name, featMap);
+						else if(obj instanceof DnDClass c) 
+							ImportObject(c, c.name, classMap);
+						else if(obj instanceof Species s)
+							ImportObject(s, s.name, speciesMap);
+						else if(obj instanceof Background b)
+							ImportObject(b, b.name, backgroundMap);
+						else if(obj instanceof BastionRoom b)
+							ImportObject(b, b.name, bastionRoomMap);
+						else if(obj instanceof Hazard h)
+							ImportObject(h, h.name, hazardMap);
 						else throw new IllegalArgumentException("Not proper object");
 						
 					} catch (ClassNotFoundException e) {
@@ -441,6 +432,8 @@ public class DataContainer {
 				ExportMap(itemMap, oos);
 			if(exportDialog.getVehicles())
 				ExportMap(vehicleMap, oos);
+			if(exportDialog.getSiegeEquipment())
+				ExportMap(siegeEquipMap, oos);
 			if(exportDialog.getFeats())
 				ExportMap(featMap, oos);
 			if(exportDialog.getClasses())
@@ -777,6 +770,42 @@ public class DataContainer {
 		return false;
 	}
 	
+	private boolean ImportSiegeEquipment() {
+		siegeEquipMap = new HashMap<String, SiegeEquipment>();
+		siegeEquipmentKeysSorted = new ArrayList<String>();
+		File siegeFile;
+		
+		if(dbFolder.exists()) {
+			if(dbFolder.isDirectory()) {
+				siegeFile = new File(dbFolder.getPath() + File.separator + SIEGE_EQUIP_FILE_NAME);
+			}else {
+				siegeFile = new File(SIEGE_EQUIP_FILE_NAME);
+			}
+		}else {
+			siegeFile = new File(SIEGE_EQUIP_FILE_NAME);
+		}
+		
+		if (siegeFile.exists()) {
+			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(siegeFile))) {
+				while (true) {
+					try {
+						SiegeEquipment s = (SiegeEquipment) ois.readObject();
+						siegeEquipMap.put(s.name, s);
+						siegeEquipmentKeysSorted.add(s.name);
+					} catch (EOFException eof) {
+						// End of file reached
+						return true;
+					}
+				}
+			} catch (IOException | ClassNotFoundException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return false;
+	}
+	
 	private boolean ImportClassMap() {
 		classMap = new HashMap<String, DnDClass>();
 		classKeysSorted = new ArrayList<String>();
@@ -1064,6 +1093,13 @@ public class DataContainer {
 		notifyChange(MapType.VEHICLES);
 	}
 	
+	public void SetSiegeEquipMap(HashMap<String, SiegeEquipment> sMap) {
+		this.siegeEquipMap = sMap;
+		this.siegeEquipmentKeysSorted = new ArrayList<String>(sMap.keySet());
+		SortKeys(MapType.SIEGEEQUIP);
+		notifyChange(MapType.SIEGEEQUIP);
+	}
+	
 	public void SetClassMap(HashMap<String, DnDClass> cMap) {
 		this.classMap = cMap;
 		this.classKeysSorted = new ArrayList<String>(cMap.keySet());
@@ -1120,7 +1156,7 @@ public class DataContainer {
 	
 	private boolean SaveData() {
 		return SaveRules() && SaveSpells() && SaveMonsters() && 
-				SaveInserts() && SaveItems() && SaveVehicles() && SaveCampaign() 
+				SaveInserts() && SaveItems() && SaveVehicles() && SaveSiegeEquipment() && SaveCampaign() 
 				&& SaveFeats()&& SaveClasses() && SaveSpecies() && SaveBackground()
 				&& SaveBastionRooms() && SaveHazards();
 	}
@@ -1133,6 +1169,7 @@ public class DataContainer {
 		case MapType.INSERTS: return SaveInserts();
 		case MapType.ITEMS: return SaveItems();
 		case MapType.VEHICLES: return SaveVehicles();
+		case MapType.SIEGEEQUIP: return SaveSiegeEquipment();
 		case MapType.CAMPAIGN: return SaveCampaign();
 		case MapType.FEATS: return SaveFeats(); 
 		case MapType.CLASSES: return SaveClasses();
@@ -1348,6 +1385,32 @@ public class DataContainer {
 		}
 	}
 	
+	private boolean SaveSiegeEquipment() {
+		File siegefile = new File(dbFolder.getPath() + File.separator + DataContainer.SIEGE_EQUIP_FILE_NAME);
+		if(!siegefile.exists()) {
+			try {
+				siegefile.createNewFile();
+			} catch (IOException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(siegefile));
+			for(String s : siegeEquipMap.keySet()) {
+				oos.writeObject(siegeEquipMap.get(s));
+			}
+			oos.flush();
+			oos.close();
+			return true;
+		}catch(IOException e) {
+			ErrorLogger.log(e);
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	private boolean SaveClasses() {
 		File classFile = new File(dbFolder.getPath() + File.separator + DataContainer.CLASS_FILE_NAME);
 		if(!classFile.exists()) {
@@ -1525,6 +1588,7 @@ public class DataContainer {
 		Collections.sort(monstKeysSorted);
 		Collections.sort(insertKeysSorted);
 		Collections.sort(weaponKeysSorted);
+		Collections.sort(siegeEquipmentKeysSorted);
 		Collections.sort(armorKeysSorted);
 		Collections.sort(gearKeysSorted);
 		Collections.sort(toolKeysSorted);
@@ -1557,6 +1621,7 @@ public class DataContainer {
 			Collections.sort(mountKeysSorted);
 			Collections.sort(largeVehicleKeysSorted);
 			break;
+		case MapType.SIEGEEQUIP: Collections.sort(siegeEquipmentKeysSorted); break;
 		case MapType.FEATS: Collections.sort(featKeysSorted); break;
 		case MapType.CLASSES: Collections.sort(classKeysSorted); break;
 		case MapType.SPECIES: Collections.sort(speciesKeysSorted); break;
@@ -1634,6 +1699,10 @@ public class DataContainer {
 		return Collections.unmodifiableMap(vehicleMap);
 	}
 	
+	public Map<String, SiegeEquipment> getSiegeEquipment(){
+		return Collections.unmodifiableMap(siegeEquipMap);
+	}
+	
 	public Map<String, Hazard> getHazards(){
 		return Collections.unmodifiableMap(hazardMap);
 	}
@@ -1664,7 +1733,17 @@ public class DataContainer {
 	               })
 	               .toList();  // Java 16+ returns an immutable list
 	}
-
+	
+	public void showSourceDialog(JFrame frm) {
+		SourceToggleDialog srcToggle = new SourceToggleDialog(frm, sourceFilter);
+		if(srcToggle.setSources) {
+			sourceFilter = new ArrayList<Source>(srcToggle.getSources());
+			if(camp != null)
+				camp.sourceFilters = sourceFilter;
+			notifyChange();
+		}
+		srcToggle.dispose();
+	}
 	
 	public List<String> getRuleKeysSorted() {
 		if((sourceFilter.size() < Source.values().length))
@@ -1673,11 +1752,6 @@ public class DataContainer {
 	}
 
 	public List<String> getSpellKeysSorted() {
-		System.out.println(
-				(sourceFilter.size() < Source.values().length) + 
-				" check in spellKeysSorted:\n"
-				+ "SourceFilter Size: " + sourceFilter.size() + "\n"
-				+"Sources Size: " + Source.values().length);
 		if((sourceFilter.size() < Source.values().length))
 			return filterKeys(spellKeysSorted, spellMap);
 		return Collections.unmodifiableList(spellKeysSorted);
@@ -1724,7 +1798,7 @@ public class DataContainer {
 	}
 	
 	public List<String> getMountKeysSorted(){
-		if(!(sourceFilter.size() < Source.values().length))
+		if((sourceFilter.size() < Source.values().length))
 			return filterKeys(mountKeysSorted, vehicleMap);
 		return Collections.unmodifiableList(mountKeysSorted);
 	}
@@ -1733,6 +1807,12 @@ public class DataContainer {
 		if((sourceFilter.size() < Source.values().length))
 			return filterKeys(largeVehicleKeysSorted, vehicleMap);
 		return Collections.unmodifiableList(largeVehicleKeysSorted);
+	}
+	
+	public List<String> getSiegeEquipmentKeysSorted(){
+		if((sourceFilter.size() < Source.values().length))
+			return filterKeys(siegeEquipmentKeysSorted, siegeEquipMap);
+		return Collections.unmodifiableList(siegeEquipmentKeysSorted);
 	}
 	
 	public List<String> getFeatKeysSorted(){
@@ -1777,14 +1857,6 @@ public class DataContainer {
 		return Collections.unmodifiableList(trapKeysSorted);
 	}
 	
-	public void showSourceDialog(JFrame frm) {
-		SourceToggleDialog srcToggle = new SourceToggleDialog(frm, sourceFilter);
-		if(srcToggle.setSources) {
-			sourceFilter = new ArrayList<Source>(srcToggle.getSources());
-			notifyChange();
-		}
-		srcToggle.dispose();
-	}
 	/*
 	 * Campaign Methods
 	 */
@@ -1872,6 +1944,9 @@ public class DataContainer {
 		if (campFile.exists()) {
 			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(campFile))) {
 				camp = (Campaign) ois.readObject();
+				sourceFilter.clear();
+				if(camp.sourceFilters != null)
+					sourceFilter.addAll(camp.sourceFilters);
 				if(!recentFiles.contains(campFile)) {
 					if(recentFiles.size() == 5)
 						recentFiles.poll();

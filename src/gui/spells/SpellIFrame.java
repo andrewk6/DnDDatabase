@@ -9,7 +9,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -29,8 +32,11 @@ import javax.swing.event.InternalFrameListener;
 
 import data.DataContainer;
 import data.DataContainer.MapType;
+import data.Spell;
+import data.Spell.SpellLevel;
 import data.interfaces.DataChangeListener;
 import gui.gui_helpers.CompFactory;
+import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CustomDesktopIcon;
 import gui.gui_helpers.HoverTextPane;
 import gui.gui_helpers.structures.ContentTab;
@@ -138,32 +144,30 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 	public void FillSidePane() {
 		SwingUtilities.invokeLater(()->{
 			spellGridPane.removeAll();
-			List<String> keys = data.getSpellKeysSorted();
-			for(String s : keys) {
-				if(s.toLowerCase().startsWith(spellFilter.getText().toLowerCase()) || spellFilter.getText().length() == 0) {
-					JTextField sField = new JTextField(s);
-					StyleContainer.SetFontHeader(sField);
-					sField.setEditable(false);
-					sField.setFocusable(false);
-					sField.setColumns(25);
-					sField.addMouseListener(new MouseListener() {
-						public void mouseClicked(MouseEvent e) {
-//							spellTitle.setText(s);
-//							hPane.setDocument(data.getSpells().get(s).spellDoc);
-							if(gd.getComboFrame() != null) {
-								gd.getComboFrame().AddTab(data.getSpells().get(s));
-							}else {
-								AddSpellTab(s);
-							}
-						}
-						public void mousePressed(MouseEvent e) {}
-						public void mouseReleased(MouseEvent e) {}
-						public void mouseEntered(MouseEvent e) {}
-						public void mouseExited(MouseEvent e) {}
-						
-					});
-					spellGridPane.add(sField);
+			//TODO: Sort by spells compare to not spell names
+//			List<String> keys = data.getSpellKeysSorted();
+			List<Spell> spells = data.getSpellKeysSorted().stream()
+				    .map(k -> data.getSpells().get(k)) // turn String into Spell
+				    .filter(Objects::nonNull)          // remove nulls
+				    .filter(spell -> spell.name.toLowerCase().contains(
+				    		spellFilter.getText().toLowerCase()) ||
+				    		spellFilter.getText().isEmpty())
+				    .sorted()
+				    .toList();
+			SpellLevel lvl = SpellLevel.Cantrip;
+			spellGridPane.add(CompFactory.createNewLabel(lvl.toString(), 
+					ComponentType.HEADER, 2f));
+			for(Spell s : spells) {
+				if(s.spellLevel != lvl) {
+					lvl = s.spellLevel;
+					spellGridPane.add(CompFactory.createNewLabel(lvl.toString(), 
+							ComponentType.HEADER, 2f));
 				}
+				JLabel lbl = CompFactory.createSideLabel(s.name);
+				lbl.addMouseListener(CompFactory.createSideMouseListener(lbl, ()->{
+					AddSpellTab(s.name);
+				}));
+				spellGridPane.add(lbl);
 			}
 			spellGridPane.revalidate();
 			spellGridPane.repaint();

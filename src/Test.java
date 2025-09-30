@@ -1,3 +1,4 @@
+import java.awt.Component;
 import java.awt.Container;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,9 +9,16 @@ import java.util.HashMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+
 import data.DataContainer;
 import data.Rule;
 import data.Spell;
@@ -21,6 +29,7 @@ import data.DataContainer.Source;
 import data.Monster;
 import data.players.BastionRoom;
 import data.players.classes.DnDClass;
+import data.siege_equipment.SiegeEquipment;
 import data.vehicles.Vehicle;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.structures.GuiDirector;
@@ -36,12 +45,11 @@ public class Test extends JFrame {
 	public static void main(String[] args) throws BadLocationException {
 		DataContainer data = new DataContainer();
 		data.init();
+		data.showSourceDialog(new JFrame());
 		boolean gui = false;
-
-		for(Item r : data.getItems().values())
-			if(r instanceof Weapon w)
-				if(w.modern || w.future)
-					System.out.println(w.properties.toString());
+		
+		for(String r : data.getSiegeEquipmentKeysSorted())
+				System.out.println(r);
 
 		if(gui)
 			guiStuff(data);

@@ -8,6 +8,7 @@ import data.hazards.Hazard;
 import data.players.Background;
 import data.players.Species;
 import data.players.classes.DnDClass;
+import data.siege_equipment.SiegeEquipment;
 
 public interface AllTab extends ContentTab
 {
