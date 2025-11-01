@@ -266,7 +266,6 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
         
         editor.registerKeyboardAction(_->{
         	showMatches = false;
-        	System.out.println("Escape Key: " + showMatches);
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), 
         		JComponent.WHEN_IN_FOCUSED_WINDOW);
 

@@ -144,7 +144,6 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 	public void FillSidePane() {
 		SwingUtilities.invokeLater(()->{
 			spellGridPane.removeAll();
-			//TODO: Sort by spells compare to not spell names
 //			List<String> keys = data.getSpellKeysSorted();
 			List<Spell> spells = data.getSpellKeysSorted().stream()
 				    .map(k -> data.getSpells().get(k)) // turn String into Spell
