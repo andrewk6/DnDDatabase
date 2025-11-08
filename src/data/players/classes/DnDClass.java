@@ -22,7 +22,7 @@ public class DnDClass implements Serializable, SourceProvider
 	
 	public enum HitDiceType {d12, d10, d8, d6};
 	public enum WeaponProficiency {
-		Simpl("Simple Weapons"), 
+		Simple("Simple Weapons"), 
 		All("Simple and Martial Weapons"), 
 		SimpleMartialFinesseLight("Simple Weapons and Finesse/Light Martial Weapons");
 		
