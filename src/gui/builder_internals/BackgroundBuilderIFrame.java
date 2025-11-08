@@ -3,6 +3,7 @@ package gui.builder_internals;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -78,7 +79,8 @@ public class BackgroundBuilderIFrame extends JInternalFrame
 				originFeats.add(f);
 		ConfigFrame();
 		BuildContent(this.getContentPane());
-		pack();
+		pack()
+		;this.setSize(new Dimension(800, 800));
 	}	
 
 	private void ConfigFrame() {
@@ -274,7 +276,7 @@ public class BackgroundBuilderIFrame extends JInternalFrame
 		itemSelPane.setLayout(new BorderLayout());
 		addItemsPane.add(itemSelPane, BorderLayout.CENTER);
 		
-		FilterCombo equipCombo = new FilterCombo(itemNames, 20);
+		FilterCombo equipCombo = new FilterCombo(itemNames, 30);
 		StyleContainer.SetFontMain(equipCombo);
 		itemSelPane.add(equipCombo, BorderLayout.CENTER);
 		

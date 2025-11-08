@@ -21,9 +21,10 @@ public class FilterCombo extends JComboBox<String> {
         super(new DefaultComboBoxModel<>());
         setEditable(true);
         JTextField editorField = (JTextField) getEditor().getEditorComponent();
-        editorField.setColumns(columns);
+//        editorField.setColumns(columns);
         String proto = String.join("", Collections.nCopies(columns, "M")); // ~20 characters wide
         setPrototypeDisplayValue(proto);
+        SwingUtilities.invokeLater(() -> setPreferredSize(getPreferredSize()));
         
         originalItems.addAll(items);
         reloadModel(originalItems);
