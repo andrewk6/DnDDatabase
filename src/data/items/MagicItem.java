@@ -7,7 +7,22 @@ public final class MagicItem extends Item
 	private static final long serialVersionUID = -293733487913646814L;
 
 	public enum Rarity {
-		Common, Uncommon, Rare, VeryRare, Legendary, Artifact, Special
+		Common("Common"), 
+		Uncommon("Uncommon"), 
+		Rare("Rare"), 
+		VeryRare("Very Rare"), 
+		Legendary("Legendary"), 
+		Artifact("Artifact"), 
+		Special("Special");
+		
+		private String desc;
+		Rarity(String desc){
+			this.desc = desc;
+		}
+		
+		public String toString() {
+			return desc;
+		}
 	}
 	
 	public String subtype = "";
