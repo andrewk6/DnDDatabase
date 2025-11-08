@@ -24,6 +24,7 @@ public class Runner
 	private static DataContainer data;
 	private static LoadFrame load;
 	
+	//TODO: Adjust init tool to be able to reset/remove players
 	public static void main(String[] args) throws InvocationTargetException, InterruptedException {
 		SwingUtilities.invokeAndWait(()->{
 			load = new LoadFrame("Loading");
