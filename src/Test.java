@@ -19,6 +19,7 @@ import javax.swing.text.Element;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import builders.background_builder.BackgroundBuilder;
 import data.DataContainer;
 import data.Rule;
 import data.Spell;
@@ -45,11 +46,9 @@ public class Test extends JFrame {
 	public static void main(String[] args) throws BadLocationException {
 		DataContainer data = new DataContainer();
 		data.init();
-		data.showSourceDialog(new JFrame());
-		boolean gui = false;
+		boolean gui = true;
 		
-		for(String r : data.getSiegeEquipmentKeysSorted())
-				System.out.println(r);
+		System.out.println(data.getRules().get("Circle Spells"));
 
 		if(gui)
 			guiStuff(data);
@@ -61,10 +60,7 @@ public class Test extends JFrame {
 		SwingUtilities.invokeLater(()->{
 			JFrame frm = new JFrame();
 //			initFrame(frm.getContentPane(), data);
-			frm.setContentPane(new HazardPane(
-					data.getHazards().get("Spike Pit"), 
-					data, 
-					new GuiDirector(new JDesktopPane())));
+			frm.setContentPane(new BackgroundBuilder(data));
 			frm.setSize(800, 800);
 			frm.addWindowListener(CompFactory.createSafeExitWindowListener(frm, data));
 			frm.setVisible(true);

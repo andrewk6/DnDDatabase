@@ -284,7 +284,7 @@ public class BackgroundBuilder extends JFrame
 		itemSelPane.setLayout(new BorderLayout());
 		addItemsPane.add(itemSelPane, BorderLayout.CENTER);
 		
-		FilterCombo equipCombo = new FilterCombo(itemNames, 20);
+		FilterCombo equipCombo = new FilterCombo(itemNames, 40);
 		StyleContainer.SetFontMain(equipCombo);
 		itemSelPane.add(equipCombo, BorderLayout.CENTER);
 		

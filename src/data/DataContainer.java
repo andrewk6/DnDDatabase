@@ -63,9 +63,34 @@ import gui.gui_helpers.structures.LoadListener;
 
 public class DataContainer {
 	public enum Skills {
-		Athletics, Acrobatices, SleightofHand, Stealth, Arcana, History, Investigation, Nature, Religion,
-		AnimalHandling, Insight, Medecine, Perception, Survival, Deception, Intimidation, Performance, Persuasion
-
+		Athletics("Athletics"), 
+		Acrobatices("Acrobatics"), 
+		SleightofHand("Sleight of Hand"), 
+		Stealth("Stealth"), 
+		Arcana("Arcana"), 
+		History("History"), 
+		Investigation("Investigation"), 
+		Nature("Nature"), 
+		Religion("Religion"),
+		AnimalHandling("Animal Handling"), 
+		Insight("Insight"), 
+		Medecine("Medicine"), 
+		Perception("Perception"), 
+		Survival("Survival"), 
+		Deception("Deception"), 
+		Intimidation("Intimidation"), 
+		Performance("Performance"), 
+		Persuasion("Persuasion");
+		
+		private String desc;
+		Skills(String desc){
+			this.desc = desc;
+		}
+		
+		@Override
+		public String toString() {
+			return desc;
+		}
 	}
 	
 	public enum Proficiency {
