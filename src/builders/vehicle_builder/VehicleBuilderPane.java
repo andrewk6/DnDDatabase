@@ -87,9 +87,13 @@ public class VehicleBuilderPane extends JPanel
 	}
 	
 	private void BuildContent() {
+		JPanel centerPane = new JPanel();
+		centerPane.setLayout(new BorderLayout());
+		this.add(centerPane, BorderLayout.CENTER);
+		
 		JPanel hPane = new JPanel();
 		hPane.setLayout(new BorderLayout());
-		this.add(hPane, BorderLayout.NORTH);
+		centerPane.add(hPane, BorderLayout.NORTH);
 		
 		JPanel titlePane = new JPanel();
 		titlePane.setLayout(new BorderLayout());
@@ -133,9 +137,9 @@ public class VehicleBuilderPane extends JPanel
 		
 		cardPane = new JPanel();
 		cardPane.setLayout(new CardLayout());
-		this.add(cardPane, BorderLayout.CENTER);
+		centerPane.add(cardPane, BorderLayout.CENTER);
 		
-		this.add(CompFactory.createButtonFlowPane(FlowLayout.RIGHT, new JButton[] {
+		centerPane.add(CompFactory.createButtonFlowPane(FlowLayout.RIGHT, new JButton[] {
 				CompFactory.createNewButton("Add Vehicle", this::AddVehicle),
 				CompFactory.createNewButton("Reset Editor", _->{
 					if(Confirmation(null) == JOptionPane.YES_OPTION)
