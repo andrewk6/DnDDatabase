@@ -225,7 +225,6 @@ public class MagicItemBuilder extends JPanel {
 		for (ReminderField field : costFields)
 			field.setText("");
 		attuneBox.setSelected(false);
-		sourceBox.setSelectedItem(Source.DungeonMastersGuide2024);
 		subtypeField.setText("");
 		rarityBox.setSelectedItem(Rarity.Common);
 

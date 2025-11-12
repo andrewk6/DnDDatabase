@@ -623,8 +623,8 @@ public class RichEditor extends RichEditorBase implements DataChangeListener{
                 	if(key.toLowerCase().startsWith(currentPartial.toLowerCase()))
                 		matches.add(key);
                 Collections.sort(matches);
-                
                 if (!matches.isEmpty()) {
+                	showMatches = true;
                     updateSuggestions(matches, caretPos);
                 }
             }

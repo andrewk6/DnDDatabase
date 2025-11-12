@@ -398,6 +398,7 @@ public class MonsterBuilderPane extends JPanel {
 		srcPane.add(CompFactory.createNewLabel("Source:", ComponentType.BODY), BorderLayout.WEST);
 		
 		srcCombo = CompFactory.createEnumCombo(Source.class, ComponentType.BODY);
+		srcCombo.setFocusable(false);
 		srcPane.add(srcCombo, BorderLayout.CENTER);
 
 		monsterTypeField = new ReminderField("", "Enter the monster size type, alignment");
@@ -979,6 +980,8 @@ public class MonsterBuilderPane extends JPanel {
 		BuildMonstListPane();
 		System.out.println("Reset Editor");
 		monsterNameField.setText("");
+		monsterNameField.setEditable(true);
+		monsterNameField.setFocusable(true);
 		monsterTypeField.setText("");
 		acField.setText("");
 		initBnsField.setText("0");
