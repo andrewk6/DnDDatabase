@@ -95,17 +95,12 @@ public class MonsterBuilderPane extends JPanel {
 
 	public MonsterBuilderPane(DataContainer data) {
 		this.data = data;
+		rEditReps = new HashMap<String, String>();
 		tagFields = new ArrayList<ReminderField>();
 		skills = new HashMap<Skills, Proficiency>();
 		ConfigurePane();
-		BuildReplacements();
 	}
 	
-	private void BuildReplacements() {
-		rEditReps = new HashMap<String, String>();
-		rEditReps.put("<Name>", "");
-	}
-
 	private void ConfigurePane() {
 
 		setLayout(new BorderLayout());
