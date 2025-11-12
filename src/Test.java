@@ -46,9 +46,16 @@ public class Test extends JFrame {
 	public static void main(String[] args) throws BadLocationException {
 		DataContainer data = new DataContainer();
 		data.init();
-		boolean gui = true;
+		boolean gui = false;
 		
-		System.out.println(data.getRules().get("Circle Spells"));
+		data.getInserts().entrySet().stream()
+		.forEach(e ->{
+			try {
+				System.out.println(e.getKey() + ": " + e.getValue().getText(0, e.getValue().getLength()));
+			} catch (BadLocationException e1) {
+				e1.printStackTrace();
+			}
+		});
 
 		if(gui)
 			guiStuff(data);
