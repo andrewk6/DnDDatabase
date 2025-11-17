@@ -814,8 +814,8 @@ public class MonsterBuilderPane extends JPanel {
 				
 //				System.out.println(key);
 				String name = key;
-				if(name.length() > 13)
-					name = name.substring(0, 13);
+//				if(name.length() > 13)
+//					name = name.substring(0, 13);
 				
 				JLabel monstName = CompFactory.createSideLabel(name, ComponentType.BODY);
 				monstName.addMouseListener(CompFactory.createSideMouseListener(monstName, ()->{
