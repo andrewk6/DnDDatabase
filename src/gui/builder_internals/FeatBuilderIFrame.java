@@ -63,6 +63,7 @@ public class FeatBuilderIFrame extends JInternalFrame implements DataChangeListe
 		this.data.registerListener(this);
 		StyleContainer.ConfigIFrame(this, "Feats Builder");
 		StyleContainer.SetIcon(this, StyleContainer.FEAT_BUILDER_ICON_FILE);
+		this.addInternalFrameListener(CompFactory.createNonCloseListener(this));
 		Initialize(this.getContentPane());
 		pack();
 	}
