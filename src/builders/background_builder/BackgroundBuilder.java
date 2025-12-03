@@ -85,7 +85,7 @@ public class BackgroundBuilder extends JFrame
 		itemNames.addAll(data.getGearKeysSorted());
 		
 		for(Feat f : data.getFeats().values())
-			if(f.type == FeatType.Origin)
+			if(f.type == FeatType.Origin || f.type == FeatType.DRAGONMARK)
 				originFeats.add(f);
 		ConfigFrame();
 		BuildContent(this.getContentPane());
