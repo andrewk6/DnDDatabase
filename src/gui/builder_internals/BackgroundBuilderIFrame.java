@@ -9,6 +9,7 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -67,16 +68,24 @@ public class BackgroundBuilderIFrame extends JInternalFrame
 		else
 			bMap = new HashMap<String, Background>();
 		
-		originFeats = new ArrayList<Feat>();
+//		originFeats = new ArrayList<Feat>();
 		itemNames = new ArrayList<String>();
 		itemNames.addAll(data.getArmorKeysSorted());
 		itemNames.addAll(data.getWeaponKeysSorted());
 		itemNames.addAll(data.getToolKeysSorted());
 		itemNames.addAll(data.getGearKeysSorted());
 		
-		for(Feat f : data.getFeats().values())
-			if(f.type == FeatType.Origin)
-				originFeats.add(f);
+//		for(Feat f : data.getFeats().values())
+//			if(f.type == FeatType.Origin || f.type == FeatType.DRAGONMARK)
+//				originFeats.add(f);
+		originFeats = new ArrayList<Feat>(data.getFeats().values().stream()
+				.filter(f -> f.type == FeatType.Origin || f.type == FeatType.DRAGONMARK)
+				.sorted(new Comparator<Feat>() {
+					public int compare(Feat o1, Feat o2) {
+						return o1.name.compareTo(o2.name);
+					}
+				})
+				.toList());
 		ConfigFrame();
 		BuildContent(this.getContentPane());
 		pack()
