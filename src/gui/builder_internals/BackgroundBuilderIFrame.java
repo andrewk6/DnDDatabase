@@ -11,8 +11,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.swing.BorderFactory;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -26,6 +32,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import data.Feat;
 import data.Feat.FeatType;
+import data.interfaces.DataChangeListener;
 import data.DataContainer;
 import data.DataContainer.Abilities;
 import data.DataContainer.MapType;
@@ -42,7 +49,7 @@ import gui.gui_helpers.CompFactory.ComponentType;
 import gui.gui_helpers.CompFactory.ScrollPolicy;
 import gui.gui_helpers.DocumentHelper;
 
-public class BackgroundBuilderIFrame extends JInternalFrame
+public class BackgroundBuilderIFrame extends JInternalFrame implements DataChangeListener
 {	
 	private DataContainer data;
 	private HashMap<String, Background> bMap;
@@ -435,5 +442,47 @@ public class BackgroundBuilderIFrame extends JInternalFrame
 		b.startEquip = items;
 		
 		bMap.put(b.name, b);
+	}
+
+	@Override
+	public void onMapUpdated() {
+		buildOriginFeats();
+	}
+
+	@Override
+	public void onMapUpdated(MapType mapType) {
+		if(mapType == MapType.FEATS)
+			buildOriginFeats();
+	}
+	
+	private void buildOriginFeats() {
+	    originFeats = new ArrayList<>(data.getFeats().values().stream()
+	            .filter(f -> f.type == FeatType.Origin || f.type == FeatType.DRAGONMARK)
+	            .sorted(Comparator.comparing(f -> f.name))
+	            .toList());
+
+	    if (featCombo != null) {
+	        DefaultComboBoxModel<Feat> model = (DefaultComboBoxModel<Feat>) featCombo.getModel();
+
+	        // Build list of model items for safe removal
+	        List<Feat> modelItems = IntStream.range(0, model.getSize())
+	                .mapToObj(model::getElementAt)
+	                .toList();
+
+	        // REMOVE stale feats
+	        modelItems.stream()
+	                .filter(existing -> !originFeats.contains(existing))
+	                .forEach(model::removeElement);
+
+	        // Now rebuild lookup after removals
+	        Set<Feat> inModel = IntStream.range(0, model.getSize())
+	                .mapToObj(model::getElementAt)
+	                .collect(Collectors.toSet());
+
+	        // ADD new feats
+	        originFeats.stream()
+	                .filter(f -> !inModel.contains(f))
+	                .forEach(model::addElement);
+	    }
 	}
 }
