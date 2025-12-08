@@ -155,6 +155,8 @@ public class DataContainer {
 		SpellJammerAdventuresInSpace("Spelljammer: Adventures In Space"),
 		PlanescapeAdventuresInTheMultiverse("Planescape: Adventures in the Multiverse"),
 		ForgottenRealmsHeroes("Forgotten Realms: Heroes of Faerun"),
+		AstarionsBookOfHungers("Astarion’s Book of Hungers"),
+		LorwynFirstLight("Lorwyn: First Light"),
 		EberronForgeOfArtificer("Eberron: Forge of the Artificer"),
 		
 		//Adventure Books
@@ -185,6 +187,7 @@ public class DataContainer {
 		DragonDelves("Dragon Delves Adventure Anthology"),
 		StartSetHeroesOfBorderlands("Starter Set: Heroes of the Boardland"),
 		ForgottenRealmsAdventures("Forgotten Realms: Adventures in Faerun"),
+		NetherilsFall("Netheril's Fall"),
 		//Misc
 		UnearthedArcana("Unearthed Arcana"), 
 		Custom("Custom");
