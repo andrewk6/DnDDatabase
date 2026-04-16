@@ -4,13 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.script.ScriptException;
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -18,7 +21,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 
+import data.DataContainer;
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.structures.StyleContainer;
 import utils.DiceCalculator;
@@ -27,11 +35,17 @@ import utils.IllegalDiceNotationException;
 
 public class DiceCalcIFrame extends JInternalFrame
 {
+	public static void main(String[]args) {
+		DataContainer data = new DataContainer();
+		JFrame test = CompFactory.buildTestFrame(data, new DiceCalcIFrame());
+		test.setVisible(true);
+	}
 //	private final DiceCalculator dCalc;
 	
 	private JTextField equation;
 	private JTabbedPane tabs;
 	private JPanel resultPanel;
+	private int equationStringCutoff = 25;
 	
 	public DiceCalcIFrame()
 	{	
@@ -64,10 +78,30 @@ public class DiceCalcIFrame extends JInternalFrame
 		
 		BuildEquationField(calcPanel);
 		BuildCalcBody(calcPanel);
+		equation.requestFocus();
 	}
 
 	private void BuildEquationField(Container cPane) {
 		this.equation = new JTextField();
+		equation.getInputMap().put(
+			    KeyStroke.getKeyStroke("ENTER"),
+			    "evaluate"
+			);
+
+		equation.getActionMap().put("evaluate", new AbstractAction() {
+			    @Override
+			    public void actionPerformed(ActionEvent e) {
+			    	try {
+						ComputeResult();
+					} catch (IllegalDiceNotationException e1) {
+						ErrorLogger.log(e1);
+						JOptionPane.showMessageDialog(DiceCalcIFrame.this, "Invalid dice notation", "Bad Equation", JOptionPane.ERROR_MESSAGE);
+					} catch (ScriptException e1) {
+						ErrorLogger.log(e1);
+						e1.printStackTrace();
+					}
+			    }
+			});
 		StyleContainer.SetFontHeader(equation);
 		cPane.add(equation, BorderLayout.NORTH);
 	}
@@ -93,21 +127,13 @@ public class DiceCalcIFrame extends JInternalFrame
 		mainCPane.setLayout(new BorderLayout());
 		calcPane.add(mainCPane, BorderLayout.CENTER);
 		
-		JButton calcBtn = new JButton("Calulate");
-		StyleContainer.SetFontBtn(calcBtn);
-		calcBtn.setFocusable(false);
-		calcBtn.addActionListener(e ->{
-			try {
-				ComputeResult();
-			} catch (IllegalDiceNotationException e1) {
-				ErrorLogger.log(e1);
-				JOptionPane.showMessageDialog(this, "Invalid dice notation", "Bad Equation", JOptionPane.ERROR_MESSAGE);
-			} catch (ScriptException e1) {
-				ErrorLogger.log(e1);
-				e1.printStackTrace();
-			}
+		JButton zeroBtn = new JButton("0");
+		StyleContainer.SetFontBtn(zeroBtn);
+		zeroBtn.setFocusable(false);
+		zeroBtn.addActionListener(e ->{
+			EquationInsert(zeroBtn.getText());
 		});
-		mainCPane.add(calcBtn, BorderLayout.SOUTH);
+		mainCPane.add(zeroBtn, BorderLayout.SOUTH);
 		
 		JPanel intBtnPane = new JPanel();
 		intBtnPane.setLayout(new GridLayout(3, 3));
@@ -160,6 +186,23 @@ public class DiceCalcIFrame extends JInternalFrame
 			EquationInsert("/");
 		});
 		fTools.add(btnDiv);
+		fTools.addSeparator();
+		
+		JButton btnEqu = new JButton(" = ");
+		StyleContainer.SetFontBtn(btnEqu);
+		btnEqu.setFocusable(false);
+		btnEqu.addActionListener(e ->{
+			try {
+				ComputeResult();
+			} catch (IllegalDiceNotationException e1) {
+				ErrorLogger.log(e1);
+				JOptionPane.showMessageDialog(this, "Invalid dice notation", "Bad Equation", JOptionPane.ERROR_MESSAGE);
+			} catch (ScriptException e1) {
+				ErrorLogger.log(e1);
+				e1.printStackTrace();
+			}
+		});
+		fTools.add(btnEqu);
 	}
 	
 	private void BuildDiceButtons(JToolBar dTools) {
@@ -234,7 +277,10 @@ public class DiceCalcIFrame extends JInternalFrame
 		rPane.setLayout(new BorderLayout());
 		resultPanel.add(rPane);
 		
-		JTextField equate = new JTextField(equation.getText());
+		String dispString = equation.getText().substring(0, 
+				Math.min(equation.getText().length(), equationStringCutoff));
+		JTextField equate = new JTextField(dispString);
+		equate.setToolTipText(equation.getText());
 		equate.setEditable(false);
 		equate.setFocusable(false);
 		equate.addMouseListener(new MouseListener() {

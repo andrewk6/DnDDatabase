@@ -1,6 +1,7 @@
 package utils;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.script.ScriptEngineManager;
@@ -14,16 +15,17 @@ public class DiceCalculator {
 		System.out.println("1d20 + 2d12 + 3d10 + 4d8+5d6   + 6d4     +     19d2 + 32: " + 
 				parseDiceExpression("1d20 + 2d12 + 3d10 + 4d8+5d6   + 6d4     +     19d2 + 32"));
 		int avg = 0;
-		for(int i = 0; i < 10000; i ++) {
+		int tests = 100;
+		for(int i = 0; i < tests; i ++) {
 			int val = parseDiceExpression("1d20");
 			System.out.println("D20: " + val);
 			avg  += val;
 		}
 		
-		System.out.println(avg/10000);
+		System.out.println(avg/tests);
 	}
 
-    private static final Random random = new Random();
+//    private static final Random random = new Random();
 
     public static boolean isExactDiceRoll(String input) {
         return input.matches("\\d+[dD]\\d+");
@@ -45,7 +47,7 @@ public class DiceCalculator {
 
         int total = 0;
         for (int i = 0; i < num; i++) {
-            total += random.nextInt(sides) + 1;
+            total += ThreadLocalRandom.current().nextInt(sides) + 1;
         }
         return total;
     }

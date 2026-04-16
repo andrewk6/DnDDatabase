@@ -3,6 +3,7 @@ package gui.dialogs;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
@@ -17,6 +18,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import data.DataContainer;
@@ -61,6 +63,9 @@ public class SourceToggleDialog extends JDialog
 		super(frm, "Export Database Selector", ModalityType.APPLICATION_MODAL);
 		sources = new ArrayList<Source>(src);
 		init(this.getContentPane());
+		Dimension pref = getPreferredSize();
+		pref.height = Math.min(pref.height, 600);
+		setPreferredSize(pref);
 		this.pack();
 		Point p = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
 		this.setLocation(p.x - this.getWidth() / 2, p.y - this.getHeight() / 2);
@@ -73,7 +78,8 @@ public class SourceToggleDialog extends JDialog
 		
 		JPanel srcPane = new JPanel();
 		srcPane.setLayout(new GridLayout(0,1));
-		cPane.add(srcPane, BorderLayout.CENTER);
+		JScrollPane srcScroll = CompFactory.wrapPanelInScroll(srcPane);
+		cPane.add(srcScroll, BorderLayout.CENTER);
 		
 		for(Source s : Source.values()) {
 			JCheckBox cBox = CompFactory.createNewCheckbox(s.toString());

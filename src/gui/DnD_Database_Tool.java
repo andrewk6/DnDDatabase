@@ -103,6 +103,9 @@ public class DnD_Database_Tool extends JFrame {
 	BastionBuilderIFrame brBuildFrame;
 	HazardBuilderIFrame hBuildFrame;
 	SiegeBuilderIFrame seBuildFrame;
+	
+	//Other Frames
+	HowToIFrame howFrame;
 
 	private final List<LoadListener> loadListeners = new ArrayList<LoadListener>();
 
@@ -258,6 +261,10 @@ public class DnD_Database_Tool extends JFrame {
 		dViewFrame = new DungeonIViewer(data, gd);
 		dPane.add(dViewFrame);
 		dViewFrame.setVisible(false);
+		
+		howFrame = new HowToIFrame();
+		dPane.add(howFrame);
+		howFrame.setVisible(false);
 	}
 	
 	private void BuildMenuBar() {
@@ -394,6 +401,18 @@ public class DnD_Database_Tool extends JFrame {
 		buildMenu.add(CompFactory.createNewJMenuItem("Bastion Room Builder", brBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Hazard Builder", hBuildFrame));
 		buildMenu.add(CompFactory.createNewJMenuItem("Siege Equipment Builder", seBuildFrame));
+		
+		/*
+		 * Help Button
+		 */
+		JButton helpButton = CompFactory.createNewButton("Help", _->{
+			howFrame.setVisible(true);
+		});
+		helpButton.setFocusable(false);
+		helpButton.setBorderPainted(false);
+		helpButton.setContentAreaFilled(false);
+		helpButton.setOpaque(false);
+		menu.add(helpButton);
 		/*
 		 * LOADED CAMPAIGN
 		 */

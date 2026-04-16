@@ -67,6 +67,8 @@ public class StyleContainer {
 	public static final String HAZARD_BUILD_ICON_FILE = "builder_hazard_ico.png";
 	public static final String SIEGE_BUILD_ICON_FILE = "builder_siege_ico.png";
 	
+	public static final String HELP_ICON_FILE = "howto_ico.png";
+	
 	public final static int ICON_SIZE = 64;
 
 	public static void SetLookAndFeel() {

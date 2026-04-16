@@ -34,6 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.ListModel;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
@@ -46,6 +47,7 @@ import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 import gui.gui_helpers.structures.TaskbarDesktopManager;
+import gui.initative.InitiativeIFrame;
 import utils.ErrorLogger;
 
 public class CompFactory
@@ -328,6 +330,12 @@ public class CompFactory
 		return field;
 	}
 	
+	public static JTextArea createTextArea(String tooltip) {
+		JTextArea field = new JTextArea(tooltip);
+		setFont(field, ComponentType.BODY);
+		return field;
+	}
+	
 	public static JTabbedPane createTabbedPane() {
 		JTabbedPane tabs = new JTabbedPane();
 		tabs = new JTabbedPane();
@@ -409,6 +417,14 @@ public class CompFactory
 		out.setLayout(new BorderLayout());
 		out.add(createNewLabel(lbl, ComponentType.HEADER, fontMod), BorderLayout.WEST);
 		out.add(createNewLabel(val, ComponentType.BODY, fontMod), BorderLayout.CENTER);
+		return out;
+	}
+	
+	public static JPanel createDescriptionPane(String lbl, Component val) {
+		JPanel out = new JPanel();
+		out.setLayout(new BorderLayout());
+		out.add(createNewLabel(lbl, ComponentType.HEADER), BorderLayout.WEST);
+		out.add(val, BorderLayout.CENTER);
 		return out;
 	}
 	
@@ -568,5 +584,20 @@ public class CompFactory
 			public void internalFrameActivated(InternalFrameEvent e) {}
 			public void internalFrameDeactivated(InternalFrameEvent e) {}
 		};
+	}
+	
+	public static JFrame buildTestFrame(DataContainer data, JInternalFrame iFrame) {
+		JFrame frame = new JFrame("Initiative Tracker Test");
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(StyleContainer.GetDefaultCloseListener(data));
+        frame.setSize(1000, 700);
+
+        JDesktopPane desktopPane = new JDesktopPane();
+        frame.setContentPane(desktopPane);
+        
+        desktopPane.add(iFrame);
+        iFrame.setVisible(true);
+        
+        return frame;
 	}
 }

@@ -24,11 +24,6 @@ public class Runner
 	private static DataContainer data;
 	private static LoadFrame load;
 	
-	//TODO: Adjust init tool to be able to reset/remove players
-	//TODO: Adjust source select dialog to use a scroll layout
-	//TODO: Add Adv on Init to Init Tool
-	//TODO: Edit Dice Tool for super long strings and or resizing
-	//TODO: Keyboard Shortcut tools message
 	public static void main(String[] args) throws InvocationTargetException, InterruptedException {
 		SwingUtilities.invokeAndWait(()->{
 			load = new LoadFrame("Loading");

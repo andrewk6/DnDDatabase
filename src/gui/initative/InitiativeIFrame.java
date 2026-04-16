@@ -39,6 +39,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
+import javax.swing.filechooser.FileFilter;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -57,6 +58,20 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class InitiativeIFrame extends JInternalFrame implements AllTab {
+	private static final String INIT_EXT = "initiative";
+
+	private static final FileFilter INITIATIVE_FILTER = new FileFilter() {
+	    @Override
+	    public boolean accept(File f) {
+	        return f.isDirectory() || f.getName().toLowerCase().endsWith("." + INIT_EXT);
+	    }
+
+	    @Override
+	    public String getDescription() {
+	        return "Initiative Files (*." + INIT_EXT + ")";
+	    }
+	};
+	
     private final DataContainer data;
     private final GuiDirector gd;
     private JDesktopPane dPane;
@@ -198,28 +213,32 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         leftPanel.add(CompFactory.wrapPanelInScroll(initiativeList), BorderLayout.CENTER);
 
         JButton nextTurn = new JButton("Next");
-        nextTurn.addActionListener(e -> advanceTurn());
+        nextTurn.addActionListener(_ -> advanceTurn());
         StyleContainer.SetFontBtn(nextTurn);
         leftPanel.add(nextTurn, BorderLayout.SOUTH);
 
         JPanel topBar = new JPanel();
         JButton addPlayerBtn = new JButton("Add Player");
         JButton addMonsterBtn = new JButton("Add Monster");
+        JButton addOtherBtn = new JButton("Add Other");
         JButton reset = CompFactory.createNewButton("Reset Initiative", this::removeAllInitiatives);
         JButton saveBtn = new JButton("Save");
         JButton loadBtn = new JButton("Load");
 
-        saveBtn.addActionListener(e -> saveInitiativeState());
+        saveBtn.addActionListener(_ -> saveInitiativeState());
         StyleContainer.SetFontBtn(saveBtn);
-        loadBtn.addActionListener(e -> loadInitiativeState());
+        loadBtn.addActionListener(_ -> loadInitiativeState());
         StyleContainer.SetFontBtn(loadBtn);
-        addPlayerBtn.addActionListener(e -> showAddPlayerDialog());
+        addPlayerBtn.addActionListener(_ -> showAddPlayerDialog());
         StyleContainer.SetFontBtn(addPlayerBtn);
-        addMonsterBtn.addActionListener(e -> showAddMonsterDialog());
+        addMonsterBtn.addActionListener(_ -> showAddMonsterDialog());
         StyleContainer.SetFontBtn(addMonsterBtn);
+        addOtherBtn.addActionListener(_->showAddOtherDialog());
+        StyleContainer.SetFontBtn(addOtherBtn);
 
         topBar.add(addPlayerBtn);
         topBar.add(addMonsterBtn);
+        topBar.add(addOtherBtn);
         topBar.add(reset);
         topBar.add(saveBtn);
         topBar.add(loadBtn);
@@ -330,7 +349,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         ReminderField numEnemies = CompFactory.createReminderField("Num Enemies", true, ComponentType.BODY);
         numEnemies.setColumns(5);
 
-        monsterSelector.addActionListener(e -> {
+        monsterSelector.addActionListener(_ -> {
             String selected = (String) monsterSelector.getSelectedItem();
             Monster m = monsters.get(selected);
             if (m != null) {
@@ -338,13 +357,6 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
                 overrideBonus.setText(m.GetInitBonus() + "");
             }
         });
-
-//        JPanel panel = new JPanel();
-//        panel.add(new JLabel("Monster:"));
-//        panel.add(monsterSelector);
-//        panel.add(initBonusLabel);
-//        panel.add(new JLabel("Bonus:"));
-//        panel.add(overrideBonus);
         
         JPanel request = new JPanel();
         request.setLayout(new BorderLayout());
@@ -363,7 +375,21 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         config.add(bonusPane, BorderLayout.NORTH);
         
         JPanel numPane = new JPanel();
-        config.add(numPane, BorderLayout.SOUTH);
+        config.add(numPane, BorderLayout.CENTER);
+        
+        JPanel specialPane = new JPanel();
+        specialPane.setLayout(new FlowLayout(FlowLayout.LEFT));
+        config.add(specialPane, BorderLayout.SOUTH);
+        
+        JCheckBox advRoll = CompFactory.createNewCheckbox("Advantage");
+        specialPane.add(advRoll);
+        
+        JLabel forceLbl = CompFactory.createNewLabel("   Set Init To:");
+        specialPane.add(forceLbl);
+        
+        ReminderField forceField = CompFactory.createReminderField("Initiative Score", true);
+        forceField.setColumns(5);
+        specialPane.add(forceField);
         
         bonusPane.add(initBonusLabel);
         bonusPane.add(new JLabel("Bonus:"));
@@ -384,13 +410,108 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
             for(int it = 0; it < numEnemy; it ++) {
             	try {
-            		
-                    int bonus = Integer.parseInt(overrideBonus.getText().trim());
-                    System.out.println();
-                    int val = DiceCalculator.parseDiceExpression("1d20 + " + bonus);
-//                    int roll = bonus + new Random().nextInt(20) + 1;
+            		int val;
+            		if(forceField.getText().length() > 0)
+            			val = Integer.parseInt(forceField.getText());
+            		else {
+            			int bonus = Integer.parseInt(overrideBonus.getText().trim());
+            			if(advRoll.isSelected()) {
+            				val = Math.max
+            						(DiceCalculator.parseDiceExpression("1d20 + " + bonus), 
+            						DiceCalculator.parseDiceExpression("1d20 + " + bonus));
+            			}else {
+            				val = DiceCalculator.parseDiceExpression("1d20 + " + bonus);
+            			}
+                        
+            		}
                     UUID id = UUID.randomUUID();
                     addInitiativeEntry(new InitiativeEntry(id, m.name, val, m));
+                } catch (NumberFormatException ignored) {
+                	ErrorLogger.log(ignored);
+                    JOptionPane.showMessageDialog(this, "Invalid bonus.");
+                } catch (IllegalDiceNotationException e1) {
+					e1.printStackTrace();
+				} catch (ScriptException e1) {
+					e1.printStackTrace();
+				}
+            }
+        }
+    }
+    
+    private void showAddOtherDialog() {
+        ReminderField actorField = 
+        		CompFactory.createReminderField("Person/Creature's Name");
+        ReminderField overrideBonus = CompFactory.createReminderField("...", true);
+        overrideBonus.setColumns(5);
+        JLabel initBonusLabel = new JLabel("Init Bonus:");
+        ReminderField numEnemies = CompFactory.createReminderField("Num Enemies", true, ComponentType.BODY);
+        numEnemies.setColumns(5);
+        
+        JPanel request = new JPanel();
+        request.setLayout(new BorderLayout());
+        
+        JPanel header = new JPanel();
+        header.setLayout(new BorderLayout());
+        request.add(header, BorderLayout.NORTH);
+        header.add(new JLabel("Monster:"), BorderLayout.WEST);
+        header.add(actorField, BorderLayout.CENTER);
+        
+        JPanel config = new JPanel();
+        config.setLayout(new BorderLayout());
+        request.add(config, BorderLayout.CENTER);
+        
+        JPanel bonusPane = new JPanel();
+        config.add(bonusPane, BorderLayout.NORTH);
+        
+        JPanel numPane = new JPanel();
+        config.add(numPane, BorderLayout.CENTER);
+        
+        JPanel specialPane = new JPanel();
+        specialPane.setLayout(new FlowLayout(FlowLayout.LEFT));
+        config.add(specialPane, BorderLayout.SOUTH);
+        
+        JCheckBox advRoll = CompFactory.createNewCheckbox("Advantage");
+        specialPane.add(advRoll);
+        
+        JLabel forceLbl = CompFactory.createNewLabel("   Set Init To:");
+        specialPane.add(forceLbl);
+        
+        ReminderField forceField = CompFactory.createReminderField("Initiative Score", true);
+        forceField.setColumns(5);
+        specialPane.add(forceField);
+        
+        bonusPane.add(initBonusLabel);
+        bonusPane.add(overrideBonus);
+        numPane.add(new JLabel("Number Enemies:"));
+        numPane.add(numEnemies); 
+
+        int result = JOptionPane.showConfirmDialog(this, request, 
+        		"Add Other", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+        	int numEnemy;
+        	if(numEnemies.getText().length() > 0)
+        		numEnemy = Math.max(1, Integer.parseInt(numEnemies.getText()));
+        	else
+        		numEnemy = 1;
+        	
+            for(int it = 0; it < numEnemy; it ++) {
+            	try {
+            		int val;
+            		if(forceField.getText().length() > 0)
+            			val = Integer.parseInt(forceField.getText());
+            		else {
+            			int bonus = Integer.parseInt(overrideBonus.getText().trim());
+            			if(advRoll.isSelected()) {
+            				val = Math.max
+            						(DiceCalculator.parseDiceExpression("1d20 + " + bonus), 
+            						DiceCalculator.parseDiceExpression("1d20 + " + bonus));
+            			}else {
+            				val = DiceCalculator.parseDiceExpression("1d20 + " + bonus);
+            			}
+                        
+            		}
+                    UUID id = UUID.randomUUID();
+                    addInitiativeEntry(new InitiativeEntry(id, actorField.getText(), val, null));
                 } catch (NumberFormatException ignored) {
                 	ErrorLogger.log(ignored);
                     JOptionPane.showMessageDialog(this, "Invalid bonus.");
@@ -458,7 +579,8 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
     }
     
     public void removeInitiativeEntry(InitiativeEntry remove) {
-        if (remove == null || remove.id.equals(PLAYER_ID)) return;
+//        if (remove == null || remove.id.equals(PLAYER_ID)) return;
+    	if(remove == null) return;
 
         InitiativeEntry tmpEntry = initiativeList.getSelectedValue();
         // Remove matching entry (case-sensitive)
@@ -492,15 +614,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         });
     }
 
-    private void advanceTurn() {
-//        if (entries.isEmpty()) return;
-//        currentIndex = (currentIndex + 1) % entries.size();
-//        initiativeList.setSelectedIndex(currentIndex);
-//        initiativeList.getSelectionModel().
-//        loadEntry(entries.get(currentIndex));
-//        initiativeList.ensureIndexIsVisible(currentIndex);                // Scrolls to it, optional
-//        initiativeList.repaint(); 
-    	
+    private void advanceTurn() {    	
     	if (entries.isEmpty()) return;
         currentIndex = (currentIndex + 1) % entries.size();
 
@@ -510,18 +624,6 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         loadEntry(entries.get(currentIndex));
     }
 
-//    private void loadEntry(InitiativeEntry entry) {
-//        rightPane.removeAll();
-//        if (entry.monster != null) {
-//            rightPane.add(new MonsterDispPane(entry.monster, data, gd), BorderLayout.CENTER);
-//        } else {
-//        	JLabel player = new JLabel("Player Loaded: " + entry.name, SwingConstants.CENTER);
-//        	StyleContainer.SetFontHeader(player);
-//            rightPane.add(player, BorderLayout.CENTER);
-//        }
-//        rightPane.revalidate();
-//        rightPane.repaint();
-//    }
     
     private void loadEntry(InitiativeEntry entry) {
         rightPane.removeAll();
@@ -552,30 +654,55 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         rightPane.revalidate();
         rightPane.repaint();
     }
-
     
     private void saveInitiativeState() {
         JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(INITIATIVE_FILTER);
+
         if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             File file = chooser.getSelectedFile();
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+
+            // FORCE .initiative extension
+            if (!file.getName().toLowerCase().endsWith("." + INIT_EXT)) {
+                file = new File(file.getParentFile(), file.getName() + "." + INIT_EXT);
+            }
+
+            try (ObjectOutputStream out =
+                         new ObjectOutputStream(new FileOutputStream(file))) {
+
                 List<SavedEntry> saved = entries.stream()
                         .map(SavedEntry::new)
                         .collect(Collectors.toList());
+
                 out.writeObject(saved);
                 out.writeInt(currentIndex);
+
             } catch (IOException ex) {
-            	ErrorLogger.log(ex);
-                JOptionPane.showMessageDialog(this, "Failed to save: " + ex.getMessage());
+                ErrorLogger.log(ex);
+                JOptionPane.showMessageDialog(this,
+                        "Failed to save: " + ex.getMessage());
             }
         }
     }
     
-    private void loadInitiativeState() {
+    @SuppressWarnings("unchecked")
+	private void loadInitiativeState() {
         JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(INITIATIVE_FILTER);
+
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             File file = chooser.getSelectedFile();
-            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+
+            // OPTIONAL: hard validation (prevents wrong file types even if filter is bypassed)
+            if (!file.getName().toLowerCase().endsWith("." + INIT_EXT)) {
+                JOptionPane.showMessageDialog(this,
+                        "Invalid file type. Please select a *." + INIT_EXT + " file.");
+                return;
+            }
+
+            try (ObjectInputStream in =
+                         new ObjectInputStream(new FileInputStream(file))) {
+
                 List<SavedEntry> saved = (List<SavedEntry>) in.readObject();
                 int index = in.readInt();
 
@@ -586,10 +713,12 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
                 currentIndex = index;
                 updateInitiativeList();
-                advanceTurn(); // Load active turn
+                advanceTurn();
+
             } catch (IOException | ClassNotFoundException ex) {
-            	ErrorLogger.log(ex);
-                JOptionPane.showMessageDialog(this, "Failed to load: " + ex.getMessage());
+                ErrorLogger.log(ex);
+                JOptionPane.showMessageDialog(this,
+                        "Failed to load: " + ex.getMessage());
             }
         }
     }
@@ -613,7 +742,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
 			JButton removeMonst = new JButton("Remove Monster");
 			StyleContainer.SetFontBtn(removeMonst);
-			removeMonst.addActionListener(e -> {
+			removeMonst.addActionListener(_ -> {
 				int index = tabs.indexOfComponent(monstDisp);
 				if (index != -1) {
 					tabs.removeTabAt(index);
@@ -641,7 +770,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
 			JButton removeSpell = new JButton("Remove " + s.name);
 			StyleContainer.SetFontBtn(removeSpell);
-			removeSpell.addActionListener(e -> {
+			removeSpell.addActionListener(_ -> {
 				int index = tabs.indexOfComponent(sPane);
 				if (index != -1) {
 					tabs.removeTabAt(index);
@@ -678,7 +807,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
 			JButton removeFeat = new JButton("Remove " + f.name);
 			StyleContainer.SetFontBtn(removeFeat);
-			removeFeat.addActionListener(e -> {
+			removeFeat.addActionListener(_ -> {
 				int index = tabs.indexOfComponent(fPane);
 				if (index != -1) {
 					tabs.removeTabAt(index);
@@ -705,7 +834,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
 			JButton removeFeat = new JButton("Remove " + c.name);
 			StyleContainer.SetFontBtn(removeFeat);
-			removeFeat.addActionListener(e -> {
+			removeFeat.addActionListener(_ -> {
 				int index = tabs.indexOfComponent(cPane);
 				if (index != -1) {
 					tabs.removeTabAt(index);
@@ -741,7 +870,7 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
 
 			JButton removeRule = new JButton("Remove " + r.name);
 			StyleContainer.SetFontBtn(removeRule);
-			removeRule.addActionListener(e -> {
+			removeRule.addActionListener(_ -> {
 				int index = tabs.indexOfComponent(rPane);
 				if (index != -1) {
 					tabs.removeTabAt(index);
@@ -850,8 +979,12 @@ public class InitiativeIFrame extends JInternalFrame implements AllTab {
         }
         
         public boolean equals(InitiativeEntry e) {
-        	return id.equals(e.id) && name.equals(e.name) &&
+        	if(e.monster != null)
+        		return id.equals(e.id) && name.equals(e.name) &&
         			initiative == e.initiative && monster.equals(e.monster);
+        	else
+        		return id.equals(e.id) && name.equals(e.name) &&
+            			initiative == e.initiative;
         }
     }
 }
