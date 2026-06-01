@@ -47,7 +47,6 @@ import gui.gui_helpers.structures.ColorTabbedPaneUI;
 import gui.gui_helpers.structures.GuiDirector;
 import gui.gui_helpers.structures.StyleContainer;
 import gui.gui_helpers.structures.TaskbarDesktopManager;
-import gui.initative.InitiativeIFrame;
 import utils.ErrorLogger;
 
 public class CompFactory

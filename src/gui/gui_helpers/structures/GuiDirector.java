@@ -34,7 +34,7 @@ import gui.dungeon.DungeonIBuilder;
 import gui.dungeon.DungeonIViewer;
 import gui.gui_helpers.PlayerNameTargets;
 import gui.hazard.HazardIFrame;
-import gui.initative.InitiativeIFrame;
+import gui.initative.InitiativeIFrameHP;
 import gui.monsters.MonsterIFrame;
 import gui.species.SpeciesIFrame;
 import gui.spells.SpellIFrame;
@@ -54,7 +54,7 @@ public class GuiDirector
 	private HazardIFrame hFrame;
 	
 	private PartyIFrame pFrame;
-	private InitiativeIFrame initFrame;
+	private InitiativeIFrameHP initFrame;
 	
 	private DungeonIBuilder dunBuild;
 	private DungeonIViewer dunView;
@@ -136,12 +136,12 @@ public class GuiDirector
 			iFrame = null;
 	}
 	
-	public void RegisterInitiativeFrame(InitiativeIFrame iFrame) {
-		initFrame = iFrame;
+	public void RegisterInitiativeFrame(InitiativeIFrameHP initiativeIFrameHP) {
+		initFrame = initiativeIFrameHP;
 	}
 	
-	public void DegisterInitiativeFrame(InitiativeIFrame iFrame) {
-		if(initFrame.equals(iFrame))
+	public void DegisterInitiativeFrame(InitiativeIFrameHP initiativeIFrameHP) {
+		if(initFrame.equals(initiativeIFrameHP))
 			initFrame = null;
 	}
 	
@@ -524,7 +524,7 @@ public class GuiDirector
 		return new InternalFrameListener() {
 			public void internalFrameOpened(InternalFrameEvent e) {
 				if(gd.getComboFrame() != null) {
-					if(!(gd.getComboFrame() instanceof InitiativeIFrame))
+					if(!(gd.getComboFrame() instanceof InitiativeIFrameHP))
 						gd.RegisterCombo(register);
 				}else
 					gd.RegisterCombo(register);
@@ -539,7 +539,7 @@ public class GuiDirector
 //					if(!(gd.getComboFrame() instanceof InitiativeIFrame))
 //						gd.RegisterCombo(register);
 				if(gd.getComboFrame() != null) {
-					if(!(gd.getComboFrame() instanceof InitiativeIFrame))
+					if(!(gd.getComboFrame() instanceof InitiativeIFrameHP))
 						gd.RegisterCombo(register);
 				}else
 					gd.RegisterCombo(register);
@@ -559,7 +559,7 @@ public class GuiDirector
 //					if(!(gd.getComboFrame() instanceof InitiativeIFrame))
 //						gd.RegisterCombo(register);
 				if(gd.getComboFrame() != null) {
-					if(!(gd.getComboFrame() instanceof InitiativeIFrame))
+					if(!(gd.getComboFrame() instanceof InitiativeIFrameHP))
 						gd.RegisterCombo(register);
 				}else
 					gd.RegisterCombo(register);

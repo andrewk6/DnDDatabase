@@ -3,6 +3,7 @@ package data.campaign;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -26,6 +27,7 @@ public class Campaign implements Serializable
 		party = new HashMap<String, Player>();
 		notes = new LinkedHashMap<String, StyledDocument>();
 		
+		sourceFilters = new ArrayList<Source>(Arrays.asList(Source.values()));
 		this.saveLoc = f;
 	}
 	

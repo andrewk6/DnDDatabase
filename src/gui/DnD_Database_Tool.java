@@ -56,7 +56,7 @@ import gui.gui_helpers.structures.LoadListener;
 import gui.gui_helpers.structures.StyleContainer;
 import gui.gui_helpers.structures.TaskbarDesktopManager;
 import gui.hazard.HazardIFrame;
-import gui.initative.InitiativeIFrame;
+import gui.initative.InitiativeIFrameHP;
 import gui.monsters.MonsterIFrame;
 import gui.species.SpeciesIFrame;
 import gui.spells.SpellIFrame;
@@ -306,7 +306,7 @@ public class DnD_Database_Tool extends JFrame {
 			data.showSourceDialog(this);
 		}));
 		toolsMenu.add(CompFactory.createNewJMenuItem(
-				"Initiative Tracker", ()->new InitiativeIFrame(data, gd, dPane), dPane));
+				"Initiative Tracker", ()->new InitiativeIFrameHP(data, gd, dPane), dPane));
 		toolsMenu.add(CompFactory.createNewJMenuItem(
 				"Dice Calculator", ()->new DiceCalcIFrame(), dPane));
 		
@@ -548,7 +548,7 @@ public class DnD_Database_Tool extends JFrame {
 		StyleContainer.SetFontBtn(initBtn);
 		initBtn.addActionListener(e ->{
 			SwingUtilities.invokeLater(()->{
-				dPane.add(new InitiativeIFrame(data, gd, dPane));
+				dPane.add(new InitiativeIFrameHP(data, gd, dPane));
 				dPane.revalidate();
 				dPane.repaint();
 			});

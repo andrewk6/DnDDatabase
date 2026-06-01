@@ -73,6 +73,10 @@ public class Monster implements Serializable, SourceProvider
 		return (int) Math.floor((stats[ability] - 10) / 2.0);
 	}
 	
+	public int getAvgHPInt() {
+		return Integer.parseInt(hp.split(" ")[0]);
+	}
+	
 	public int getSkillMod(Skills s) {
 		int aMod = 0;
 		int profMod = 0;

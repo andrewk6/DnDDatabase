@@ -28,6 +28,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JFileChooser;
@@ -188,6 +191,7 @@ public class DataContainer {
 		StartSetHeroesOfBorderlands("Starter Set: Heroes of the Boardland"),
 		ForgottenRealmsAdventures("Forgotten Realms: Adventures in Faerun"),
 		NetherilsFall("Netheril's Fall"),
+		RavenloftTheHorrorsWithing("Revenloft: The Horrors Within"),
 		//Misc
 		UnearthedArcana("Unearthed Arcana"), 
 		Custom("Custom");
@@ -256,6 +260,12 @@ public class DataContainer {
 	private final AtomicInteger runningTasks = new AtomicInteger(0);
 	private volatile boolean isRunning = true;
 	private final BlockingQueue<Runnable> ioQueue = new LinkedBlockingQueue<>();
+	
+	//Autosaver
+	private final ScheduledExecutorService autosaveExec = Executors.newSingleThreadScheduledExecutor();
+	private ScheduledFuture<?> pendingAutosave;
+
+	private final long AUTOSAVE_DELAY_MS = 1000; // 1 second debounce
 	
 	
 	private final List<DataChangeListener> updateListeners = new ArrayList<DataChangeListener>();
@@ -1952,16 +1962,20 @@ public class DataContainer {
 	}
 	
 	public void AddPlayer(Player p) {
-		if(isCampaignLoaded())
+		if(isCampaignLoaded()) {
 			camp.AddPlayer(p);
+			scheduleAutosave(MapType.CAMPAIGN);
+		}
 	}
 	
 	public void DeletePlayer(String p) {
 		camp.RemovePlayer(p);
+		scheduleAutosave(MapType.CAMPAIGN);
 	}
 	
 	public void DeletePlayer(Player p) {
 		camp.RemovePlayer(p);
+		scheduleAutosave(MapType.CAMPAIGN);
 	}
 	
 	public Map<String, Player> getParty(){
@@ -1973,10 +1987,12 @@ public class DataContainer {
 	
 	public void AddNote(String title, StyledDocument note) {
 		camp.notes.put(title, note);
+		scheduleAutosave(MapType.CAMPAIGN);
 	}
 	
 	public void DeleteNote(String title) {
 		camp.notes.remove(title);
+		scheduleAutosave(MapType.CAMPAIGN);
 	}
 	
 	public StyledDocument getNote(String key){
@@ -2044,6 +2060,16 @@ public class DataContainer {
 	
 	public String getLastCampPath() {
 		return lastCampPath;
+	}
+	
+	public void scheduleAutosave(MapType type) {
+	    if (pendingAutosave != null && !pendingAutosave.isDone()) {
+	        pendingAutosave.cancel(false);
+	    }
+
+	    pendingAutosave = autosaveExec.schedule(() -> {
+	        SafeSaveData(type);
+	    }, AUTOSAVE_DELAY_MS, TimeUnit.MILLISECONDS);
 	}
 	
 	private void SaveConfig() {
