@@ -191,7 +191,7 @@ public class DataContainer {
 		StartSetHeroesOfBorderlands("Starter Set: Heroes of the Boardland"),
 		ForgottenRealmsAdventures("Forgotten Realms: Adventures in Faerun"),
 		NetherilsFall("Netheril's Fall"),
-		RavenloftTheHorrorsWithing("Revenloft: The Horrors Within"),
+		RavenloftTheHorrorsWithing("Ravenloft: The Horrors Within"),
 		//Misc
 		UnearthedArcana("Unearthed Arcana"), 
 		Custom("Custom");
