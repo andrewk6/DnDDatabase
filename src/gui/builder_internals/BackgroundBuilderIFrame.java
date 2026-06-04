@@ -86,7 +86,8 @@ public class BackgroundBuilderIFrame extends JInternalFrame implements DataChang
 //			if(f.type == FeatType.Origin || f.type == FeatType.DRAGONMARK)
 //				originFeats.add(f);
 		originFeats = new ArrayList<Feat>(data.getFeats().values().stream()
-				.filter(f -> f.type == FeatType.Origin || f.type == FeatType.DRAGONMARK)
+				.filter(f -> f.type == FeatType.Origin || f.type == FeatType.DRAGONMARK 
+					|| f.type == FeatType.DARKGIFT)
 				.sorted(new Comparator<Feat>() {
 					public int compare(Feat o1, Feat o2) {
 						return o1.name.compareTo(o2.name);
