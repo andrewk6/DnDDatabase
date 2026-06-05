@@ -18,7 +18,7 @@ import utils.ErrorLogger;
  * Feat Builder
  * 
  */
-//TODO: Re-namable players
+//TODO: Add stat link to Liminal Space Bastion Room
 public class Runner
 {
 	private static DataContainer data;

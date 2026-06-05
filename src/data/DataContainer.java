@@ -1216,6 +1216,12 @@ public class DataContainer {
 		notifyChange(MapType.BASTION_ROOMS);
 	}
 	
+	public void setBastionRules(HashMap<String, StyledDocument> inMap){
+		this.bastionRules = inMap;
+		SaveBastionRules();
+		System.out.println("Saved");
+	}
+	
 	public void SetHazardMap(HashMap<String, Hazard> hMap) {
 		this.hazardMap = hMap;
 		this.hazardKeysSorted = new ArrayList<String>();
@@ -1593,6 +1599,30 @@ public class DataContainer {
 			for (String s : bastionRoomMap.keySet()) {
 				oos.writeObject(bastionRoomMap.get(s));
 			}
+			oos.flush();
+			oos.close();
+			return true;
+		} catch (IOException e) {
+			ErrorLogger.log(e);
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public boolean SaveBastionRules() {
+		File bFile = new File(dbFolder.getPath() + File.separator + DataContainer.BASTION_RULES);
+		if(!bFile.exists()) {
+			try {
+				bFile.createNewFile();
+			} catch (IOException e) {
+				ErrorLogger.log(e);
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(bFile));
+			oos.writeObject(bastionRules);
 			oos.flush();
 			oos.close();
 			return true;

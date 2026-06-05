@@ -20,6 +20,8 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import builders.background_builder.BackgroundBuilder;
+import builders.bastion_builder.BastionRoomBuilder;
+import builders.bastion_builder.BastionRuleBuilderPane;
 import data.DataContainer;
 import data.Rule;
 import data.Spell;
@@ -46,16 +48,7 @@ public class Test extends JFrame {
 	public static void main(String[] args) throws BadLocationException {
 		DataContainer data = new DataContainer();
 		data.init();
-		boolean gui = false;
-		
-		data.getInserts().entrySet().stream()
-		.forEach(e ->{
-			try {
-				System.out.println(e.getKey() + ": " + e.getValue().getText(0, e.getValue().getLength()));
-			} catch (BadLocationException e1) {
-				e1.printStackTrace();
-			}
-		});
+		boolean gui = true;
 
 		if(gui)
 			guiStuff(data);
@@ -65,12 +58,11 @@ public class Test extends JFrame {
 	
 	private static void guiStuff(DataContainer data) {
 		SwingUtilities.invokeLater(()->{
-			JFrame frm = new JFrame();
-//			initFrame(frm.getContentPane(), data);
-			frm.setContentPane(new BackgroundBuilder(data));
-			frm.setSize(800, 800);
-			frm.addWindowListener(CompFactory.createSafeExitWindowListener(frm, data));
-			frm.setVisible(true);
+			JFrame test = new JFrame();
+			test.setContentPane(new BastionRuleBuilderPane(data));
+			test.pack();
+			test.setVisible(true);
+			test.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		});
 	}
 	

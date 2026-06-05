@@ -22,7 +22,7 @@ public abstract class AbstractBuilderPane<T> extends JPanel
 	protected final DataContainer data;
 	protected HashMap<String, T> map;
 	
-	protected JPanel sidePane;
+	protected JPanel sidePane, mainPane;
 	
 	public AbstractBuilderPane(DataContainer data) {
 		super();
@@ -44,7 +44,7 @@ public abstract class AbstractBuilderPane<T> extends JPanel
 			
 			JLabel lbl = CompFactory.createSideLabel(key);
 			lbl.addMouseListener(CompFactory.createSideMouseListener(lbl, ()->{
-				Load(map.get(key));
+				Load(key);
 			}));
 			pane.add(lbl, BorderLayout.CENTER);
 			
@@ -89,7 +89,7 @@ public abstract class AbstractBuilderPane<T> extends JPanel
 	
 	protected abstract void AddObj();
 	
-	protected abstract void Load(T s);
+	protected abstract void Load(String s);
 	
 	protected abstract void Save();
 }

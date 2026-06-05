@@ -216,7 +216,8 @@ public class SiegeBuilderPane extends AbstractBuilderPane<SiegeEquipment>
 	}
 
 	@Override
-	protected void Load(SiegeEquipment s) {
+	protected void Load(String key) {
+		SiegeEquipment s = map.get(key);
 		nameField.setText(s.name);
 		nameField.setEditable(false);
 		nameField.setFocusable(false);

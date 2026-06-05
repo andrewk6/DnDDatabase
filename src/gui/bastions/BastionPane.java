@@ -144,6 +144,8 @@ public class BastionPane extends JPanel implements DataChangeListener
 		ruleTabs.addTab("Bastion Turns", getRulePane("Bastion Turns"));
 		ruleTabs.addTab("Bastion Events", getRulePane("Bastion Events"));
 		ruleTabs.addTab("Fall of a Bastion", getRulePane("Fall of a Bastion"));
+		ruleTabs.addTab("Mobile Bastions", getRulePane("Mobile Bastions"));
+		ruleTabs.addTab("Haunted Bastions", getRulePane("Haunted Bastions"));
 		
 	}
 	
