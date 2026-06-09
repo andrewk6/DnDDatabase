@@ -18,7 +18,6 @@ import utils.ErrorLogger;
  * Feat Builder
  * 
  */
-//TODO: Add stat link to Liminal Space Bastion Room
 public class Runner
 {
 	private static DataContainer data;
