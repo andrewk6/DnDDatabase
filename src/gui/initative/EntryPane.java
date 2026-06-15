@@ -13,6 +13,7 @@ import javax.swing.event.DocumentListener;
 
 import gui.gui_helpers.CompFactory;
 import gui.gui_helpers.ReminderField;
+import gui.gui_helpers.structures.GuiDirector;
 import gui.initative.InitiativeIFrameHP.InitiativeEntry;
 
 public class EntryPane extends JPanel
@@ -30,9 +31,12 @@ public class EntryPane extends JPanel
 		eLbl.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("Lbl Clicked!!!");
-				if(e.isControlDown() || SwingUtilities.isRightMouseButton(e))
+				if(e.isAltDown() || SwingUtilities.isRightMouseButton(e))
 					owner.removeInitiativeEntry(EntryPane.this.entry);
+				else
+					if(entry.monster != null)
+						owner.AddTab(entry.monster);
+						
 			}
 		});
 		this.add(eLbl, BorderLayout.CENTER);

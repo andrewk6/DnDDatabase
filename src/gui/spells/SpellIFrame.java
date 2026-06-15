@@ -165,7 +165,10 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 				}
 				JLabel lbl = CompFactory.createSideLabel(s.name);
 				lbl.addMouseListener(CompFactory.createSideMouseListener(lbl, ()->{
-					AddSpellTab(s.name);
+					if(gd.getComboFrame() != null)
+						gd.getComboFrame().AddTab(data.getSpells().get(s.name));
+					else
+						AddSpellTab(s.name);
 				}));
 				spellGridPane.add(lbl);
 			}

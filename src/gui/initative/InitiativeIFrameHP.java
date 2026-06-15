@@ -229,7 +229,7 @@ public class InitiativeIFrameHP extends JInternalFrame implements AllTab {
 			String name = nameField.getText().trim();
 			try {
 				int init = Integer.parseInt(initField.getText().trim());
-				addInitiativeEntry(new InitiativeEntry(PLAYER_ID, name, init, null));
+				addInitiativeEntry(new InitiativeEntry(UUID.randomUUID(), name, init, null));
 			} catch (NumberFormatException ignored) {
 				ErrorLogger.log(ignored);
 				JOptionPane.showMessageDialog(this, "Invalid initiative value.");
@@ -269,7 +269,7 @@ public class InitiativeIFrameHP extends JInternalFrame implements AllTab {
 				if (!value.isEmpty()) {
 					try {
 						int init = Integer.parseInt(value);
-						addInitiativeEntry(new InitiativeEntry(PLAYER_ID, name, init, null));
+						addInitiativeEntry(new InitiativeEntry(UUID.randomUUID(), name, init, null));
 					} catch (NumberFormatException ex) {
 						ErrorLogger.log(ex);
 						JOptionPane.showMessageDialog(this, "Invalid initiative for " + name + ": " + value);
@@ -568,11 +568,12 @@ public class InitiativeIFrameHP extends JInternalFrame implements AllTab {
 	}
 
 	private void updateSelected() {
-		for (int i = 0; i < entries.size(); i++)
+		for (int i = 0; i < entries.size(); i++) {
 			if (i == currentIndex)
 				getEntryPaneByEntry(entries.get(i)).setSelected(true);
 			else
 				getEntryPaneByEntry(entries.get(i)).setSelected(false);
+		}
 		 initListPane.repaint();
 	}
 
@@ -580,7 +581,6 @@ public class InitiativeIFrameHP extends JInternalFrame implements AllTab {
 		if (entries.isEmpty())
 			return;
 		currentIndex = (currentIndex + 1) % entries.size();
-		System.out.println("Cur: " + currentIndex);
 		loadEntry(entries.get(currentIndex));
 
 		updateSelected();
