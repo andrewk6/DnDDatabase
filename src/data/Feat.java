@@ -16,7 +16,8 @@ public class Feat implements Serializable, SourceProvider{
 		Fighting_Style("Fighting Style"), 
 		Epic_Boon("Epic Boon"),
 		DRAGONMARK("Dragonmarks"),
-		DARKGIFT("Dark Gift");
+		DARKGIFT("Dark Gift"),
+		PLANAR_PACT("Panar Pact");
 		
 		private String name;
 		

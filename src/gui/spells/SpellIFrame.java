@@ -172,6 +172,8 @@ public class SpellIFrame extends JInternalFrame implements ContentTab, DataChang
 				}));
 				spellGridPane.add(lbl);
 			}
+			
+			spellGridPane.add(CompFactory.createSideLabel("            "));
 			spellGridPane.revalidate();
 			spellGridPane.repaint();
 		});

@@ -47,7 +47,7 @@ public class BackgroundBuilder extends JFrame
 		DataContainer data = new DataContainer();
 		data.init();
 		
-		SwingUtilities.invokeLater(() -> {
+		SwingUtilities.invokeLater(() -> {  
 			BackgroundBuilder build = new BackgroundBuilder(data);
 			build.setVisible(true);
 		});

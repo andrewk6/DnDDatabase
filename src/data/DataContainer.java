@@ -145,6 +145,7 @@ public class DataContainer {
 		MonstersOfTheMultivers("Monsters of the Multiverse"),
 		BigbysGloryofGiants("Bigby Presents: Glory of the Giants"),
 		BookOfManyThings("The Book of Many Things"),
+		ArcanaUnleashed("Arcana Unleashed"),
 		
 		//Setting Books
 		SwordCoastAdventureGuide("Sword Coast Adventurer's Guide"),
@@ -192,7 +193,9 @@ public class DataContainer {
 		ForgottenRealmsAdventures("Forgotten Realms: Adventures in Faerun"),
 		NetherilsFall("Netheril's Fall"),
 		RavenloftTheHorrorsWithing("Ravenloft: The Horrors Within"),
+		ArcanaUnleashedDeadfall("Arcana Unleashed: Deadfall"),
 		//Misc
+		DnDBeyondDrop("DnD Beyond Drops"),
 		UnearthedArcana("Unearthed Arcana"), 
 		Custom("Custom");
 		
