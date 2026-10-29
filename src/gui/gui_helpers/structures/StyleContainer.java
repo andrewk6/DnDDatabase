@@ -53,6 +53,7 @@ public class StyleContainer {
 	public final static String PARTY_ICON_FILE = "party_ico.png";
 	public final static String CAMPAIGN_NOTE_ICON_FILE = "camp_note_icon.png";
 	public final static String DICE_CALC_ICON_FILE = "dice_calc_ico.png";
+	public static final String MATH_TOOLS_ICON_FILE = "math_tools_ico.png";
 	
 	public static final String RULE_BUILDER_ICON_FILE = "builder_rule_ico.png";
 	public static final String SPELL_BUILDER_ICON_FILE = "builder_spell_ico.png";

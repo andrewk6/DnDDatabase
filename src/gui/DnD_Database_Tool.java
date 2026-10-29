@@ -57,6 +57,7 @@ import gui.gui_helpers.structures.StyleContainer;
 import gui.gui_helpers.structures.TaskbarDesktopManager;
 import gui.hazard.HazardIFrame;
 import gui.initative.InitiativeIFrameHP;
+import gui.math_utils.MathIFrame;
 import gui.monsters.MonsterIFrame;
 import gui.species.SpeciesIFrame;
 import gui.spells.SpellIFrame;
@@ -85,9 +86,10 @@ public class DnD_Database_Tool extends JFrame {
 	//Campaign Label
 	private JLabel camp;
 	
-	//Dungeon Frames
+	//Tool Frames
 	DungeonIBuilder dBuildFrame;
 	DungeonIViewer dViewFrame;
+	MathIFrame mathFrame;
 	
 	//Builder Frames
 	RuleBuilderIFrame rBuildFrame;
@@ -262,6 +264,10 @@ public class DnD_Database_Tool extends JFrame {
 		dPane.add(dViewFrame);
 		dViewFrame.setVisible(false);
 		
+		mathFrame = new MathIFrame();
+		dPane.add(mathFrame);
+		mathFrame.setVisible(false);
+		
 		howFrame = new HowToIFrame();
 		dPane.add(howFrame);
 		howFrame.setVisible(false);
@@ -309,6 +315,7 @@ public class DnD_Database_Tool extends JFrame {
 				"Initiative Tracker", ()->new InitiativeIFrameHP(data, gd, dPane), dPane));
 		toolsMenu.add(CompFactory.createNewJMenuItem(
 				"Dice Calculator", ()->new DiceCalcIFrame(), dPane));
+		toolsMenu.add(CompFactory.createNewJMenuItem("Math Tools", mathFrame));
 		
 		JMenu dataExInMenu = new JMenu("Import/Export");
 		StyleContainer.SetFontMain(dataExInMenu);
